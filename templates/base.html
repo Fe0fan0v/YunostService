@@ -14,20 +14,21 @@
 
         <ul class="uk-navbar-nav">
             <li class="uk-active"><a href="#">Юность</a></li>
-            <li>
-                <a href="#">Пункт меню</a>
-                <div class="uk-navbar-dropdown">
-                    <ul class="uk-nav uk-navbar-dropdown-nav">
-                        <li class="uk-active"><a href="#">Ссылка</a></li>
-                        <li><a href="#">Ссылка</a></li>
-                        <li><a href="#">Ссылка</a></li>
-                    </ul>
-                </div>
-            </li>
-            <li><a href="#">Пункт меню</a></li>
+{#            {% if user.is_authenticated %}#}
+{#               <li>#}
+{#                <a href="#">{{ user.name }} {{ user.surname }}</a>#}
+{#            </li>#}
+{#            <li><a href="/logout">Выход</a></li>#}
+{#            {% else %}#}
+{#            <li>#}
+{#                <a href="/login">Вход</a>#}
+{#            </li>#}
+{#            {% endif %}#}
         </ul>
 
     </div>
 </nav>
+{% block content %}
+{% endblock %}
 </body>
 </html>
