@@ -6,28 +6,10 @@
     <script src="{{ url_for('static', filename='js/uikit.js') }}"></script>
     <script src="{{ url_for('static', filename='js/uikit-icons.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/uikit.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/uikit-rtl.css') }}">
+{#    <link rel="stylesheet" href="{{ url_for('static', filename='css/uikit-rtl.css') }}">#}
 </head>
 <body>
-<nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
-    <div class="uk-navbar-left">
-
-        <ul class="uk-navbar-nav">
-            <li class="uk-active"><a href="#">Юность</a></li>
-{#            {% if user.is_authenticated %}#}
-{#               <li>#}
-{#                <a href="#">{{ user.name }} {{ user.surname }}</a>#}
-{#            </li>#}
-{#            <li><a href="/logout">Выход</a></li>#}
-{#            {% else %}#}
-{#            <li>#}
-{#                <a href="/login">Вход</a>#}
-{#            </li>#}
-{#            {% endif %}#}
-        </ul>
-
-    </div>
-</nav>
+<h1 class="uk-heading-line uk-text-center uk-margin-large-bottom"><span>{{ title }}</span></h1>
 {% block content %}
 {% endblock %}
 </body>

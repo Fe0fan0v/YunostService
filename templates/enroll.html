@@ -1,17 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-<div class="uk-child-width-1-2@s" uk-grid>
-    <div>
-        <ul class="uk-tab-left" uk-tab>
-            <li class="uk-active"><a href="#">пр-т Макеева, 39</a></li>
-            <li><a href="#">пр-т Октября, 21</a></li>
-            <li><a href="#">ул. Ст. Разина, 4</a></li>
-            <li><a href="#">ул. 8-е марта, 147</a></li>
-            <li><a href="#">ул. Первомайская, 9</a></li>
+    <div class="uk-container uk-container-small">
+        <ul class="uk-accordion">
+            <li>
+                <a class="uk-accordion-title" href="#">Пр-т Макеева, 39</a>
+                <div class="uk-accordion-content"></div>
+            </li>
+            <li>
+                <a class="uk-accordion-title" href="#">Пр-т Октября, 21</a>
+                <div class="uk-accordion-content"></div>
+            </li>
+            <li>
+                <a class="uk-accordion-title" href="#">Ул. Ст. Разина, 4</a>
+                <div class="uk-accordion-content"></div>
+            </li>
+            <li>
+                <a class="uk-accordion-title" href="#">Ул. 8-е марта, 147</a>
+                <div class="uk-accordion-content"></div>
+            </li>
+            <li>
+                <a class="uk-accordion-title" href="#">ул. Первомайская, 9</a>
+                <div class="uk-accordion-content"></div>
+            </li>
         </ul>
     </div>
-</div>
 
 {% endblock %}
+

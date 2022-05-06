@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, session
-from flask_login import current_user
+
 
 app = Flask(__name__)
 
@@ -11,7 +11,7 @@ def main_page():
 
 @app.route('/enroll')   # страница записи ребёнка
 def enroll():
-    return render_template('enroll.html')
+    return render_template('enroll.html', title='Запись')
 
 
 if __name__ == '__main__':
