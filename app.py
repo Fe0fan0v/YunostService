@@ -5,7 +5,6 @@ from forms import NewCourse, RegisterForm
 
 
 app = Flask(__name__)
-db_session.global_init()
 app.config['SECRET_KEY'] = 'super_secret_key'
 
 
@@ -44,5 +43,5 @@ def add_course():
 
 
 if __name__ == '__main__':
-    db_session.global_init()
+    # db_session.global_init()
     app.run()
