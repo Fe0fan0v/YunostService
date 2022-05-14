@@ -2,11 +2,20 @@
 
 {% block content %}
 
-<div class="uk-section uk-section-muted">
-    <h3>Редактирование направлений обучения</h3>
-    <div class="uk-container">
+    <div class="uk-section uk-width-large uk-text-center">
+        <h3>Редактирование направлений обучения</h3>
+        <div class="uk-container">
+            <ul class="uk-list uk-link-text">
+                {% for course in courses %}
+                    <li><a class="uk-link-heading" href="/courses/{{ course.name }}">{{ course.name }}</a></li>
+                {% endfor %}
+            </ul>
+            <div class="uk-inline">
+                <span class="uk-form-icon" uk-icon="icon: plus"></span>
+                <a href="/add_course"><button class="uk-button uk-button-default">Добавить новый курс</button></a>
+            </div>
 
+        </div>
     </div>
-</div>
 
 {% endblock %}
