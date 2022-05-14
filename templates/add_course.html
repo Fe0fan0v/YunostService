@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var maxField = 6; //Input fields increment limitation
+            var addButton = $('.add_button'); //Add button selector
+            var wrapper = $('.wrapper'); //Input field wrapper
+            var x = 1; //Initial field counter is 1
+            //Once add button is clicked
+            $(addButton).click(function () {
+                //Check maximum number of input fields
+                if (x < maxField) {
+                    $(wrapper).append(`<div class="uk-width-1-3@s"><input class="uk-input" type="text" placeholder="Номер группы" name="group[]" id="group_' + x + '"> </div> <div class="uk-width-1-3@s"> <select class="uk-select" type="text" placeholder="День недели" name="weekday[]" id="weekday_' + x + '"><option>ПН</option><option>ВТ</option><option>СР</option><option>ЧТ</option><option>ПТ</option><option>СБ</option><option>ВС</option></select></div><div class="uk-width-1-3@s"> <input class="uk-input" type="text" placeholder="Время" name="time[]" id="time_' + x + '"></div>`);
+                    x++;//Increment field counter
+                }
+                return false;
+            })
+            $('#submit').click(function () {
+                $.ajax({
+                    url: "/add_course",
+                    method: "POST",
+                    data: $('#add_course').serialize(),
+                    success: function () {
+                        window.location.href = "/add_course";
+                    }
+                });
+            });
+        });
+    </script>
+    <div class="uk-container uk-container-small">
+        <form class="uk-form-stacked" id="add_course" method="post">
+            {{ form.hidden_tag() }}
+            <div class="uk-margin">
+                <div class="uk-form-controls">
+                    {{ form.name(class="uk-input", id="name", type="text", placeholder=form.name.label.text) }}
+                </div>
+            </div>
+            <div class="uk-margin">
+                <div class="uk-form-controls">
+                    {{ form.area(class="uk-select", id="area", placeholder=form.area.label) }}
+                </div>
+            </div>
+            <div class="uk-margin">
+                <div class="uk-form-controls">
+                    {{ form.direction(class="uk-select", id="direction", placeholder=form.direction.label) }}
+                </div>
+            </div>
+            <div class="uk-margin">
+                <div class="uk-form-controls">
+                    {{ form.teacher(class="uk-input", id="teacher", type="text", placeholder=form.teacher.label.text) }}
+                </div>
+            </div>
+            <h3>Возраст детей</h3>
+            <div class="uk-margin">
+                {{ form.age_from.label(class="uk-form-label") }}
+                <label class="uk-label" id="fromLabel"></label>
+                <div class="uk-form-controls">
+                    {{ form.age_from(class="uk-range", id="age_from", type="range", value="6", min="4", max="18", step="1", oninput="document.getElementById('fromLabel').innerHTML=this.value") }}
+                    {{ form.age_to(class="uk-range", id="age_to", type="range", value="6", min="4", max="18", step="1", oninput="document.getElementById('toLabel').innerHTML=this.value") }}
+                </div>
+                {{ form.age_to.label(class="uk-form-label") }}
+                <label class="uk-label" id="toLabel"></label>
+            </div>
+            <div class="uk-margin">
+                <div class="uk-form-controls">
+                    {{ form.description(class="uk-textarea", rows=5, placeholder="Описание объединения") }}
+                </div>
+            </div>
+            <div class="uk-grid uk-margin-large-bottom wrapper">
+            </div>
+            <div class="uk-margin">
+                <div class="uk-form-controls">
+                    <a class="add_button uk-button uk-button-default uk-width-1-1">Добавить группу</a>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <div class="uk-form-controls">
+                    {{ form.submit(class="uk-button uk-button-primary", id="submit") }}
+                </div>
+            </div>
+
+        </form>
+    </div>
+{% endblock %}
