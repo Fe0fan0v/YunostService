@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 from db import db_session
 from db.models import Course, User
 from forms import NewCourse, RegisterForm
+from pprint import pprint
 
 
 app = Flask(__name__)
@@ -29,16 +30,9 @@ def admin_panel():
 def add_course():
     form = NewCourse()
     if request.method == 'POST':
-        db_sess = db_session.create_session()
-        data = request.form
-        info = data.to_dict()
-        area = info['area']
-        direction = info['direction']
-        description = info['description']
-        groups = data.getlist('group[]')
-        weekdays = data.getlist('weekday[]')
-        times = data.getlist('time[]')
-        print(info)
+        # db_sess = db_session.create_session()
+        data = request.get_json()
+        pprint(data)
     return render_template('add_course.html', title='Добавить новое объединение', form=form)
 
 
