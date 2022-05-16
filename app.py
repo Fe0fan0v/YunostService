@@ -3,6 +3,7 @@ from db import db_session
 from db.models import Course, User
 from forms import NewCourse, RegisterForm
 from pprint import pprint
+import urllib.parse
 
 
 app = Flask(__name__)
@@ -31,8 +32,11 @@ def add_course():
     form = NewCourse()
     if request.method == 'POST':
         # db_sess = db_session.create_session()
-        data = request.get_json()
-        pprint(data)
+        data = request.form
+        form_data = urllib.parse.parse_qs(data['form_data'])
+        lessons_data = eval(data['lessons_data'])
+        print(form_data)
+        print(lessons_data)
     return render_template('add_course.html', title='Добавить новое объединение', form=form)
 
 

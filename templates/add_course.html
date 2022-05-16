@@ -11,11 +11,9 @@
                 $.ajax({
                     url: "/add_course",
                     type: "POST",
-                    contentType: "application/json",
-                    dataType: "json",
-                    data: $("#add_course").serialize() + dataCollection(),
+                    data:  {"form_data": $("#add_course").serialize(), "lessons_data": dataCollection()},
                     success: function () {
-                        location.reload();
+                        window.location.href = '/add_course';
                     }
                 });
             });
