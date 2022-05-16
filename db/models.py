@@ -33,5 +33,7 @@ class Course(base):
     direction = sqlalchemy.Column(sqlalchemy.String)
     area = sqlalchemy.Column(sqlalchemy.String)
     teacher = sqlalchemy.Column(sqlalchemy.String)
+    age_from = sqlalchemy.Column(sqlalchemy.Integer)
+    age_to = sqlalchemy.Column(sqlalchemy.Integer)
     schedule = sqlalchemy.Column(sqlalchemy.JSON)
     description = sqlalchemy.Column(sqlalchemy.Text)
