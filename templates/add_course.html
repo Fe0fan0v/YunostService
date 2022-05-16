@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <script type="text/javascript">
+        var groups = 0;
+        var dataToSend = new Map();
+        var lessons_count = new Map();
+        var lessons = 0;
+        $(document).ready(function () {
+            $('#submit').click(function () {
+                $.ajax({
+                    url: "/add_course",
+                    type: "POST",
+                    data:  {"form_data": $("#add_course").serialize(), "lessons_data": dataCollection()},
+                    success: function () {
+                        window.location.href = '/add_course';
+                    }
+                });
+            });
+        });
+        function addGroup() {
+            var wrapper = $('.wrapper');
+            var groupWrapper = $('.lesson_wrapper');
+            lessons = 0;
+            if (groups < 1) {
+                $(wrapper).append(`<div class="uk-margin">
+                                    <div class="uk-form-controls">
+                                        <a class="add_group_button uk-button uk-button-default uk-width-1-1" onclick="addLesson()">Добавить занятие</a>
+                                    </div>
+                                   </div>`);
+            }
+            $(groupWrapper).append(`<div class="uk-margin">
+                                    <div class="uk-form-controls">
+                                        <h3 class="uk-heading-bullet">Группа ${groups + 1}</h3><hr>
+                                    </div>
+                                   </div>`);
+            groups ++;
+            dataToSend.set(groups, new Map());
+        }
+        function addLesson() {
+            var lessonWrapper = $('.lesson_wrapper');
+            lessons++;
+            lessons_count.set(groups, lessons);
+            $(lessonWrapper).append(`<div class="uk-grid">
+                                        <div class="uk-width-1-2@s">
+                                            <select class="uk-select" type="text" placeholder="День недели" id="weekday_${groups}_${lessons}">
+                                                <option>ПН</option>
+                                                <option>ВТ</option>
+                                                <option>СР</option>
+                                                <option>ЧТ</option>
+                                                <option>ПТ</option>
+                                                <option>СБ</option>
+                                                <option>ВС</option>
+                                            </select>
+                                        </div>
+                                            <div class="uk-width-1-2@s">
+                                                <input class="uk-input" type="text" placeholder="Время" id="time_${groups}_${lessons}">
+                                            </div>
+                                     </div>`);
+        }
+        function dataCollection() {
+            for (let group = 1; group <= groups; group++) {
+                for (let lesson = 1; lesson <= lessons_count.get(group); lesson++) {
+                    let weekday = document.getElementById(`weekday_${group}_${lesson}`).value;
+                    let time = document.getElementById(`time_${group}_${lesson}`).value;
+                    dataToSend.get(group).set(weekday, time);
+                }
+            }
+            let grps = Object.fromEntries(dataToSend);
+            for (let key in grps) {
+                let schedule = Object.fromEntries(grps[key]);
+                grps[key] = schedule;
+            }
+            return JSON.stringify(grps);
+        }
+    </script>
+    <div class="uk-container uk-container-small">
+        <form class="uk-form-stacked" id="add_course" method="post">
+            {{ form.hidden_tag() }}
+            <div class="uk-margin">
+                <div class="uk-form-controls">
+                    {{ form.name(class="uk-input", id="name", type="text", placeholder=form.name.label.text) }}
+                </div>
+            </div>
+            <div class="uk-margin">
+                <div class="uk-form-controls">
+                    {{ form.area(class="uk-select", id="area", placeholder=form.area.label) }}
+                </div>
+            </div>
+            <div class="uk-margin">
+                <div class="uk-form-controls">
+                    {{ form.direction(class="uk-select", id="direction", placeholder=form.direction.label) }}
+                </div>
+            </div>
+            <div class="uk-margin">
+                <div class="uk-form-controls">
+                    {{ form.teacher(class="uk-input", id="teacher", type="text", placeholder=form.teacher.label.text) }}
+                </div>
+            </div>
+            <h3>Возраст детей</h3>
+            <div class="uk-margin">
+                {{ form.age_from.label(class="uk-form-label") }}
+                <label class="uk-label" id="fromLabel"></label>
+                <div class="uk-form-controls">
+                    {{ form.age_from(class="uk-range", id="age_from", type="range", value="6", min="4", max="18", step="1", oninput="document.getElementById('fromLabel').innerHTML=this.value") }}
+                    {{ form.age_to(class="uk-range", id="age_to", type="range", value="6", min="4", max="18", step="1", oninput="document.getElementById('toLabel').innerHTML=this.value") }}
+                </div>
+                {{ form.age_to.label(class="uk-form-label") }}
+                <label class="uk-label" id="toLabel"></label>
+            </div>
+            <div class="uk-margin">
+                <div class="uk-form-controls">
+                    {{ form.description(class="uk-textarea", rows=5, placeholder="Описание объединения") }}
+                </div>
+            </div>
+            <div class="uk-margin-large-bottom lesson_wrapper">
+            </div>
+            <div class="uk-margin-large-bottom wrapper">
+            </div>
+            <div class="uk-margin">
+                <div class="uk-form-controls">
+                    <a class="add_button uk-button uk-button-default uk-width-1-1" onclick="addGroup()">Добавить группу</a>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <div class="uk-form-controls">
+                    <a class="uk-button uk-button-primary" id="submit">Сохранить</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+{% endblock %}

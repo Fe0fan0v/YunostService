@@ -1,0 +1,56 @@
+{% extends base.html %}
+
+{% block content %}
+    <form action="post">
+        {{ form.hidden_tag() }}
+        <div class="uk-margin">
+            <div class="uk-inline">
+                <span class="uk-form-icon" uk-icon="icon: user"></span>
+                {{ form.name(class="uk-input", type="text", placeholder=form.name.label) }}
+            </div>
+        </div>
+
+        <div class="uk-margin">
+            <div class="uk-inline">
+                <span class="uk-form-icon" uk-icon="icon: user"></span>
+                {{ form.surname(class="uk-input", type="text", placeholder=form.surname.label) }}
+            </div>
+        </div>
+
+        <div class="uk-margin">
+            <div class="uk-inline">
+                <span class="uk-form-icon" uk-icon="icon: user"></span>
+                {{ form.patronymic(class="uk-input", type="text", placeholder=form.patronymic.label) }}
+            </div>
+        </div>
+
+        <div class="uk-margin">
+            <div class="uk-inline">
+                <span class="uk-form-icon" uk-icon="icon: user"></span>
+                {{ form.patronymic(class="uk-input", type="text", placeholder=form.patronymic.label) }}
+            </div>
+        </div>
+
+        <div class="uk-margin">
+            <div class="uk-inline">
+                <span class="uk-form-icon" uk-icon="icon: mail"></span>
+                {{ form.email(class="uk-input", type="text", placeholder=form.email.label) }}
+            </div>
+        </div>
+
+        <div class="uk-margin">
+            <div class="uk-inline">
+                <span class="uk-form-icon" uk-icon="icon: user"></span>
+                <span class="uk-label">Начало периода</span>
+                {{ form.birthday(class="uk-input", type="text", placeholder=form.birthday.label, data-uk-datepicker="{
+    weekstart:1,
+    format:'DD.MM.YYYY',
+    i18n: {
+            months:['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+            weekdays: ['Вс','Пн','Вт','Ср','Чт','Пт','Сб']
+            }
+     ") }}
+            </div>
+        </div>
+    </form>
+{% endblock %}

@@ -6,28 +6,12 @@
     <script src="{{ url_for('static', filename='js/uikit.js') }}"></script>
     <script src="{{ url_for('static', filename='js/uikit-icons.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/uikit.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/uikit-rtl.css') }}">
+    <script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
+{#    <link rel="stylesheet" href="{{ url_for('static', filename='css/uikit-rtl.css') }}">#}
 </head>
 <body>
-<nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
-    <div class="uk-navbar-left">
-
-        <ul class="uk-navbar-nav">
-            <li class="uk-active"><a href="#">Юность</a></li>
-            <li>
-                <a href="#">Пункт меню</a>
-                <div class="uk-navbar-dropdown">
-                    <ul class="uk-nav uk-navbar-dropdown-nav">
-                        <li class="uk-active"><a href="#">Ссылка</a></li>
-                        <li><a href="#">Ссылка</a></li>
-                        <li><a href="#">Ссылка</a></li>
-                    </ul>
-                </div>
-            </li>
-            <li><a href="#">Пункт меню</a></li>
-        </ul>
-
-    </div>
-</nav>
+<h1 class="uk-heading-line uk-text-center uk-margin-large-bottom"><span>{{ title }}</span></h1>
+{% block content %}
+{% endblock %}
 </body>
 </html>
