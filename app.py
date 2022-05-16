@@ -1,13 +1,13 @@
 from flask import Flask, render_template, request
 from db import db_session
 from db.models import Course
-from forms import NewCourse, RegisterForm
+from forms import NewCourse, RegisterForm, RegisterChild
 import urllib.parse
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super_secret_key'
-db_session.global_init()
+# db_session.global_init()
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -61,6 +61,15 @@ def add_course():
 #     return render_template('course_redaction.html', title='Редактировать объединение', form=form)
 
 
+@app.route('/registration/<course>', methods=['GET', 'POST'])
+def registration(course):
+    form = RegisterChild()
+    if request.method == 'POST':
+        print(request.form.to_dict())
+        print(course)
+    return render_template('registration.html', title='Форма для внесения данных', form=form)
+
+
 if __name__ == '__main__':
-    db_session.global_init()
+    # db_session.global_init()
     app.run()

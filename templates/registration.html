@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="uk-container uk-container-small">
+        <form method="post">
+            {{ form.hidden_tag() }}
+            <div class="uk-margin">
+                {{ form.child_name(class="uk-input", type="text", placeholder=form.child_name.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.child_surname(class="uk-input", type="text", placeholder=form.child_surname.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.child_patronymic(class="uk-input", type="text", placeholder=form.child_patronymic.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.child_birthday(class="uk-input", type="text", placeholder=form.child_birthday.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.educational_institution(class="uk-input", type="text", placeholder=form.educational_institution.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.edu_class(class="uk-input", type="text", placeholder=form.edu_class.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.health(class="uk-select") }}
+            </div>
+            <div class="uk-margin">
+                {{ form.child_phone(class="uk-input", type="text", placeholder=form.child_phone.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.child_email(class="uk-input", type="text", placeholder=form.child_email.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.child_residence(class="uk-input", type="text", placeholder=form.child_residence.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.parent_name(class="uk-input", type="text", placeholder=form.parent_name.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.parent_surname(class="uk-input", type="text", placeholder=form.parent_surname.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.parent_surname(class="uk-input", type="text", placeholder=form.parent_surname.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.parent_patronymic(class="uk-input", type="text", placeholder=form.parent_patronymic.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.parent_birthday(class="uk-input", type="text", placeholder=form.parent_birthday.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.parent_residence(class="uk-input", type="text", placeholder=form.parent_residence.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.parent_work(class="uk-input", type="text", placeholder=form.parent_work.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.parent_phone(class="uk-input", type="text", placeholder=form.parent_phone.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.parent_email(class="uk-input", type="text", placeholder=form.parent_email.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.full_family(class="uk-select") }}
+            </div>
+            <div class="uk-margin">
+                {{ form.large_family(class="uk-select") }}
+            </div>
+            <div class="uk-margin">
+                {{ form.without_parents(class="uk-select") }}
+            </div>
+            <div class="uk-margin">
+                {{ form.police_record(class="uk-select") }}
+            </div>
+            <div class="uk-margin">
+                {{ form.resident(class="uk-select") }}
+            </div>
+            <div class="uk-margin">
+                {{ form.second_parent_fio(class="uk-input", type="text", placeholder=form.second_parent_fio.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.second_parent_phone(class="uk-input", type="text", placeholder=form.second_parent_phone.label.text) }}
+            </div>
+            <div class="uk-text-center uk-margin-large-bottom">
+                {{ form.submit(class="uk-button uk-button-primary") }}
+            </div>
+        </form>
+    </div>
+{% endblock %}
