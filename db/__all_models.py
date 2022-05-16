@@ -1,1 +1,1 @@
-from .models import User, Course
+from .models import Course

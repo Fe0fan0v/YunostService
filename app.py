@@ -1,12 +1,13 @@
 from flask import Flask, render_template, request
 from db import db_session
-from db.models import Course, User
+from db.models import Course
 from forms import NewCourse, RegisterForm
 import urllib.parse
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super_secret_key'
+db_session.global_init()
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -16,7 +17,15 @@ def main_page():
 
 @app.route('/enroll')   # страница записи ребёнка
 def enroll():
-    return render_template('enroll.html', title='Запись')
+    db_sess = db_session.create_session()
+    courses = db_sess.query(Course).all()
+    areas = {}
+    for course in courses:
+        if course.area in areas:
+            areas[course.area].append(course.direction)
+        else:
+            areas[course.area] = [course.direction]
+    return render_template('enroll.html', title='Запись', courses=courses, areas=areas)
 
 
 @app.route('/admin')    # панель администратора
@@ -45,6 +54,11 @@ def add_course():
         db_sess.add(new_course)
         db_sess.commit()
     return render_template('add_course.html', title='Добавить новое объединение', form=form)
+
+
+# @app.route('/courses/<course>')
+# def course_redaction(course):
+#     return render_template('course_redaction.html', title='Редактировать объединение', form=form)
 
 
 if __name__ == '__main__':

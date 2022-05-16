@@ -1,30 +1,97 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="uk-container uk-container-small">
-        <ul class="uk-accordion">
-            <li>
-                <a class="uk-accordion-title" href="#">Пр-т Макеева, 39</a>
-                <div class="uk-accordion-content"></div>
-            </li>
-            <li>
-                <a class="uk-accordion-title" href="#">Пр-т Октября, 21</a>
-                <div class="uk-accordion-content"></div>
-            </li>
-            <li>
-                <a class="uk-accordion-title" href="#">Ул. Ст. Разина, 4</a>
-                <div class="uk-accordion-content"></div>
-            </li>
-            <li>
-                <a class="uk-accordion-title" href="#">Ул. 8-е марта, 147</a>
-                <div class="uk-accordion-content"></div>
-            </li>
-            <li>
-                <a class="uk-accordion-title" href="#">ул. Первомайская, 9</a>
-                <div class="uk-accordion-content"></div>
-            </li>
-        </ul>
-    </div>
-
+    <nav class="uk-navbar-container" uk-navbar>
+        <div class="uk-navbar-left">
+            <ul class="uk-navbar-nav">
+                <li>
+                    <a href="#">Показать все</a>
+                </li>
+                <li>
+                    <a href="#">По площадке</a>
+                    <div class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            {% for area in areas %}
+                                <li><a href="#">{{ area }}</a>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="#">По направлению</a>
+                    <div class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            {% for direction in directions %}
+                                <li><a href="#">{{ direction }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="#">По возрасту</a>
+                    <div class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            {% for age in range(3, 19) %}
+                                <li><a href="#">{{ age }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="uk-navbar-right">
+            <ul class="uk-navbar-nav">
+                <li class="uk-active">
+                    <div class="uk-navbar-item">
+                        <form action="javascript:void(0)">
+                            <input class="uk-input uk-form-width-small" type="text">
+                            <button class="uk-button uk-button-default">
+                                <span class="uk-icon uk-margin-small-right" uk-icon="icon: search"></span>
+                                Искать
+                            </button>
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    {% for area in areas %}
+        <h2 class="uk-heading-divider uk-text-center">{{ area }}</h2>
+        <div class="uk-margin-medium uk-margin-medium-left">
+            {% for direction in areas[area] %}
+                <h4 class="uk-heading">{{ direction }}</h4>
+                <div class="uk-grid-column-small uk-grid-row-large uk-child-width-1-3@s" uk-grid>
+                    {% for course in courses %}
+                        {% if (course.area == area) and (course.direction == direction) %}
+                            <div class="uk-card uk-card-default uk-width-1-4@m uk-box-shadow-hover-small">
+                                <div class="uk-card-header">
+                                    <div class="uk-grid-small uk-flex-middle" uk-grid>
+                                        <div class="uk-width-expand">
+                                            <h3 class="uk-card-title uk-margin-remove-bottom">{{ course.name }}</h3>
+                                            <p class="uk-text-meta uk-margin-remove-top">
+                                                С {{ course.age_from }} до {{ course.age_to }} лет
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="uk-card-body">
+                                    <p>{{ course.description }}</p>
+                                </div>
+                                <div class="uk-card-footer">
+                                    <p class="uk-text-center">Выбрать группу</p>
+                                    {% for schedule in course.schedule.values() %}
+                                        <a href="#" class="uk-button uk-button-text uk-text-primary">
+                                            {% for weekday, time in schedule.items() %}
+                                                {{ weekday }} - {{ time }}
+                                            {% endfor %}
+                                        </a><br>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
 {% endblock %}
-
