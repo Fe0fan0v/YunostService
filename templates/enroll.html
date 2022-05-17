@@ -5,14 +5,14 @@
         <div class="uk-navbar-left">
             <ul class="uk-navbar-nav">
                 <li>
-                    <a href="#">Показать все</a>
+                    <a href="/enroll">Показать все</a>
                 </li>
                 <li>
                     <a href="#">По площадке</a>
                     <div class="uk-navbar-dropdown">
                         <ul class="uk-nav uk-navbar-dropdown-nav">
-                            {% for area in areas %}
-                                <li><a href="#">{{ area }}</a>
+                            {% for area in nav_areas %}
+                                <li><a href="/enroll?sort_type=area_{{ area }}">{{ area }}</a>
                             {% endfor %}
                         </ul>
                     </div>
@@ -22,7 +22,7 @@
                     <div class="uk-navbar-dropdown">
                         <ul class="uk-nav uk-navbar-dropdown-nav">
                             {% for direction in directions %}
-                                <li><a href="#">{{ direction }}</a></li>
+                                <li><a href="/enroll?sort_type=direction_{{ direction }}">{{ direction }}</a></li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -32,7 +32,7 @@
                     <div class="uk-navbar-dropdown">
                         <ul class="uk-nav uk-navbar-dropdown-nav">
                             {% for age in range(3, 19) %}
-                                <li><a href="#">{{ age }}</a></li>
+                                <li><a href="/enroll?sort_type=age_{{ age }}">{{ age }}</a></li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -57,60 +57,62 @@
     </nav>
     {% for area in areas %}
         <h2 class="uk-heading-divider uk-text-center">{{ area }}</h2>
-        <div class="uk-margin-medium uk-margin-medium-left">
+        <div class="uk-margin-medium-left uk-margin-medium-right">
             {% for direction in areas[area] %}
                 <h4 class="uk-heading">{{ direction }}</h4>
-                <div class="uk-grid-column-small uk-grid-row-large uk-child-width-1-3@s" uk-grid>
+                <div class="uk-child-width-expand@l uk-grid-small " uk-grid uk-height-match=".uk-card">
                     {% for course in courses %}
                         {% if (course.area == area) and (course.direction == direction) %}
-                            <div class="uk-card uk-card-default uk-width-1-4@m uk-box-shadow-hover-small uk-margin-auto">
-                                <div class="uk-card-header">
-                                    <div class="uk-grid-small uk-flex-middle" uk-grid>
-                                        <div class="uk-width-expand">
-                                            <h3 class="uk-card-title uk-margin-remove-bottom">{{ course.name }}</h3>
-                                            <p>{{ course.teacher }}</p>
-                                            <p class="uk-text-meta uk-margin-remove-top">
-                                                С {{ course.age_from }} до {{ course.age_to }} лет
-                                            </p>
+                            <div class="uk-width-1-4@s">
+                                <div class="uk-card uk-card-default uk-box-shadow-hover-small">
+                                    <div class="uk-card-header">
+                                        <div class="uk-grid-small uk-flex-middle" uk-grid>
+                                            <div class="uk-width-expand">
+                                                <h3 class="uk-card-title uk-margin-remove-bottom">{{ course.name }}</h3>
+                                                <p>{{ course.teacher }}</p>
+                                                <p class="uk-text-meta uk-margin-remove-top">
+                                                    С {{ course.age_from }} до {{ course.age_to }} лет
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="uk-card-body">
-                                    <p>{{ course.description }}</p>
-                                </div>
-                                <div class="uk-card-footer">
-                                    <p class="uk-text-center">Выбрать группу</p>
-                                    {% for group, schedule in course.schedule.items() %}
-                                        <a href="#{{ '_'.join(course.name.split()) }}_{{ group }}"
-                                           class="uk-button uk-button-text uk-text-primary" uk-toggle>
-                                            {% for weekday, time in schedule.items() %}
-                                                {{ weekday }} - {{ time }}
-                                            {% endfor %}
-                                        </a><br>
-                                        <div id="{{ '_'.join(course.name.split()) }}_{{ group }}" uk-modal>
-                                            <div class="uk-modal-dialog">
-                                                <button class="uk-modal-close-default" type="button" uk-close></button>
-                                                <div class="uk-modal-header">
-                                                    <h2 class="uk-modal-title">
-                                                        <p>Запись на {{ course.name }} </p>
-                                                        <p>группа {{ group }}</p>
+                                    <div class="uk-card-body">
+                                        <p>{{ course.description }}</p>
+                                    </div>
+                                    <div class="uk-card-footer">
+                                        <p class="uk-text-center">Выбрать группу</p>
+                                        {% for group, schedule in course.schedule.items() %}
+                                            <a href="#{{ '_'.join(course.name.split()) }}_{{ group }}"
+                                               class="uk-button uk-button-text uk-text-primary" uk-toggle>
+                                                {% for weekday, time in schedule.items() %}
+                                                    {{ weekday }} - {{ time }}
+                                                {% endfor %}
+                                            </a><br>
+                                            <div id="{{ '_'.join(course.name.split()) }}_{{ group }}" uk-modal>
+                                                <div class="uk-modal-dialog">
+                                                    <button class="uk-modal-close-default" type="button"
+                                                            uk-close></button>
+                                                    <div class="uk-modal-header">
+                                                        <h2 class="uk-modal-title">{{ course.name }}</h2>
+                                                        <p>Запись в группу {{ group }}</p>
                                                         <p>
                                                             {% for weekday, time in schedule.items() %}
                                                                 {{ weekday }} - {{ time }}
                                                             {% endfor %}
-                                                        </p></h2>
-                                                </div>
-                                                <div class="uk-modal-body">
-                                                    {% include 'registration.html' %}
-                                                </div>
-                                                <div class="uk-modal-footer uk-text-right">
-                                                    <button class="uk-button uk-button-default uk-modal-close"
-                                                            type="button">Отменить
-                                                    </button>
+                                                        </p>
+                                                    </div>
+                                                    <div class="uk-modal-body">
+                                                        {% include 'registration.html' %}
+                                                    </div>
+                                                    <div class="uk-modal-footer uk-text-right">
+                                                        <button class="uk-button uk-button-default uk-modal-close"
+                                                                type="button">Отменить
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    {% endfor %}
+                                        {% endfor %}
+                                    </div>
                                 </div>
                             </div>
                         {% endif %}
