@@ -1,21 +1,105 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-    <div class="uk-section uk-width-large uk-text-center">
-        <h3>Объединения</h3>
-        <div class="uk-container">
-            <ul class="uk-list uk-link-text">
-                {% for course in courses %}
-                    <li><a class="uk-link-heading" href="/courses/{{ course.name }}">{{ course.name }}</a></li>
-                {% endfor %}
+    <nav class="uk-navbar-container" uk-navbar>
+        <div class="uk-navbar-left">
+            <ul class="uk-navbar-nav">
+                <li>
+                    <a href="/enroll">Показать все</a>
+                </li>
+                <li>
+                    <a href="#">По площадке</a>
+                    <div class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            {% for area in nav_areas %}
+                                <li><a href="/enroll?sort_type=area_{{ area }}">{{ area }}</a>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="#">По направлению</a>
+                    <div class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            {% for direction in directions %}
+                                <li><a href="/enroll?sort_type=direction_{{ direction }}">{{ direction }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="#">По возрасту</a>
+                    <div class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            {% for age in range(3, 19) %}
+                                <li><a href="/enroll?sort_type=age_{{ age }}">{{ age }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
             </ul>
-            <div class="uk-inline">
-                <span class="uk-form-icon" uk-icon="icon: plus"></span>
-                <a href="/add_course"><button class="uk-button uk-button-default">Добавить новое объединение</button></a>
-            </div>
-
         </div>
-    </div>
-
+        <div class="uk-navbar-right">
+            <ul class="uk-navbar-nav">
+                <li>
+                    <div class="uk-navbar-item">
+                        <div class="uk-inline">
+                            <span class="uk-form-icon" uk-icon="icon: plus"></span>
+                            <a href="/add_course">
+                                <button class="uk-button uk-button-default">Добавить новое объединение</button>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+                <li class="uk-active">
+                    <div class="uk-navbar-item">
+                        <form action="javascript:void(0)">
+                            <input class="uk-input uk-form-width-small" type="text">
+                            <button class="uk-button uk-button-default">
+                                <span class="uk-icon uk-margin-small-right" uk-icon="icon: search"></span>
+                                Искать
+                            </button>
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    {% for area in areas %}
+        <h2 class="uk-heading-divider uk-text-center">{{ area }}</h2>
+        <div class="uk-margin-medium-left uk-margin-medium-right">
+            {% for direction in areas[area] %}
+                <h4 class="uk-heading">{{ direction }}</h4>
+                <div class="uk-child-width-expand@l uk-grid-small " uk-grid uk-height-match=".uk-card">
+                    {% for course in courses %}
+                        {% if (course.area == area) and (course.direction == direction) %}
+                            <div class="uk-width-1-4@s">
+                                <div class="uk-card uk-card-default uk-box-shadow-hover-small">
+                                    <div class="uk-card-header">
+                                        <div class="uk-grid-small uk-flex-middle" uk-grid>
+                                            <div class="uk-width-expand">
+                                                <h3 class="uk-card-title uk-margin-remove-bottom">{{ course.name }}</h3>
+                                                <p>{{ course.teacher }}</p>
+                                                <p class="uk-text-meta uk-margin-remove-top">
+                                                    С {{ course.age_from }} до {{ course.age_to }} лет
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="uk-card-body">
+                                        <p>{{ course.description }}</p>
+                                    </div>
+                                    <a class="uk-card-footer">
+                                        <a href="/redact_course/{{ course.id }}"><p class="uk-text-center uk-text-warning">Редактировать</p></a>
+                                        <a href="/delete_course/{{ course.id }}"><p class="uk-text-center uk-text-danger">Удалить</p></a>
+                                    </a><br>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
 {% endblock %}
+

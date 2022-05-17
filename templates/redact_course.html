@@ -9,15 +9,19 @@
         $(document).ready(function () {
             $('#submit').click(function () {
                 $.ajax({
-                    url: "/add_course",
+                    url: "/redact_course",
                     type: "POST",
-                    data:  {"form_data": $("#add_course").serialize(), "lessons_data": dataCollection()},
+                    data: {"form_data": $("#redact_course").serialize()},
                     success: function () {
-                        window.location.href = '/add_course';
+                        window.location.href = '/admin';
+                    },
+                    error: function (error) {
+                        alert(error);
                     }
                 });
             });
         });
+
         function addGroup() {
             var wrapper = $('.wrapper');
             var groupWrapper = $('.lesson_wrapper');
@@ -34,9 +38,10 @@
                                         <h3 class="uk-heading-bullet">Группа ${groups + 1}</h3><hr>
                                     </div>
                                    </div>`);
-            groups ++;
+            groups++;
             dataToSend.set(groups, new Map());
         }
+
         function addLesson() {
             var lessonWrapper = $('.lesson_wrapper');
             lessons++;
@@ -58,6 +63,7 @@
                                             </div>
                                      </div>`);
         }
+
         function dataCollection() {
             for (let group = 1; group <= groups; group++) {
                 for (let lesson = 1; lesson <= lessons_count.get(group); lesson++) {
@@ -74,60 +80,83 @@
             return JSON.stringify(grps);
         }
     </script>
+    <script>
+        $(function () {
+            var area="{{ course.area }}";
+            var direction="{{ course.direction }}";
+            $("#area").val(area);
+            $("#direction").val(direction);
+            });
+    </script>
     <div class="uk-container uk-container-small">
-        <form class="uk-form-stacked" id="add_course" method="post">
+        <form class="uk-form-stacked" id="redact_course" method="post">
             {{ form.hidden_tag() }}
             <div class="uk-margin">
                 <div class="uk-form-controls">
-                    {{ form.name(class="uk-input", id="name", type="text", placeholder=form.name.label.text) }}
+                    {{ form.name(class="uk-input uk-form-blank", id="name", type="text", value=course.name) }}
                 </div>
             </div>
             <div class="uk-margin">
                 <div class="uk-form-controls">
-                    {{ form.area(class="uk-select", id="area", placeholder=form.area.label) }}
+                    {{ form.area(class="uk-select uk-form-blank", id="area", value=course.area) }}
                 </div>
             </div>
             <div class="uk-margin">
                 <div class="uk-form-controls">
-                    {{ form.direction(class="uk-select", id="direction", placeholder=form.direction.label) }}
+                    {{ form.direction(class="uk-select uk-form-blank", id="direction", value=course.direction) }}
                 </div>
             </div>
             <div class="uk-margin">
                 <div class="uk-form-controls">
-                    {{ form.teacher(class="uk-input", id="teacher", type="text", placeholder=form.teacher.label.text) }}
+                    {{ form.teacher(class="uk-input uk-form-blank", id="teacher", type="text", value=course.teacher) }}
                 </div>
             </div>
             <h3>Возраст детей</h3>
             <div class="uk-margin">
                 {{ form.age_from.label(class="uk-form-label") }}
-                <label class="uk-label" id="fromLabel">6</label>
+                <label class="uk-label" id="fromLabel">{{ course.age_from }}</label>
                 <div class="uk-form-controls">
-                    {{ form.age_from(class="uk-range", id="age_from", type="range", value="6", min="4", max="18", step="1", oninput="document.getElementById('fromLabel').innerHTML=this.value") }}
-                    {{ form.age_to(class="uk-range", id="age_to", type="range", value="6", min="4", max="18", step="1", oninput="document.getElementById('toLabel').innerHTML=this.value") }}
+                    {{ form.age_from(class="uk-range uk-form-blank", id="age_from", type="range", value=course.age_from, min="4", max="18", step="1", oninput="document.getElementById('fromLabel').innerHTML=this.value") }}
+                    {{ form.age_to(class="uk-range uk-form-blank", id="age_to", type="range", value=course.age_to, min="4", max="18", step="1", oninput="document.getElementById('toLabel').innerHTML=this.value") }}
                 </div>
                 {{ form.age_to.label(class="uk-form-label") }}
-                <label class="uk-label" id="toLabel">6</label>
+                <label class="uk-label" id="toLabel">{{ course.age_to }}</label>
             </div>
             <div class="uk-margin">
                 <div class="uk-form-controls">
-                    {{ form.description(class="uk-textarea", rows=5, placeholder="Описание объединения") }}
+                    <textarea class="uk-textarea uk-form-blank" rows=5 id="textarea">{{ course.description }}</textarea>
                 </div>
             </div>
-            <div class="uk-margin-large-bottom lesson_wrapper">
+            <div class="uk-child-width-expand@l uk-grid-small " uk-grid>
+                {% for group, schedule in course.schedule.items() %}
+                    <div class="uk-width-1-4@s">
+                        <h3 class="uk-heading-bullet">Группа {{ group }}</h3>
+                        {% for weekday, time in schedule.items() %}
+                            <div class="uk-grid">
+                                <div class="uk-width-1-2@s">
+                                    <select class="uk-select uk-form-blank" id="{{ weekday }}_{{ loop.index }}" type="text">
+                                        <option>ПН</option>
+                                        <option>ВТ</option>
+                                        <option>СР</option>
+                                        <option>ЧТ</option>
+                                        <option>ПТ</option>
+                                        <option>СБ</option>
+                                        <option>ВС</option>
+                                    </select>
+                                </div>
+                                <div class="uk-width-1-2@s">
+                                    <input class="uk-input uk-form-blank" type="text" value={{ time }}>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
             </div>
-            <div class="uk-margin-large-bottom wrapper">
-            </div>
-            <div class="uk-margin">
-                <div class="uk-form-controls">
-                    <a class="add_button uk-button uk-button-default uk-width-1-1" onclick="addGroup()">Добавить группу</a>
-                </div>
-            </div>
-            <div class="uk-margin">
+            <div class="uk-margin-large-top uk-align-right">
                 <div class="uk-form-controls">
                     <a class="uk-button uk-button-primary" id="submit">Сохранить</a>
                 </div>
             </div>
-
         </form>
     </div>
 {% endblock %}
