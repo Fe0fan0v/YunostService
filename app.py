@@ -15,11 +15,12 @@ def main_page():
     return render_template('index.html')
 
 
-@app.route('/enroll')   # страница записи ребёнка
+@app.route('/enroll', methods=['GET', 'POST'])   # страница записи ребёнка
 def enroll():
     db_sess = db_session.create_session()
     courses = db_sess.query(Course).all()
     areas = {}
+    form = RegisterChild()
     for course in courses:
         if course.area in areas:
             if course.direction not in areas[course.area]:
@@ -28,7 +29,9 @@ def enroll():
                 continue
         else:
             areas[course.area] = [course.direction]
-    return render_template('enroll.html', title='Запись', courses=courses, areas=areas)
+    if request.method == 'POST':
+        print(request.form.to_dict())
+    return render_template('enroll.html', title='Запись', courses=courses, areas=areas, form=form)
 
 
 @app.route('/admin')    # панель администратора
@@ -62,14 +65,6 @@ def add_course():
 # @app.route('/courses/<course>')
 # def course_redaction(course):
 #     return render_template('course_redaction.html', title='Редактировать объединение', form=form)
-
-
-@app.route('/registration', methods=['GET', 'POST'])
-def registration():
-    form = RegisterChild()
-    if request.method == 'POST':
-        print(request.form.to_dict())
-    return render_template('registration.html', title='Форма для внесения данных', form=form)
 
 
 if __name__ == '__main__':
