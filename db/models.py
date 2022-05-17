@@ -70,3 +70,4 @@ class Registration(base):
     resident = sqlalchemy.Column(sqlalchemy.Boolean)
     second_parent_fio = sqlalchemy.Column(sqlalchemy.String)
     second_parent_phone = sqlalchemy.Column(sqlalchemy.String)
+    courses = sqlalchemy.Column(sqlalchemy.JSON)

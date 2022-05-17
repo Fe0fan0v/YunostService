@@ -7,7 +7,7 @@ import urllib.parse
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super_secret_key'
-# db_session.global_init()
+db_session.global_init()
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -22,7 +22,10 @@ def enroll():
     areas = {}
     for course in courses:
         if course.area in areas:
-            areas[course.area].append(course.direction)
+            if course.direction not in areas[course.area]:
+                areas[course.area].append(course.direction)
+            else:
+                continue
         else:
             areas[course.area] = [course.direction]
     return render_template('enroll.html', title='Запись', courses=courses, areas=areas)
@@ -61,15 +64,14 @@ def add_course():
 #     return render_template('course_redaction.html', title='Редактировать объединение', form=form)
 
 
-@app.route('/registration/<course>', methods=['GET', 'POST'])
-def registration(course):
+@app.route('/registration', methods=['GET', 'POST'])
+def registration():
     form = RegisterChild()
     if request.method == 'POST':
         print(request.form.to_dict())
-        print(course)
     return render_template('registration.html', title='Форма для внесения данных', form=form)
 
 
 if __name__ == '__main__':
-    # db_session.global_init()
+    db_session.global_init()
     app.run()

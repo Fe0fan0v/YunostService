@@ -21,8 +21,8 @@ class RegisterForm(FlaskForm):
 
 
 class NewCourse(FlaskForm):
-    name = StringField('Название курса', validators=[DataRequired()])
-    direction = SelectField('Направление курса', validators=[DataRequired()],
+    name = StringField('Название объединения', validators=[DataRequired()])
+    direction = SelectField('Направление объединения', validators=[DataRequired()],
                             choices=['Изобразительное искусство', 'Вокал', 'Хореография', 'Театр', 'Цирк',
                                      'Развивающая акробатика', 'Журналистика', 'Психология',
                                      'Декоративно-прикладное творчество (валяние из шерсти, бисероплетение, текстильная кукла и др.)',
@@ -31,7 +31,7 @@ class NewCourse(FlaskForm):
                                      'Естественные науки (химия, биология, астрономия, геология)',
                                      'IT (программирование, робототехника, технический английский и др.)',
                                      'Фотография и видеография'])
-    area = SelectField('Площадка проведения курса', validators=[DataRequired()],
+    area = SelectField('Площадка объединения', validators=[DataRequired()],
                        choices=['Пр-т Макеева, 39', 'Пр-т Октября, 21', 'Ул. Ст. Разина, 4', 'Ул. 8-е марта, 147',
                                 'ул. Первомайская, 9'])
     teacher = StringField('Фамилия Имя Отчество педагога', validators=[DataRequired()])
