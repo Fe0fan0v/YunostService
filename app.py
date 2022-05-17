@@ -3,6 +3,7 @@ from db import db_session
 from db.models import Course
 from forms import NewCourse, RegisterForm, RegisterChild
 import urllib.parse
+from pprint import pprint
 
 
 app = Flask(__name__)
@@ -30,7 +31,7 @@ def enroll():
         else:
             areas[course.area] = [course.direction]
     if request.method == 'POST':
-        print(request.form.to_dict())
+        pprint(request.form.to_dict())
     return render_template('enroll.html', title='Запись', courses=courses, areas=areas, form=form)
 
 
