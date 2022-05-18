@@ -20,7 +20,7 @@ def main_page():
 def enroll():
     form = RegisterChild()
     db_sess = db_session.create_session()
-    courses, areas, directions, nav_areas = show_courses(db_sess)  # todo: раздельная сортировка
+    courses, areas, directions, nav_areas = show_courses(db_sess)
     if request.method == 'POST':
         data = request
         print(data)
