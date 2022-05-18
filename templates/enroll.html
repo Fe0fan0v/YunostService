@@ -5,6 +5,7 @@
         var dataToSend = {};
         $(document).ready(function () {
             $('#submit').click(function () {
+                alert('2' + dataToSend);
                 $.ajax({
                     url: "/enroll",
                     type: "POST",

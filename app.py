@@ -16,13 +16,14 @@ def main_page():
     return render_template('index.html')
 
 
-@app.route('/enroll', methods=['GET', 'POST'])  # страница записи ребёнка
+@app.route('/enroll', methods=['GET', 'POST'])  # todo: страница записи ребёнка
 def enroll():
     form = RegisterChild()
     db_sess = db_session.create_session()
-    courses, areas, directions, nav_areas = show_courses(db_sess)
+    courses, areas, directions, nav_areas = show_courses(db_sess)  # todo: раздельная сортировка
     if request.method == 'POST':
-        data = request.form
+        data = request
+        print(data)
         form_data = urllib.parse.parse_qs(data['form_data'])
         lessons_data = eval(data['lessons_data'])
         print(form_data)
@@ -71,12 +72,12 @@ def delete_course(_id):
     return redirect('/admin')
 
 
-@app.route('/redact_course/<_id>', methods=['GET', 'POST'])
+@app.route('/redact_course/<_id>', methods=['GET', 'POST'])  # todo: установка значения дня недели по умолчанию
 def redact_course(_id):
     form = NewCourse()
     db_sess = db_session.create_session()
     course = db_sess.query(Course).filter(Course.id == _id).first()
-    if request.method == 'POST':
+    if request.method == 'POST':  # todo: удаление и добавление групп
         data = request.form.to_dict()
         print(data)
     return render_template('redact_course.html', course=course, form=form, title='Редактирование объединения')
