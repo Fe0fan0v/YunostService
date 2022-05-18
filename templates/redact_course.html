@@ -82,11 +82,11 @@
     </script>
     <script>
         $(function () {
-            var area="{{ course.area }}";
-            var direction="{{ course.direction }}";
+            var area = "{{ course.area }}";
+            var direction = "{{ course.direction }}";
             $("#area").val(area);
             $("#direction").val(direction);
-            });
+        });
     </script>
     <div class="uk-container uk-container-small">
         <form class="uk-form-stacked" id="redact_course" method="post">
@@ -134,14 +134,15 @@
                         {% for weekday, time in schedule.items() %}
                             <div class="uk-grid">
                                 <div class="uk-width-1-2@s">
-                                    <select class="uk-select uk-form-blank" id="{{ weekday }}_{{ loop.index }}" type="text">
-                                        <option>ПН</option>
-                                        <option selected="selected">ВТ</option>
-                                        <option>СР</option>
-                                        <option>ЧТ</option>
-                                        <option>ПТ</option>
-                                        <option>СБ</option>
-                                        <option>ВС</option>
+                                    <select class="uk-select uk-form-blank" id="{{ weekday }}_{{ loop.index }}"
+                                            type="text">
+                                        {% for day in ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'] %}
+                                            {% if day == weekday %}
+                                                <option selected="selected">{{ day }}</option>
+                                            {% else %}
+                                                <option>{{ day }}</option>
+                                            {% endif %}
+                                        {% endfor %}
                                     </select>
                                 </div>
                                 <div class="uk-width-1-2@s">

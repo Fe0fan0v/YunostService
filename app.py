@@ -72,7 +72,7 @@ def delete_course(_id):
     return redirect('/admin')
 
 
-@app.route('/redact_course/<_id>', methods=['GET', 'POST'])  # todo: установка значения дня недели по умолчанию
+@app.route('/redact_course/<_id>', methods=['GET', 'POST'])
 def redact_course(_id):
     form = NewCourse()
     db_sess = db_session.create_session()
