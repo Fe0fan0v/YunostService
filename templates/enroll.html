@@ -1,6 +1,29 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <script type="text/javascript">
+        var dataToSend = {};
+        $(document).ready(function () {
+            $('#submit').click(function () {
+                $.ajax({
+                    url: "/enroll",
+                    type: "POST",
+                    data: {"form_data": $("#registration").serialize(), "lessons_data": dataToSend},
+                    success: function () {
+                        alert('response');
+                        window.location.href = '/enroll';
+                    },
+                });
+            });
+        });
+
+        function dataCollection(courseName, group) {
+            dataToSend = {};
+            dataToSend[courseName] = group;
+            dataToSend = JSON.stringify(dataToSend);
+            return true;
+        }
+    </script>
     <nav class="uk-navbar-container" uk-navbar>
         <div class="uk-navbar-left">
             <ul class="uk-navbar-nav">
@@ -83,7 +106,8 @@
                                         <p class="uk-text-center">Выбрать группу</p>
                                         {% for group, schedule in course.schedule.items() %}
                                             <a href="#{{ '_'.join(course.name.split()) }}_{{ group }}"
-                                               class="uk-button uk-button-text uk-text-primary" uk-toggle>
+                                               class="uk-button uk-button-text uk-text-primary"
+                                               onClick="dataCollection('{{ course.name }}', '{{ group }}')" uk-toggle>
                                                 {% for weekday, time in schedule.items() %}
                                                     {{ weekday }} - {{ time }}
                                                 {% endfor %}
@@ -93,8 +117,9 @@
                                                     <button class="uk-modal-close-default" type="button"
                                                             uk-close></button>
                                                     <div class="uk-modal-header">
-                                                        <h2 class="uk-modal-title">{{ course.name }}</h2>
-                                                        <p>Запись в группу {{ group }}</p>
+                                                        <h2 id="courseName"
+                                                            class="uk-modal-title">{{ course.name }}</h2>
+                                                        <p id="group">Запись в группу {{ group }}</p>
                                                         <p>
                                                             {% for weekday, time in schedule.items() %}
                                                                 {{ weekday }} - {{ time }}

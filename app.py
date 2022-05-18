@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, jsonify
 from db import db_session
 from db.models import Course
 from forms import NewCourse, RegisterForm, RegisterChild
@@ -22,7 +22,12 @@ def enroll():
     db_sess = db_session.create_session()
     courses, areas, directions, nav_areas = show_courses(db_sess)
     if request.method == 'POST':
-        pprint(request.form.to_dict())
+        data = request.form
+        form_data = urllib.parse.parse_qs(data['form_data'])
+        lessons_data = eval(data['lessons_data'])
+        print(form_data)
+        print(lessons_data)
+        return jsonify({'msg': 'success'})
     return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
                            nav_areas=nav_areas, form=form)
 
