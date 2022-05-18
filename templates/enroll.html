@@ -1,30 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <script type="text/javascript">
-        var dataToSend = {};
-        $(document).ready(function () {
-            $('#submit').click(function () {
-                alert('2' + dataToSend);
-                $.ajax({
-                    url: "/enroll",
-                    type: "POST",
-                    data: {"form_data": $("#registration").serialize(), "lessons_data": dataToSend},
-                    success: function () {
-                        alert('response');
-                        window.location.href = '/enroll';
-                    },
-                });
-            });
-        });
-
-        function dataCollection(courseName, group) {
-            dataToSend = {};
-            dataToSend[courseName] = group;
-            dataToSend = JSON.stringify(dataToSend);
-            return true;
-        }
-    </script>
     <nav class="uk-navbar-container" uk-navbar>
         <div class="uk-navbar-left">
             <ul class="uk-navbar-nav">
@@ -79,6 +55,23 @@
             </ul>
         </div>
     </nav>
+    {% if message %}
+        {% if message_type == "danger" %}
+            <div class="uk-margin-large-top uk-margin-large-bottom uk-text-center">
+                <div class="uk-alert-danger" uk-alert>
+                    <a class="uk-alert-close" uk-close></a>
+                    <p>{{ message }}</p>
+                </div>
+            </div>
+        {% else %}
+            <div class="uk-margin-large-top uk-margin-large-bottom uk-text-center">
+                <div class="uk-alert-success" uk-alert>
+                    <a class="uk-alert-close" uk-close></a>
+                    <p>{{ message }}</p>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
     {% for area in areas %}
         <h2 class="uk-heading-divider uk-text-center">{{ area }}</h2>
         <div class="uk-margin-medium-left uk-margin-medium-right">

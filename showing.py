@@ -11,7 +11,7 @@ def show_courses(db_sess):
         pass
     elif sort_type.split('_')[0] != 'age':
         sort_type, sort_data = sort_type.split('_')
-        courses = eval(f'list(filter(lambda x: x.{sort_type} == "{sort_data}", courses))')
+        courses = eval(f'db_sess.query(Course).filter(Course.{sort_type} == "{sort_data}").all()')
     else:
         age = int(sort_type.split('_')[1])
         courses = list(filter(lambda x: x.age_from <= age < x.age_to, courses))
