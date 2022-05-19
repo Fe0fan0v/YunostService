@@ -34,12 +34,13 @@ class NewCourse(FlaskForm):
     area = SelectField('Площадка объединения', validators=[DataRequired()],
                        choices=['Пр-т Макеева, 39', 'Пр-т Октября, 21', 'Ул. Ст. Разина, 4', 'Ул. 8-е марта, 147',
                                 'ул. Первомайская, 9'])
-    teacher = StringField('Фамилия Имя Отчество педагога', validators=[DataRequired()])
+    teachers = StringField('ФИО педагогов', validators=[DataRequired()])  # список педагогов через ", "
     age_from = StringField('Начало диапазона возраста', validators=[DataRequired()])
     age_to = StringField('Конец диапазона возраста', validators=[DataRequired()])
     group = StringField('Номер группы', validators=[DataRequired()])
     schedule_weekday = SelectField('День недели', validators=[DataRequired()])
-    schedule_time = TimeField('Время занятия', validators=[DataRequired()])  # todo: временной интервал (от до)
+    schedule_time_start = TimeField('Время начала занятия', validators=[DataRequired()])
+    schedule_time_stop = TimeField('Время окончания занятия', validators=[DataRequired()])
     description = TextAreaField('Описание курса', validators=[DataRequired()])
     submit = SubmitField('Сохранить', validators=[DataRequired()])
 

@@ -98,7 +98,7 @@ def admin_panel():
 
 
 @app.route('/add_course', methods=['GET', 'POST'])  # добавление нового курса
-def add_course():  # todo: в расписании добавить начало и окончание занятия
+def add_course():
     form = NewCourse()
     if request.method == 'POST':
         db_sess = db_session.create_session()
@@ -108,14 +108,14 @@ def add_course():  # todo: в расписании добавить начало
         new_course = Course(name=form_data['name'][0],
                             direction=form_data['direction'][0],
                             area=form_data['area'][0],
-                            teacher=form_data['teacher'][0],  # todo: преподавателей может быть несколько
+                            teachers=form_data['teachers'][0].split(', '),
                             age_from=int(form_data['age_from'][0]),
                             age_to=int(form_data['age_to'][0]),
                             schedule=lessons_data,
                             description=form_data['description'][0])
         db_sess.add(new_course)
         db_sess.commit()
-        return redirect('/admin')
+        return redirect('/add_course')
     return render_template('add_course.html', title='Добавить новое объединение', form=form)
 
 
@@ -133,9 +133,22 @@ def redact_course(_id):
     form = NewCourse()
     db_sess = db_session.create_session()
     course = db_sess.query(Course).filter(Course.id == _id).first()
-    if request.method == 'POST':  # todo: удаление и добавление групп
-        data = request.form.to_dict()
-        print(data)
+    print(course.name)
+    if request.method == 'POST':  # todo: удаление группы, отправка данных (ошибка 404)
+        data = request.form
+        form_data = urllib.parse.parse_qs(data['form_data'])
+        lessons_data = eval(data['lessons_data'])
+        course.name = form_data['name'][0]
+        course.direction = form_data['direction'][0]
+        course.area = form_data['area'][0]
+        course.teachers = form_data['teachers'][0].split(', ')
+        course.age_from = int(form_data['age_from'][0])
+        course.age_to = int(form_data['age_to'][0])
+        course.schedule = lessons_data
+        course.description = form_data['description'][0]
+        db_sess.add(course)
+        db_sess.commit()
+        return redirect('/add_course')
     return render_template('redact_course.html', course=course, form=form, title='Редактирование объединения')
 
 
