@@ -8,7 +8,8 @@ import urllib.parse
 from showing import show_courses
 from pprint import pprint
 
-app = Flask(__name__)
+# todo: доменное имя - priem.ddt-miass.ru
+app = Flask(__name__)  # todo: отправка уведомления на email
 app.config['SECRET_KEY'] = 'super_secret_key'
 db_session.global_init()
 
@@ -19,7 +20,7 @@ def main_page():
 
 
 @app.route('/enroll', methods=['GET', 'POST'])
-def enroll():
+def enroll():  # todo: добавить в шапку контактный телефон 83513527785, 83513532265 и логотипы
     form = RegisterChild()
     db_sess = db_session.create_session()
     courses, areas, directions, nav_areas = show_courses(db_sess)
@@ -27,7 +28,8 @@ def enroll():
         data = request.form
         registered = db_sess.query(Registration).filter((Registration.child_name == data['child_name']) and (
                 Registration.child_surname == data['child_surname']) and (
-                Registration.child_patronymic == data['child_patronymic'])).first()
+                                                                Registration.child_patronymic == data[
+                                                            'child_patronymic'])).first()
         if registered:
             if any(map(lambda x: data['course_name'] in x, list(registered.courses.keys()))):
                 return render_template('enroll.html', title='Запись', courses=courses, areas=areas,
@@ -36,7 +38,8 @@ def enroll():
                                        message_type='danger',
                                        message='Вы уже записаны в это объединение!')
             else:
-                registered.courses[data['course_name']] = data['group']  # todo: новое объединение не появляется в базе данных
+                registered.courses[data['course_name']] = data[
+                    'group']  # todo: новое объединение не появляется в базе данных
                 db_sess.add(registered)
                 db_sess.commit()
                 return render_template('enroll.html', title='Запись', courses=courses, areas=areas,
@@ -95,7 +98,7 @@ def admin_panel():
 
 
 @app.route('/add_course', methods=['GET', 'POST'])  # добавление нового курса
-def add_course():
+def add_course():  # todo: в расписании добавить начало и окончание занятия
     form = NewCourse()
     if request.method == 'POST':
         db_sess = db_session.create_session()
