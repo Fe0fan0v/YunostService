@@ -25,56 +25,58 @@ def enroll():
     courses, areas, directions, nav_areas = show_courses(db_sess)
     if request.method == 'POST':
         data = request.form
-        record = Registration(child_name=data['child_name'],
-                              child_surname=data['child_surname'],
-                              child_patronymic=data['child_patronymic'],
-                              child_birthday=datetime.date(int(data['child_birthday'].split('.')[-1]),
-                                                           int(data['child_birthday'].split('.')[1]),
-                                                           int(data['child_birthday'].split('.')[0])),
-                              educational_institution=data['educational_institution'],
-                              edu_class=data['edu_class'],
-                              health=data['health'],
-                              child_phone=data['child_phone'],
-                              child_email=data['child_email'],
-                              child_residence=data['child_residence'],
-                              parent_name=data['parent_name'],
-                              parent_surname=data['parent_surname'],
-                              parent_patronymic=data['parent_patronymic'],
-                              parent_birthday=datetime.date(int(data['parent_birthday'].split('.')[-1]),
-                                                            int(data['parent_birthday'].split('.')[1]),
-                                                            int(data['parent_birthday'].split('.')[0])),
-                              parent_residence=data['parent_residence'],
-                              parent_work=data['parent_work'],
-                              parent_phone=data['parent_phone'],
-                              parent_email=data['parent_email'],
-                              full_family=True if data['full_family'] == 'Полная семья' else False,
-                              large_family=True if data['large_family'] == 'Многодетная семья' else False,
-                              without_parents=False if data['without_parents'] == 'Нет' else True,
-                              police_record=False if data['police_record'] == 'Нет' else True,
-                              resident=False if data['resident'] == 'Нет' else True,
-                              second_parent_fio=data['second_parent_fio'] if data['second_parent_fio'] else None,
-                              second_parent_phone=data['second_parent_phone'] if data['second_parent_phone'] else None,
-                              courses={data['course_name']: data['group']}
-                              )
-        registered = db_sess.query(Registration).filter((Registration.child_name == record.child_name) and (
-                Registration.child_surname == record.child_surname) and (
-                                                                Registration.child_patronymic == record.child_patronymic)).first()
+        registered = db_sess.query(Registration).filter((Registration.child_name == data['child_name']) and (
+                Registration.child_surname == data['child_surname']) and (
+                Registration.child_patronymic == data['child_patronymic'])).first()
         if registered:
-            if any(map(lambda x: list(record.courses.keys())[0] in x, list(registered.courses.keys()))):
+            if any(map(lambda x: data['course_name'] in x, list(registered.courses.keys()))):
                 return render_template('enroll.html', title='Запись', courses=courses, areas=areas,
                                        directions=directions,
                                        nav_areas=nav_areas, form=form,
                                        message_type='danger',
                                        message='Вы уже записаны в это объединение!')
             else:
-                registered.courses[list(record.courses.keys())[0]] = list(record.courses.values())[0]   # todo: добавление ещё одного курса в запись (не работает)
+                registered.courses[data['course_name']] = data['group']  # todo: новое объединение не появляется в базе данных
+                db_sess.add(registered)
                 db_sess.commit()
-                print('this')
                 return render_template('enroll.html', title='Запись', courses=courses, areas=areas,
                                        directions=directions,
                                        nav_areas=nav_areas, form=form, message_type='success',
                                        message='Вы успешно записаны!')
         else:
+            record = Registration(child_name=data['child_name'],
+                                  child_surname=data['child_surname'],
+                                  child_patronymic=data['child_patronymic'],
+                                  child_birthday=datetime.date(int(data['child_birthday'].split('.')[-1]),
+                                                               int(data['child_birthday'].split('.')[1]),
+                                                               int(data['child_birthday'].split('.')[0])),
+                                  educational_institution=data['educational_institution'],
+                                  edu_class=data['edu_class'],
+                                  health=data['health'],
+                                  child_phone=data['child_phone'],
+                                  child_email=data['child_email'],
+                                  child_residence=data['child_residence'],
+                                  parent_name=data['parent_name'],
+                                  parent_surname=data['parent_surname'],
+                                  parent_patronymic=data['parent_patronymic'],
+                                  parent_birthday=datetime.date(int(data['parent_birthday'].split('.')[-1]),
+                                                                int(data['parent_birthday'].split('.')[1]),
+                                                                int(data['parent_birthday'].split('.')[0])),
+                                  parent_residence=data['parent_residence'],
+                                  parent_work=data['parent_work'],
+                                  parent_phone=data['parent_phone'],
+                                  parent_email=data['parent_email'],
+                                  full_family=True if data['full_family'] == 'Полная семья' else False,
+                                  large_family=True if data['large_family'] == 'Многодетная семья' else False,
+                                  without_parents=False if data['without_parents'] == 'Нет' else True,
+                                  police_record=False if data['police_record'] == 'Нет' else True,
+                                  resident=False if data['resident'] == 'Нет' else True,
+                                  second_parent_fio=data['second_parent_fio'] if data['second_parent_fio'] else None,
+                                  second_parent_phone=data['second_parent_phone'] if data[
+                                      'second_parent_phone'] else None,
+                                  courses={data['course_name']: data['group']}
+                                  )
+
             db_sess.add(record)
             db_sess.commit()
             return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
@@ -103,7 +105,7 @@ def add_course():
         new_course = Course(name=form_data['name'][0],
                             direction=form_data['direction'][0],
                             area=form_data['area'][0],
-                            teacher=form_data['teacher'][0],
+                            teacher=form_data['teacher'][0],  # todo: преподавателей может быть несколько
                             age_from=int(form_data['age_from'][0]),
                             age_to=int(form_data['age_to'][0]),
                             schedule=lessons_data,

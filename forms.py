@@ -39,7 +39,7 @@ class NewCourse(FlaskForm):
     age_to = StringField('Конец диапазона возраста', validators=[DataRequired()])
     group = StringField('Номер группы', validators=[DataRequired()])
     schedule_weekday = SelectField('День недели', validators=[DataRequired()])
-    schedule_time = TimeField('Время занятия', validators=[DataRequired()])
+    schedule_time = TimeField('Время занятия', validators=[DataRequired()])  # todo: временной интервал (от до)
     description = TextAreaField('Описание курса', validators=[DataRequired()])
     submit = SubmitField('Сохранить', validators=[DataRequired()])
 
