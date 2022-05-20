@@ -16,7 +16,8 @@ db_session.global_init()
 
 @app.route('/', methods=['GET', 'POST'])
 def main_page():
-    return render_template('index.html')
+    return redirect('/enroll')
+    # return render_template('index.html')
 
 
 @app.route('/enroll', methods=['GET', 'POST'])
@@ -28,8 +29,7 @@ def enroll():  # todo: добавить в шапку контактный те�
         data = request.form
         registered = db_sess.query(Registration).filter((Registration.child_name == data['child_name']) and (
                 Registration.child_surname == data['child_surname']) and (
-                                                                Registration.child_patronymic == data[
-                                                            'child_patronymic'])).first()
+                Registration.child_patronymic == data['child_patronymic'])).first()
         if registered:
             if any(map(lambda x: data['course_name'] in x, list(registered.courses.keys()))):
                 return render_template('enroll.html', title='Запись', courses=courses, areas=areas,
@@ -134,7 +134,7 @@ def redact_course(_id):
     db_sess = db_session.create_session()
     course = db_sess.query(Course).filter(Course.id == _id).first()
     print(course.name)
-    if request.method == 'POST':  # todo: удаление группы, отправка данных (ошибка 404)
+    if request.method == 'POST':  # todo: удаление и добавление группы, отправка данных (ошибка 404)
         data = request.form
         form_data = urllib.parse.parse_qs(data['form_data'])
         lessons_data = eval(data['lessons_data'])
