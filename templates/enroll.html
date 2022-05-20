@@ -121,7 +121,7 @@
                                                         <p id="group">Запись в группу {{ group }}</p>
                                                         <p>
                                                             {% for weekday, time in schedule.items() %}
-                                                                {{ weekday }} - {{ time }}
+                                                                |{{ weekday }} - с {{ time[0] }} до {{ time[1] }}|
                                                             {% endfor %}
                                                         </p>
                                                     </div>
@@ -130,8 +130,7 @@
                                                     </div>
                                                     <div class="uk-modal-footer uk-text-right">
                                                         <button class="uk-button uk-button-default uk-modal-close"
-                                                                type="button">Отменить
-                                                        </button>
+                                                                type="button">Отменить</button>
                                                     </div>
                                                 </div>
                                             </div>
