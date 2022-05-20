@@ -21,7 +21,7 @@ def main_page():
 
 
 @app.route('/enroll', methods=['GET', 'POST'])
-def enroll():  # todo: добавить в шапку контактный телефон 83513527785, 83513532265 и логотипы
+def enroll():
     form = RegisterChild()
     db_sess = db_session.create_session()
     courses, areas, directions, nav_areas = show_courses(db_sess)
