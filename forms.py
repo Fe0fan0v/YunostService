@@ -21,7 +21,7 @@ class RegisterForm(FlaskForm):
 
 
 class NewCourse(FlaskForm):
-    name = StringField('Название объединения', validators=[DataRequired()])
+    name = StringField('Образовательная программа', validators=[DataRequired()])
     direction = SelectField('Направление объединения', validators=[DataRequired()],
                             choices=['Изобразительное искусство', 'Вокал', 'Хореография', 'Театр', 'Цирк',
                                      'Развивающая акробатика', 'Журналистика', 'Психология',
