@@ -1,6 +1,6 @@
 import datetime
 
-from flask import Flask, render_template, request, redirect, jsonify
+from flask import Flask, render_template, request, redirect, url_for
 from db import db_session
 from db.models import Course, Registration
 from forms import NewCourse, RegisterForm, RegisterChild
@@ -25,27 +25,23 @@ def enroll():  # todo: добавить в шапку контактный те�
     form = RegisterChild()
     db_sess = db_session.create_session()
     courses, areas, directions, nav_areas = show_courses(db_sess)
+    args = request.args.to_dict()
     if request.method == 'POST':
         data = request.form
         registered = db_sess.query(Registration).filter((Registration.child_name == data['child_name']) and (
                 Registration.child_surname == data['child_surname']) and (
-                Registration.child_patronymic == data['child_patronymic'])).first()
+                                                                Registration.child_patronymic == data[
+                                                            'child_patronymic'])).first()
         if registered:
             if any(map(lambda x: data['course_name'] in x, list(registered.courses.keys()))):
-                return render_template('enroll.html', title='Запись', courses=courses, areas=areas,
-                                       directions=directions,
-                                       nav_areas=nav_areas, form=form,
-                                       message_type='danger',
-                                       message='Вы уже записаны в это объединение!')
+                return redirect(url_for('enroll', message_type='danger', message='Вы уже записаны в это объединение!'))
             else:
                 registered.courses[data['course_name']] = data[
                     'group']  # todo: новое объединение не появляется в базе данных
+                print(registered.courses)
                 db_sess.add(registered)
                 db_sess.commit()
-                return render_template('enroll.html', title='Запись', courses=courses, areas=areas,
-                                       directions=directions,
-                                       nav_areas=nav_areas, form=form, message_type='success',
-                                       message='Вы успешно записаны!')
+                return redirect(url_for('enroll', message_type='success', message='Вы успешно записаны!'))
         else:
             record = Registration(child_name=data['child_name'],
                                   child_surname=data['child_surname'],
@@ -79,14 +75,16 @@ def enroll():  # todo: добавить в шапку контактный те�
                                       'second_parent_phone'] else None,
                                   courses={data['course_name']: data['group']}
                                   )
-
             db_sess.add(record)
             db_sess.commit()
-            return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
-                                   nav_areas=nav_areas, form=form, message_type='success',
-                                   message='Вы успешно записаны!')
-    return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
-                           nav_areas=nav_areas, form=form)
+            return redirect(url_for('enroll', message_type='success', message='Вы успешно записаны!'))
+    if not args:
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
+                               nav_areas=nav_areas, form=form)
+    else:
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
+                               nav_areas=nav_areas, form=form, message_type=args['message_type'],
+                               message=args['message'])
 
 
 @app.route('/admin')  # панель администратора
