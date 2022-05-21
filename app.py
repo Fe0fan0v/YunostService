@@ -3,10 +3,10 @@ import datetime
 from flask import Flask, render_template, request, redirect, url_for
 from db import db_session
 from db.models import Course, Registration
-from forms import NewCourse, RegisterForm, RegisterChild
+from forms import NewCourse, RegisterChild
 import urllib.parse
 from showing import show_courses
-from pprint import pprint
+from sqlalchemy.orm.attributes import flag_modified
 
 # todo: доменное имя - priem.ddt-miass.ru
 app = Flask(__name__)  # todo: отправка уведомления на email
@@ -36,10 +36,9 @@ def enroll():
             if any(map(lambda x: data['course_name'] in x, list(registered.courses.keys()))):
                 return redirect(url_for('enroll', message_type='danger', message='Вы уже записаны в это объединение!'))
             else:
-                registered.courses[data['course_name']] = data[
-                    'group']  # todo: новое объединение не появляется в базе данных
-                print(registered.courses)
+                registered.courses[data['course_name']] = data['group']
                 db_sess.add(registered)
+                flag_modified(registered, 'courses')
                 db_sess.commit()
                 return redirect(url_for('enroll', message_type='success', message='Вы успешно записаны!'))
         else:
