@@ -1,1 +1,1 @@
-from .models import Course, Registration
+from .models import Course, Person, Teacher, Parent, Student, User, Role, Group, Area, Direction

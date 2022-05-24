@@ -2,16 +2,19 @@ import datetime
 
 from flask import Flask, render_template, request, redirect, url_for
 from db import db_session
-from db.models import Course, Registration
+from db.models import Course
 from forms import NewCourse, RegisterChild
 import urllib.parse
 from showing import show_courses
 from sqlalchemy.orm.attributes import flag_modified
+from security import security
+
 
 # todo: доменное имя - priem.ddt-miass.ru
 app = Flask(__name__)  # todo: отправка уведомления на email
 app.config['SECRET_KEY'] = 'super_secret_key'
-db_session.global_init()
+app.config['SECURITY_PASSWORD_SALT'] = 'salt'
+security.init_app(app)
 
 
 @app.route('/', methods=['GET', 'POST'])
