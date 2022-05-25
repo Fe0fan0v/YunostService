@@ -154,16 +154,15 @@ class Parent(base):
     second_parent_phone = Column(String)
     children = relationship('Student', back_populates='parent')
 
-    @staticmethod
-    def add_child(**kwargs):
+    def add_child(self, **kwargs):
         from security import user_datastore
         temp_password = '444'  # todo: generate
         user = user_datastore.create_user(email=kwargs['email'],
                                           username=kwargs['username'],
                                           password=hash_password(temp_password))
         user_datastore.add_role_to_user(user, user_datastore.find_or_create_role('student'))
-        db_session.add(user)
-        stud = user.make_student(**keys_only_for(Student, **kwargs))
+        stud = user.make_student(**kwargs, temp_password=temp_password)
+        stud.parent = self
         return stud
 
     def get_child(self, index):

@@ -28,6 +28,7 @@ directions_data = [('Изобразительное искусство', ''), ('
 areas_data = ['Пр-т Макеева, 39', 'Пр-т Октября, 21', 'Ул. Ст. Разина, 4', 'Ул. 8-е марта, 147',
               'ул. Первомайская, 9']
 courses = [(f'Новый курс {i}', f'Описание курса {i}') for i in range(1, 10)]
+roles = ['admin', 'teacher', 'student', 'parent']
 
 init_db()
 
@@ -41,7 +42,10 @@ teachers = []
 parents = []
 users_data = get_users_data(50)
 with app.app_context():
-    user = user_datastore.create_user(email='admin@ema.il', password=hash_password('admin'))
+    user = user_datastore.create_user(email='admin@ema.il', username='admin', password=hash_password('admin'))
+    for r in roles:
+        user_datastore.find_or_create_role(name=r)
+    user_datastore.commit()
     user_datastore.add_role_to_user(user, user_datastore.find_or_create_role('admin'))
 
     for ud in users_data[:10]:
@@ -59,9 +63,8 @@ with app.app_context():
             teacher.add_group(number=random.randint(1, 9),
                               schedule={"ПН": ["15:25", "17:10"], "СР": ["15:25", "17:10"]})
         teachers.append(teacher)
-        db_session.commit()
 
-    for ud in users_data[10:50]:
+    for ud in users_data[10:30]:
         user = user_datastore.create_user(email=ud['Email'],
                                           username=ud['Login'],
                                           password=hash_password('222'))
@@ -92,9 +95,7 @@ with app.app_context():
                                      edu_class=f'{random.randint(1, 11)}',
                                      health='здоров(а)')
             parent.assign(child, random.choice(random.choice(teachers).groups))
-            db_session.commit()
         parents.append(parent)
-        db_session.commit()
 
     user_datastore.commit()
 
@@ -102,7 +103,7 @@ courses = [Course(name=n,
                   description=d,
                   direction=random.choice(directions),
                   area=random.choice(areas),
-                  teachers=random.choices(teachers, k=random.randint(1, 3)),
+                  teachers=random.choices(teachers, k=random.randint(1, 2)),
                   age_from=random.randint(6, 12),
                   age_to=random.randint(12, 18)) for n, d in courses]
 for c in courses:
