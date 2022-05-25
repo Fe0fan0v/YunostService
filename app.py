@@ -1,7 +1,7 @@
 import datetime
 
 from flask import Flask, render_template, request, redirect, url_for
-from db import db_session
+from db import database
 from db.models import Course
 from forms import NewCourse, RegisterChild
 import urllib.parse
@@ -153,5 +153,5 @@ def redact_course(_id):
 
 
 if __name__ == '__main__':
-    db_session.global_init()
+    database.init_db()
     app.run()

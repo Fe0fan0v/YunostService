@@ -1,10 +1,9 @@
-from flask_security import hash_password
-from flask_security.models.fsqla import UserMixin, RoleMixin
+from flask_security import UserMixin, RoleMixin, hash_password
 from sqlalchemy import Table, Column, String, Text, Integer, Date, DateTime, Boolean, \
     JSON, ForeignKey
 from sqlalchemy.orm import relationship, backref
 
-from db_session import base, create_session
+from .database import base, db_session
 
 
 class RolesUsers(base):
@@ -40,6 +39,33 @@ class User(base, UserMixin):
     roles = relationship('Role', secondary='roles_users',
                          backref=backref('users', lazy='dynamic'))
 
+    def make_person(self, **kwargs):
+        person = Person(**keys_only_for(Person, **kwargs))
+        person.user = self
+        db_session.add(person)
+        return person
+
+    def make_teacher(self, **kwargs):
+        self.make_person(**kwargs)
+        teacher = Teacher(**keys_only_for(Teacher, **kwargs))
+        teacher.user = self
+        db_session.add(teacher)
+        return teacher
+
+    def make_student(self, **kwargs):
+        self.make_person(**kwargs)
+        student = Student(**keys_only_for(Student, **kwargs))
+        student.user = self
+        db_session.add(student)
+        return student
+
+    def make_parent(self, **kwargs):
+        self.make_person(**kwargs)
+        parent = Parent(**keys_only_for(Parent, **kwargs))
+        parent.user = self
+        db_session.add(parent)
+        return parent
+
 
 class Course(base):
     __tablename__ = 'courses'
@@ -60,7 +86,7 @@ class Group(base):
     __tablename__ = 'groups'
     id = Column(Integer, primary_key=True, autoincrement=True)
     number = Column(Integer)
-    teacher_id = Column(Integer, ForeignKey('user.id'))
+    teacher_id = Column(Integer, ForeignKey('teachers.id'))
     teacher = relationship('Teacher', back_populates='groups')
     schedule = Column(JSON)  # {"ПН": ["15:25", "17:10"], "СР": ["15:25", "17:10"]}
     students = relationship('Student', secondary='students_groups', backref='groups')
@@ -68,11 +94,10 @@ class Group(base):
 
 class Person(base):
     __tablename__ = 'persons'
-    __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship('User', backref=backref('teachers', uselist=False))
+    user = relationship('User', backref=backref('person', uselist=False))
 
     name = Column(String(255))
     surname = Column(String(255))
@@ -82,27 +107,43 @@ class Person(base):
     residence = Column(String)
 
 
-class Student(Person):
+class Student(base):
+    __tablename__ = 'students'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship('User', backref=backref('student', uselist=False))
+
     educational_institution = Column(String)
     edu_class = Column(String)
     health = Column(String)
-    parent_id = Column(Integer, ForeignKey('person.id'))
+    parent_id = Column(Integer, ForeignKey('parents.id'))
     parent = relationship('Parent', back_populates='children')
     temp_password = Column(String)
 
 
-class Teacher(Person):
+class Teacher(base):
+    __tablename__ = 'teachers'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship('User', backref=backref('teacher', uselist=False))
+
     groups = relationship('Group', back_populates='teacher')
 
     def add_group(self, **kwargs):
         group = Group(**kwargs)
         group.teacher = self
-        sess = create_session()
-        sess.add(group)
-        sess.commit()
+        db_session.add(group)
 
 
-class Parent(Person):
+class Parent(base):
+    __tablename__ = 'parents'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship('User', backref=backref('parent', uselist=False))
+
     work = Column(String)
     full_family = Column(Boolean)
     large_family = Column(Boolean)
@@ -113,32 +154,24 @@ class Parent(Person):
     second_parent_phone = Column(String)
     children = relationship('Student', back_populates='parent')
 
-    def add_child(self, **kwargs):
+    @staticmethod
+    def add_child(**kwargs):
         from security import user_datastore
-        temp_password = '123'  # todo: generate
+        temp_password = '444'  # todo: generate
         user = user_datastore.create_user(email=kwargs['email'],
                                           username=kwargs['username'],
                                           password=hash_password(temp_password))
         user_datastore.add_role_to_user(user, user_datastore.find_or_create_role('student'))
-        # kwargs.pop('email')
-        # kwargs.pop('username')
-        # kwargs.pop('password')
-        stud = Student(**kwargs)
-        stud.user = user
-        stud.parent = self
-        sess = create_session()
-        sess.add(stud)
-        sess.commit()
+        db_session.add(user)
+        stud = user.make_student(**keys_only_for(Student, **kwargs))
         return stud
 
     def get_child(self, index):
         return self.children[index]
 
-    def assign(self, child, group):
-        sess = create_session()
-        child = sess.get(Student, child.id)
+    @staticmethod
+    def assign(child, group):
         group.students.append(child)
-        sess.commit()
 
 
 class Area(base):
@@ -159,9 +192,16 @@ class Direction(base):
 
 
 teachers_courses = Table('teachers_courses', base.metadata,
-                         Column('teacher_id', ForeignKey('persons.id'), primary_key=True),
+                         Column('teacher_id', ForeignKey('teachers.id'), primary_key=True),
                          Column('course_id', ForeignKey('courses.id'), primary_key=True))
 
-students_groups = Table('students_courses', base.metadata,
-                        Column('student_id', ForeignKey('persons.id'), primary_key=True),
+students_groups = Table('students_groups', base.metadata,
+                        Column('student_id', ForeignKey('students.id'), primary_key=True),
                         Column('group_id', ForeignKey('groups.id'), primary_key=True))
+
+
+def keys_only_for(cls, **kwargs):
+    res = {k: v for k, v in kwargs.items()
+           if k in filter(lambda x: not x.startswith('_') and x != 'metadata', dir(cls))}
+    print(cls.__name__, res)
+    return res
