@@ -1,3 +1,4 @@
+from flask import jsonify
 from flask_security import UserMixin, RoleMixin, hash_password
 from sqlalchemy import Table, Column, String, Text, Integer, Date, DateTime, Boolean, \
     JSON, ForeignKey
@@ -71,6 +72,9 @@ class User(base, UserMixin, SerializerMixin):
 class Course(base, SerializerMixin):
     __tablename__ = 'courses'
 
+    serialize_only = ('id', 'name', 'description', 'age_from', 'age_to',
+                      'direction', 'area', 'teachers')
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
     direction_id = Column(Integer, ForeignKey('directions.id'))
@@ -82,9 +86,17 @@ class Course(base, SerializerMixin):
     age_to = Column(Integer)
     description = Column(Text)
 
+    def serialize(self):
+        return jsonify({'course': self.to_dict(
+            rules=('-direction.courses', '-area.courses', 'teachers.groups')
+        )})
+
 
 class Group(base, SerializerMixin):
     __tablename__ = 'groups'
+
+    serialize_rules = ('-teacher', '-teacher_id', '-students')
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     number = Column(Integer)
     teacher_id = Column(Integer, ForeignKey('teachers.id'))
@@ -95,6 +107,10 @@ class Group(base, SerializerMixin):
 
 class Person(base, SerializerMixin):
     __tablename__ = 'persons'
+
+    serialize_only = ('id', 'name', 'surname', 'patronymic', 'birthday',
+                      'phone', 'residence')
+    serialize_rules = ('-user',)
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -111,6 +127,10 @@ class Person(base, SerializerMixin):
 class Student(base, SerializerMixin):
     __tablename__ = 'students'
 
+    serialize_only = ('id', 'user_id', 'edu_class', 'educational_institution',
+                      'health', 'parent')
+    serialize_rules = ('user.person',)
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship('User', backref=backref('student', uselist=False))
@@ -126,6 +146,9 @@ class Student(base, SerializerMixin):
 class Teacher(base, SerializerMixin):
     __tablename__ = 'teachers'
 
+    serialize_only = ('id', 'groups')
+    serialize_rules = ('user.person',)
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship('User', backref=backref('teacher', uselist=False))
@@ -140,6 +163,11 @@ class Teacher(base, SerializerMixin):
 
 class Parent(base, SerializerMixin):
     __tablename__ = 'parents'
+
+    serialize_only = ('id', 'user_id', 'work', 'full_family', 'large_family',
+                      'without_parents', 'police_record', 'resident',
+                      'second_parent_fio', 'second_parent_phone')
+    serialize_rules = ('user.person', '-children')
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -177,7 +205,6 @@ class Parent(base, SerializerMixin):
 class Area(base, SerializerMixin):
     __tablename__ = 'areas'
 
-    serialize_only = ()
     serialize_rules = ('-courses',)
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -188,7 +215,6 @@ class Area(base, SerializerMixin):
 class Direction(base, SerializerMixin):
     __tablename__ = 'directions'
 
-    serialize_only = ()
     serialize_rules = ('-courses',)
 
     id = Column(Integer, primary_key=True, autoincrement=True)

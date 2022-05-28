@@ -5,6 +5,8 @@ from flask_restful import Api
 
 from api.direction_resource import DirectionResource, DirectionListResource
 from api.area_resource import AreaResource, AreaListResource
+from api.course_resource import CourseResource, CourseListResource
+from api.student_resource import StudentResource, StudentListResource
 from db.database import init_db, db_session
 from db.models import Course
 from forms import NewCourse, RegisterChild
@@ -18,6 +20,7 @@ from security import security
 app = Flask(__name__)  # todo: отправка уведомления на email
 app.config['SECRET_KEY'] = 'super_secret_key'
 app.config['SECURITY_PASSWORD_SALT'] = 'salt'
+app.config['JSON_AS_ASCII'] = False
 security.init_app(app)
 
 api = Api(app)
@@ -25,6 +28,10 @@ api.add_resource(DirectionListResource, '/api/directions')
 api.add_resource(DirectionResource, '/api/directions/<int:direction_id>')
 api.add_resource(AreaListResource, '/api/areas')
 api.add_resource(AreaResource, '/api/areas/<int:area_id>')
+api.add_resource(CourseListResource, '/api/courses')
+api.add_resource(CourseResource, '/api/courses/<int:course_id>')
+api.add_resource(StudentListResource, '/api/students')
+api.add_resource(StudentResource, '/api/students/<int:student_id>')
 
 
 @app.route('/', methods=['GET', 'POST'])
