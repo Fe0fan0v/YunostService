@@ -16,7 +16,7 @@ class CourseResource(Resource):
     def get(self, course_id):
         abort_if_course_not_found(course_id)
         course = Course.query.get(course_id)
-        return course.serialize()
+        return jsonify({'course': course.to_dict()})
 
     def delete(self, course_id):
         abort_if_course_not_found(course_id)
@@ -29,7 +29,7 @@ class CourseResource(Resource):
 class CourseListResource(Resource):
     def get(self):
         courses = Course.query.all()
-        return jsonify({'courses': [course.serialize() for course in courses]})
+        return jsonify({'courses': [course.to_dict() for course in courses]})
 
     def post(self):
         args = parser.parse_args()

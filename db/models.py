@@ -74,6 +74,7 @@ class Course(base, SerializerMixin):
 
     serialize_only = ('id', 'name', 'description', 'age_from', 'age_to',
                       'direction', 'area', 'teachers')
+    serialize_rules = ('-direction.courses', '-area.courses', 'teachers.groups')
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
@@ -85,11 +86,6 @@ class Course(base, SerializerMixin):
     age_from = Column(Integer)
     age_to = Column(Integer)
     description = Column(Text)
-
-    def serialize(self):
-        return jsonify({'course': self.to_dict(
-            rules=('-direction.courses', '-area.courses', 'teachers.groups')
-        )})
 
 
 class Group(base, SerializerMixin):
