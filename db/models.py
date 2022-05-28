@@ -2,6 +2,7 @@ from flask_security import UserMixin, RoleMixin, hash_password
 from sqlalchemy import Table, Column, String, Text, Integer, Date, DateTime, Boolean, \
     JSON, ForeignKey
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy_serializer import SerializerMixin
 
 from .database import base, db_session
 
@@ -13,14 +14,14 @@ class RolesUsers(base):
     role_id = Column('role_id', Integer(), ForeignKey('role.id'))
 
 
-class Role(base, RoleMixin):
+class Role(base, RoleMixin, SerializerMixin):
     __tablename__ = 'role'
     id = Column(Integer(), primary_key=True)
     name = Column(String(80), unique=True)
     description = Column(String(255))
 
 
-class User(base, UserMixin):
+class User(base, UserMixin, SerializerMixin):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
@@ -67,7 +68,7 @@ class User(base, UserMixin):
         return parent
 
 
-class Course(base):
+class Course(base, SerializerMixin):
     __tablename__ = 'courses'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -82,7 +83,7 @@ class Course(base):
     description = Column(Text)
 
 
-class Group(base):
+class Group(base, SerializerMixin):
     __tablename__ = 'groups'
     id = Column(Integer, primary_key=True, autoincrement=True)
     number = Column(Integer)
@@ -92,7 +93,7 @@ class Group(base):
     students = relationship('Student', secondary='students_groups', backref='groups')
 
 
-class Person(base):
+class Person(base, SerializerMixin):
     __tablename__ = 'persons'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -107,7 +108,7 @@ class Person(base):
     residence = Column(String)
 
 
-class Student(base):
+class Student(base, SerializerMixin):
     __tablename__ = 'students'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -122,7 +123,7 @@ class Student(base):
     temp_password = Column(String)
 
 
-class Teacher(base):
+class Teacher(base, SerializerMixin):
     __tablename__ = 'teachers'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -137,7 +138,7 @@ class Teacher(base):
         db_session.add(group)
 
 
-class Parent(base):
+class Parent(base, SerializerMixin):
     __tablename__ = 'parents'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -173,16 +174,22 @@ class Parent(base):
         group.students.append(child)
 
 
-class Area(base):
+class Area(base, SerializerMixin):
     __tablename__ = 'areas'
+
+    serialize_only = ()
+    serialize_rules = ('-courses',)
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
     courses = relationship('Course', back_populates='area')
 
 
-class Direction(base):
+class Direction(base, SerializerMixin):
     __tablename__ = 'directions'
+
+    serialize_only = ()
+    serialize_rules = ('-courses',)
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
