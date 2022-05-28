@@ -1,7 +1,11 @@
 import datetime
 
 from flask import Flask, render_template, request, redirect, url_for
-from db import database
+from flask_restful import Api
+
+from api.direction_resource import DirectionResource, DirectionListResource
+from api.area_resource import AreaResource, AreaListResource
+from db.database import init_db, db_session
 from db.models import Course
 from forms import NewCourse, RegisterChild
 import urllib.parse
@@ -15,6 +19,12 @@ app = Flask(__name__)  # todo: отправка уведомления на emai
 app.config['SECRET_KEY'] = 'super_secret_key'
 app.config['SECURITY_PASSWORD_SALT'] = 'salt'
 security.init_app(app)
+
+api = Api(app)
+api.add_resource(DirectionListResource, '/api/directions')
+api.add_resource(DirectionResource, '/api/directions/<int:direction_id>')
+api.add_resource(AreaListResource, '/api/areas')
+api.add_resource(AreaResource, '/api/areas/<int:area_id>')
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -153,5 +163,5 @@ def redact_course(_id):
 
 
 if __name__ == '__main__':
-    database.init_db()
+    init_db()
     app.run()
