@@ -29,8 +29,9 @@ for row in filter(lambda r: r[0].value, ws.iter_rows(min_row=5)):
     if isinstance(data['age'], datetime.datetime):
         data['age'] = f"{data['age'].day}-{data['age'].month}"
     data['teachers'] = data['teachers'].split(',')
+    data['direction'] = data['direction'].upper()
     course = Course(**data)
-    course.free = row[6].value is None or row[6].value.strip().lower == 'бюджет'
+    course.free = row[6].value is None or row[6].value.strip().lower() == 'бюджет'
     schedule = dict(filter(lambda pair: pair[1], zip(keys[7:], (clear(cell.value) for cell in row[7:]))))
     if not any(schedule.values()):
         continue
