@@ -9,7 +9,7 @@
                 </li>
                 <li>
                     <a href="#">По площадке</a>
-                    <div class="uk-navbar-dropdown">
+                    <div class="uk-navbar-dropdown" style="width: 250px;">
                         <ul class="uk-nav uk-navbar-dropdown-nav">
                             {% for area in nav_areas %}
                                 <li><a href="/enroll?sort_type=area_{{ area }}">{{ area }}</a>
@@ -19,12 +19,12 @@
                 </li>
                 <li>
                     <a href="#">По направленности</a>
-                    <div class="uk-navbar-dropdown">
-                        <ul class="uk-nav uk-navbar-dropdown-nav" uk-accordion>
+                    <div class="uk-navbar-dropdown" style="width: 200px;">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
                         {% for focus in directions %}
                             <li>
                                 <a href="">{{ focus }}</a>
-                                <div class="uk-navbar-dropdown" uk-dropdown="pos: right-center">
+                                <div class="uk-navbar-dropdown" style="width: 250px;" uk-dropdown="pos: right-center">
                                     <ul class="uk-nav uk-navbar-dropdown-nav">
                                         {% for direction in directions[focus] %}
                                     <li>
