@@ -33,7 +33,8 @@ class Course(base):
     direction = sqlalchemy.Column(sqlalchemy.String)
     area = sqlalchemy.Column(sqlalchemy.String)
     teachers = sqlalchemy.Column(sqlalchemy.ARRAY(sqlalchemy.String))  # список педагогов
-    age = sqlalchemy.Column(sqlalchemy.String)
+    age_from = sqlalchemy.Column(sqlalchemy.Integer)
+    age_to = sqlalchemy.Column(sqlalchemy.Integer)
     schedule = sqlalchemy.Column(sqlalchemy.JSON)   # расписание, пример: {"1": {"ПН": ["15:25", "17:10"], "СР": ["15:25", "17":"10"]}}
     description = sqlalchemy.Column(sqlalchemy.Text)
     free = sqlalchemy.Column(sqlalchemy.Boolean)
