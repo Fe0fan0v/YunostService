@@ -27,7 +27,7 @@ def correct_area(area):
     for k in correct:
         if k in area:
             return correct[k]
-    return area
+    return ' '.join(area.split())
 
 
 def get_age(data):
