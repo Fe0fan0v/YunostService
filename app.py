@@ -42,19 +42,14 @@ def enroll():
                 flag_modified(registered, 'courses')
                 db_sess.commit()
                 send(registered.parent_email, f'Вы успешно записались! Получить ')
-                return redirect(url_for('enroll', message_type='success', message="""Ваша запись успешно зарегистрирована.
-Ожидайте приглашения на родительское собрание для оформления пакета документов:
- Заявление
- Согласие на фото и видеосъемку
- Копию свидетельства о рождении ребенка, либо копию паспорта ребенка (для детей старше 14)
-Образцы бланков документов (ссылка): <a href="download/documents.zip">Скачать</a>"""))
+                return redirect(url_for('enroll', message_type='success', message="""Ваша запись успешно зарегистрирована"""))
         else:
             record = Registration(child_name=data['child_name'],
                                   child_surname=data['child_surname'],
                                   child_patronymic=data['child_patronymic'],
-                                  child_birthday=datetime.date(int(data['child_birthday'].split('.')[-1]),
-                                                               int(data['child_birthday'].split('.')[1]),
-                                                               int(data['child_birthday'].split('.')[0])),
+                                  child_birthday=datetime.date(int(data['child_birthday'].split('-')[0]),
+                                                               int(data['child_birthday'].split('-')[1]),
+                                                               int(data['child_birthday'].split('-')[2])),
                                   educational_institution=data['educational_institution'],
                                   edu_class=data['edu_class'],
                                   health=data['health'],
@@ -64,9 +59,9 @@ def enroll():
                                   parent_name=data['parent_name'],
                                   parent_surname=data['parent_surname'],
                                   parent_patronymic=data['parent_patronymic'],
-                                  parent_birthday=datetime.date(int(data['parent_birthday'].split('.')[-1]),
-                                                                int(data['parent_birthday'].split('.')[1]),
-                                                                int(data['parent_birthday'].split('.')[0])),
+                                  parent_birthday=datetime.date(int(data['parent_birthday'].split('-')[0]),
+                                                                int(data['parent_birthday'].split('-')[1]),
+                                                                int(data['parent_birthday'].split('-')[2])),
                                   parent_residence=data['parent_residence'],
                                   parent_work=data['parent_work'],
                                   parent_phone=data['parent_phone'],
@@ -83,7 +78,7 @@ def enroll():
                                   )
             db_sess.add(record)
             db_sess.commit()
-            return redirect(url_for('enroll', message_type='success', message='Вы успешно записаны!'))
+            return redirect(url_for('enroll', message_type='success', message="""Ваша запись успешно зарегистрирована."""))
     if not args:
         return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
                                nav_areas=nav_areas, form=form)
