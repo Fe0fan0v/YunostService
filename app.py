@@ -7,6 +7,7 @@ from forms import NewCourse, RegisterChild
 import urllib.parse
 from showing import show_courses
 from sqlalchemy.orm.attributes import flag_modified
+from sendmail import send
 
 # todo: доменное имя - priem.ddt-miass.ru
 app = Flask(__name__)  # todo: отправка уведомления на email
@@ -40,6 +41,7 @@ def enroll():
                 db_sess.add(registered)
                 flag_modified(registered, 'courses')
                 db_sess.commit()
+                send(registered.parent_email, f'Вы успешно записались! Получить ')
                 return redirect(url_for('enroll', message_type='success', message='Вы успешно записаны!'))
         else:
             record = Registration(child_name=data['child_name'],
