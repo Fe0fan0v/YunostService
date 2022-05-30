@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/2.27.5/css/components/datepicker.css">
     <nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
         <div class="uk-navbar-left">
             <ul class="uk-navbar-nav">
@@ -37,20 +38,8 @@
                         </ul>
                     </div>
                 </li>
-            </ul>
-        </div>
-        <div class="uk-navbar-right">
-            <ul class="uk-navbar-nav">
-                <li class="uk-active">
-                    <div class="uk-navbar-item">
-                        <form action="javascript:void(0)">
-                            <input class="uk-input uk-form-width-small" type="text">
-                            <button class="uk-button uk-button-default">
-                                <span class="uk-icon uk-margin-small-right" uk-icon="icon: search"></span>
-                                Искать
-                            </button>
-                        </form>
-                    </div>
+                <li>
+                    <a href="/enroll?sort_type=cube_True">IT-Cube</a>
                 </li>
             </ul>
         </div>
@@ -102,10 +91,9 @@
                                         <p class="uk-text-center">Выбрать группу</p>
                                         {% for group, schedule in course.schedule.items() %}
                                             <div class="uk-inline">
-                                                <button class="uk-button uk-button-text uk-text-primary"
-                                                        onClick="dataCollection('{{ course.name }}', '{{ group }}')">Группа {{ group }}</button>
+                                                <button class="uk-button uk-button-text uk-text-primary">Группа {{ group }}</button>
                                                 <div uk-dropdown>
-                                                    {% for weekday, time in schedule.items() %}<p class="uk-text-primary">{{ weekday }} - с {{ time[0] }} до {{ time[1] }}</p>{% endfor %}
+                                                    <p class="uk-text-primary">{{ schedule }}</p>
                                                     <a href="#{{ '_'.join(course.name.split()) }}_{{ group }}"
                                                class="uk-button uk-button-primary" onClick="dataCollection('{{ course.name }}', '{{ group }}')" uk-toggle>Записаться</a>
                                                 </div>
@@ -120,9 +108,7 @@
                                                             class="uk-modal-title">{{ course.name }}</h2>
                                                         <p id="group">Запись в группу {{ group }}</p>
                                                         <p>
-                                                            {% for weekday, time in schedule.items() %}
-                                                                |{{ weekday }} - с {{ time[0] }} до {{ time[1] }}|
-                                                            {% endfor %}
+                                                                {{ schedule }}
                                                         </p>
                                                     </div>
                                                     <div class="uk-modal-body">

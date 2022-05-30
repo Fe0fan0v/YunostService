@@ -80,10 +80,13 @@ def enroll():
     if not args:
         return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
                                nav_areas=nav_areas, form=form)
-    else:
+    elif 'message_type' in args.keys():
         return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
                                nav_areas=nav_areas, form=form, message_type=args['message_type'],
                                message=args['message'])
+    else:
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
+                               nav_areas=nav_areas, form=form)
 
 
 @app.route('/admin')  # панель администратора
