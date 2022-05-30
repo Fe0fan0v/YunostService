@@ -42,7 +42,12 @@ def enroll():
                 flag_modified(registered, 'courses')
                 db_sess.commit()
                 send(registered.parent_email, f'Вы успешно записались! Получить ')
-                return redirect(url_for('enroll', message_type='success', message='Вы успешно записаны! Запись является предварительной! Для окончательно необходимо заполнить и предоставить документы: <a href="download/documents.zip">Скачать</a>'))
+                return redirect(url_for('enroll', message_type='success', message="""Ваша запись успешно зарегистрирована.
+Ожидайте приглашения на родительское собрание для оформления пакета документов:
+ Заявление
+ Согласие на фото и видеосъемку
+ Копию свидетельства о рождении ребенка, либо копию паспорта ребенка (для детей старше 14)
+Образцы бланков документов (ссылка): <a href="download/documents.zip">Скачать</a>"""))
         else:
             record = Registration(child_name=data['child_name'],
                                   child_surname=data['child_surname'],
