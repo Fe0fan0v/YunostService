@@ -38,7 +38,7 @@ class Course(base):
     schedule = sqlalchemy.Column(sqlalchemy.JSON)   # расписание, пример: {"1": {"ПН": ["15:25", "17:10"], "СР": ["15:25", "17":"10"]}}
     description = sqlalchemy.Column(sqlalchemy.Text)
     free = sqlalchemy.Column(sqlalchemy.Boolean)
-    cube = sqlalchemy.Column(sqlalchemy.Boolean)
+    code = sqlalchemy.Column(sqlalchemy.Integer)
 
 
 class Registration(base):

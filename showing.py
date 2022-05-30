@@ -11,10 +11,12 @@ def show_courses(db_sess):
         pass
     elif sort_type.split('_')[0] != 'age':
         sort_type, sort_data = sort_type.split('_')
-        if sort_type != 'cube':
-            courses = eval(f'db_sess.query(Course).filter(Course.{sort_type} == "{sort_data}").all()')
+        if sort_type == 'cube':
+            courses = db_sess.query(Course).filter(Course.code == 1).all()
+        elif sort_type == 'success':
+            courses = db_sess.query(Course).filter(Course.code == 2).all()
         else:
-            courses = db_sess.query(Course).filter(Course.cube).all()
+            courses = eval(f'db_sess.query(Course).filter(Course.{sort_type} == "{sort_data}").all()')
     else:
         age = int(sort_type.split('_')[1])
         courses = list(filter(lambda x: x.age_from <= age < x.age_to, courses))

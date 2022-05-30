@@ -39,7 +39,10 @@
                     </div>
                 </li>
                 <li>
-                    <a href="/enroll?sort_type=cube_True">IT-Cube</a>
+                    <a href="/enroll?sort_type=cube">IT-Cube</a>
+                </li>
+                <li>
+                    <a href="/enroll?sort_type=success">Успех каждого ребенка</a>
                 </li>
             </ul>
         </div>
@@ -76,7 +79,7 @@
                                             <div class="uk-width-expand">
                                                 <h3 class="uk-card-title uk-margin-remove-bottom">{{ course.name }}</h3>
                                                 {% for teacher in course.teachers %}
-                                                <p> {{ teacher }} </p>
+                                                    <p> {{ teacher }} </p>
                                                 {% endfor %}
                                                 <p class="uk-text-meta uk-margin-remove-top">
                                                     С {{ course.age_from }} до {{ course.age_to }} лет
@@ -91,15 +94,19 @@
                                         <p class="uk-text-center">Выбрать группу</p>
                                         {% for group, schedule in course.schedule.items() %}
                                             <div class="uk-inline">
-                                                <button class="uk-button uk-button-text uk-text-primary">Группа {{ group }}</button>
+                                                <button class="uk-button uk-button-text uk-text-primary">
+                                                    Группа {{ group }}</button>
                                                 <div uk-dropdown>
                                                     <p class="uk-text-primary">{{ schedule }}</p>
-                                                    <a href="#{{ '_'.join(course.name.split()) }}_{{ group }}"
-                                               class="uk-button uk-button-primary" onClick="dataCollection('{{ course.name }}', '{{ group }}')" uk-toggle>Записаться</a>
+                                                    <a href="#{{ '_'.join(course.name.replace('.', '_').split()) }}_{{ group }}"
+                                                       class="uk-button uk-button-primary"
+                                                       onClick="dataCollection('{{ course.name }}', '{{ group }}')"
+                                                       uk-toggle>Записаться</a>
                                                 </div>
                                             </div>
                                             <br>
-                                            <div id="{{ '_'.join(course.name.split()) }}_{{ group }}" uk-modal>
+                                            <div id="{{ '_'.join(course.name.replace('.', '_').split()) }}_{{ group }}"
+                                                 uk-modal>
                                                 <div class="uk-modal-dialog">
                                                     <button class="uk-modal-close-default" type="button"
                                                             uk-close></button>
@@ -108,7 +115,7 @@
                                                             class="uk-modal-title">{{ course.name }}</h2>
                                                         <p id="group">Запись в группу {{ group }}</p>
                                                         <p>
-                                                                {{ schedule }}
+                                                            {{ schedule }}
                                                         </p>
                                                     </div>
                                                     <div class="uk-modal-body">
@@ -116,7 +123,8 @@
                                                     </div>
                                                     <div class="uk-modal-footer uk-text-right">
                                                         <button class="uk-button uk-button-default uk-modal-close"
-                                                                type="button">Отменить</button>
+                                                                type="button">Отменить
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
