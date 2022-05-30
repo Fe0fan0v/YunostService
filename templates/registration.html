@@ -11,7 +11,8 @@
             {{ form.child_patronymic(class="uk-input", type="text", placeholder=form.child_patronymic.label.text) }}
         </div>
         <div class="uk-margin">
-             {{ form.child_birthday(class="uk-input", type="text", placeholder=form.child_birthday.label.text) }}
+             <label class="uk-form-label">{{ form.child_birthday.label.text }}</label>
+             {{ form.child_birthday(class="uk-input", type="date") }}
         </div>
         <div class="uk-margin">
             {{ form.educational_institution(class="uk-input", type="text", placeholder=form.educational_institution.label.text) }}
@@ -41,7 +42,8 @@
             {{ form.parent_patronymic(class="uk-input", type="text", placeholder=form.parent_patronymic.label.text) }}
         </div>
         <div class="uk-margin">
-            {{ form.parent_birthday(class="uk-input", type="text", placeholder=form.parent_birthday.label.text) }}
+            <label class="uk-form-label">{{ form.parent_birthday.label.text }}</label>
+            {{ form.parent_birthday(class="uk-input", type="date") }}
         </div>
         <div class="uk-margin">
             {{ form.parent_residence(class="uk-input", type="text", placeholder=form.parent_residence.label.text) }}

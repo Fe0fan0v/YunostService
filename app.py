@@ -1,6 +1,6 @@
 import datetime
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_file
 from db import db_session
 from db.models import Course, Registration
 from forms import NewCourse, RegisterChild
@@ -150,6 +150,12 @@ def redact_course(_id):
         db_sess.commit()
         return redirect('/add_course')
     return render_template('redact_course.html', course=course, form=form, title='Редактирование объединения')
+
+
+@app.route('/download/<filename>')
+def return_files(filename):
+    file_path = filename
+    return send_file(file_path, as_attachment=True, attachment_filename='')
 
 
 if __name__ == '__main__':
