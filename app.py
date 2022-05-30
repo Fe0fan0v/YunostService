@@ -42,7 +42,8 @@ def enroll():
                 flag_modified(registered, 'courses')
                 db_sess.commit()
                 send(registered.parent_email, f'Вы успешно записались! Получить ')
-                return redirect(url_for('enroll', message_type='success', message="""Ваша запись успешно зарегистрирована"""))
+                return redirect(
+                    url_for('enroll', message_type='success', message="""Ваша запись успешно зарегистрирована"""))
         else:
             record = Registration(child_name=data['child_name'],
                                   child_surname=data['child_surname'],
@@ -78,7 +79,8 @@ def enroll():
                                   )
             db_sess.add(record)
             db_sess.commit()
-            return redirect(url_for('enroll', message_type='success', message="""Ваша запись успешно зарегистрирована."""))
+            return redirect(
+                url_for('enroll', message_type='success', message="""Ваша запись успешно зарегистрирована."""))
     if not args:
         return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
                                nav_areas=nav_areas, form=form)

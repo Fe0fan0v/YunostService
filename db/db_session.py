@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 import sqlalchemy.ext.declarative as dec
 from sqlalchemy.orm import sessionmaker
-from env import pg_login, pg_password, db_name
+from env import pg_login, pg_password, db_name, db_host, db_port
 
 base = dec.declarative_base()
 
@@ -15,7 +15,7 @@ def global_init():
     if __factory:
         return
 
-    conn_str = f'postgresql://{pg_login}:{pg_password}@localhost:5432/{db_name}'
+    conn_str = f'postgresql://{pg_login}:{pg_password}@{db_host}:{db_port}/{db_name}'
     print(f"Подключение к базе данных по адресу {conn_str}")
 
     engine = create_engine(conn_str, echo=False)
