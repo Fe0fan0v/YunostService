@@ -8,8 +8,8 @@ from db.models import Course
 
 FILENAME = 'courses.xlsx'
 
-keys = ['name', 'age', 'direction', 'description', 'teachers', 'area', 'free',
-        *(str(i) for i in range(1, 11))]
+keys = ['name', 'age_from', 'age_to', 'focus', 'direction', 'description',
+        'teachers', 'area', 'free', 'code', 'schedule']
 
 
 def clear(s):
@@ -46,6 +46,27 @@ def get_age(data):
         return int(age_from), int(age_to)
 
 
+def create_course(name, age, focus, direction, description, teachers, area, free, code, *schedule):
+    if not code:
+        code = -1
+    if not all((name, age, focus, direction, description, teachers, area, free, code)):
+        return
+    schedule = dict(filter(lambda pair: pair[1], zip((str(i) for i in range(1, 11)),
+                                                     (clear(value) for value in schedule))))
+    if not schedule:
+        return
+    name = name.strip()
+    age_from, age_to = get_age(age)
+    teachers = teachers.split(',')
+    focus = focus.upper()
+    direction = direction.upper()
+    area = correct_area(area)
+    free = free is None or free.strip().lower() == 'бюджет'
+    code = int(code) if code else 0
+    return Course(**dict(zip(keys, (name, age_from, age_to, focus, direction, description, teachers,
+                                    area, free, code, schedule))))
+
+
 global_init()
 db_session = create_session()
 wb = load_workbook(FILENAME)
@@ -53,20 +74,8 @@ ws = wb.active
 for row in filter(lambda r: r[0].value, ws.iter_rows(min_row=5)):
     if len(list(filter(lambda c: c.value, row))) <= 1:
         continue
-    data = dict(zip(keys, (cell.value for cell in row[:6])))
-    if not all(data.values()):
+    course = create_course(*(cell.value for cell in row))
+    if not course:
         continue
-    data['age_from'], data['age_to'] = get_age(data['age'])
-    data.pop('age')
-    data['teachers'] = data['teachers'].split(',')
-    data['direction'] = data['direction'].upper()
-    data['area'] = correct_area(data['area'])
-    course = Course(**data)
-    course.free = row[6].value is None or row[6].value.strip().lower() == 'бюджет'
-    schedule = dict(filter(lambda pair: pair[1], zip(keys[7:], (clear(cell.value) for cell in row[7:]))))
-    if not any(schedule.values()):
-        continue
-    course.schedule = schedule
-    course.cube = row[0].fill.bgColor.rgb == 'FF00FFFF'
     db_session.add(course)
 db_session.commit()
