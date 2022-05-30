@@ -18,12 +18,23 @@
                     </div>
                 </li>
                 <li>
-                    <a href="#">По направлению</a>
+                    <a href="#">По направленности</a>
                     <div class="uk-navbar-dropdown">
-                        <ul class="uk-nav uk-navbar-dropdown-nav">
-                            {% for direction in directions %}
-                                <li><a href="/enroll?sort_type=direction_{{ direction }}">{{ direction }}</a></li>
-                            {% endfor %}
+                        <ul class="uk-nav uk-navbar-dropdown-nav" uk-accordion>
+                        {% for focus in directions %}
+                            <li>
+                                <a href="">{{ focus }}</a>
+                                <div class="uk-navbar-dropdown">
+                                    <ul class="uk-nav uk-navbar-dropdown-nav">
+                                        {% for direction in directions[focus] %}
+                                    <li>
+                                        <a href="/enroll?sort_type=direction_{{ direction }}">{{ direction }}</a>
+                                    </li>
+                                {% endfor %}
+                                    </ul>
+                                </div>
+                            </li>
+                        {% endfor %}
                         </ul>
                     </div>
                 </li>

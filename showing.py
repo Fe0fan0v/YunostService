@@ -6,7 +6,9 @@ def show_courses(db_sess):
     sort_type = request.args.get('sort_type')
     courses = db_sess.query(Course).all()
     nav_areas = list(set(course.area for course in courses))
-    directions = list(set(course.direction for course in courses))
+    directions = {}
+    for course in courses:
+        directions.setdefault(course.focus, []).append(course.direction)
     if not sort_type:
         pass
     elif sort_type.split('_')[0] != 'age':
