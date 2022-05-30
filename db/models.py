@@ -20,6 +20,7 @@ class Course(base):
     description = sqlalchemy.Column(sqlalchemy.Text)
     free = sqlalchemy.Column(sqlalchemy.Boolean)
     code = sqlalchemy.Column(sqlalchemy.Integer)
+    counter = sqlalchemy.Column(sqlalchemy.Integer, default=0)
 
     def name_to_id(self):
         translit_name = translit(self.name, language_code='ru', reversed=True)
@@ -58,4 +59,4 @@ class Registration(base):
     resident = sqlalchemy.Column(sqlalchemy.Boolean)
     second_parent_fio = sqlalchemy.Column(sqlalchemy.String)
     second_parent_phone = sqlalchemy.Column(sqlalchemy.String)
-    courses = sqlalchemy.Column(sqlalchemy.JSON)
+    courses = sqlalchemy.Column(sqlalchemy.JSON)  # {'название курса': 'номер группы'}

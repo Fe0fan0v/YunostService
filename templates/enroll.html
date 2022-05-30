@@ -120,6 +120,9 @@
                                                     <div class="uk-modal-header">
                                                         <h2 id="courseName"
                                                             class="uk-modal-title">{{ course.name }}</h2>
+                                                        {% if course.counter >= 20 %}
+                                                        <span class="uk-label uk-label-warning">Вакантные места заняты, идет запись в резервный список</span>
+                                                        {% endif %}
                                                         <p id="group">Запись в группу {{ group }}</p>
                                                         <p>
                                                             {{ schedule }}

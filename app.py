@@ -77,6 +77,8 @@ def enroll():
                                       'second_parent_phone'] else None,
                                   courses={data['course_name']: data['group']}
                                   )
+            course = db_sess.query(Course).filter(Course.name == data['course_name']).first()
+            course.counter += 1
             db_sess.add(record)
             db_sess.commit()
             return redirect(
