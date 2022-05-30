@@ -41,9 +41,15 @@ def enroll():
                 db_sess.add(registered)
                 flag_modified(registered, 'courses')
                 db_sess.commit()
-                send(registered.parent_email, f'Вы успешно записались! Получить ')
+                # send(registered.parent_email, f'Вы успешно записались! Получить ')
                 return redirect(
-                    url_for('enroll', message_type='success', message="""Ваша запись успешно зарегистрирована"""))
+                    url_for('enroll', message_type='success', message="""Ваша запись успешно зарегистрирована.\n
+Ожидайте приглашения на родительское собрание (в конце августа) для оформления пакета документов:\n
+ Заявление\n
+ Согласие на фото и видеосъемку\n
+ Копию свидетельства о рождении ребенка, либо копию паспорта ребенка (для детей старше 14)\n
+Образцы бланков документов (ссылка)\n
+*Расписание является предварительным, возможна корректировка"""))  # todo: отрисовка сообщения в шаблоне
         else:
             record = Registration(child_name=data['child_name'],
                                   child_surname=data['child_surname'],
@@ -82,7 +88,13 @@ def enroll():
             db_sess.add(record)
             db_sess.commit()
             return redirect(
-                url_for('enroll', message_type='success', message="""Ваша запись успешно зарегистрирована."""))
+                url_for('enroll', message_type='success', message="""Ваша запись успешно зарегистрирована.
+Ожидайте приглашения на родительское собрание (в конце августа) для оформления пакета документов:
+ Заявление
+ Согласие на фото и видеосъемку
+ Копию свидетельства о рождении ребенка, либо копию паспорта ребенка (для детей старше 14)
+Образцы бланков документов (ссылка)
+*Расписание является предварительным, возможна корректировка"""))
     if not args:
         return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
                                nav_areas=nav_areas, form=form)
