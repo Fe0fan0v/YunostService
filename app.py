@@ -42,7 +42,7 @@ def enroll():
                 flag_modified(registered, 'courses')
                 db_sess.commit()
                 send(registered.parent_email, f'Вы успешно записались! Получить ')
-                return redirect(url_for('enroll', message_type='success', message='Вы успешно записаны!'))
+                return redirect(url_for('enroll', message_type='success', message='Вы успешно записаны! Запись является предварительной! Для окончательно необходимо заполнить и предоставить документы: <a href="download/documents.zip">Скачать</a>'))
         else:
             record = Registration(child_name=data['child_name'],
                                   child_surname=data['child_surname'],
