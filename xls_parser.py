@@ -27,8 +27,7 @@ def correct_area(area):
     for k in correct:
         if k in area:
             return correct[k]
-    # pref, name, number = re.search('(пр\.|ул\.)\s*([^\s]*)[,\s]*(\d*)', area).groups()
-    # return f'{pref} {name}, {number}'
+    return area
 
 
 def get_age(data):
