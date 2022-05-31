@@ -21,20 +21,21 @@
                     <a href="#">По направленности</a>
                     <div class="uk-navbar-dropdown" style="width: 200px;">
                         <ul class="uk-nav uk-navbar-dropdown-nav">
-                        {% for focus in directions %}
-                            <li>
-                                <a href="">{{ focus }}</a>
-                                <div class="uk-navbar-dropdown" style="width: 250px;" uk-dropdown="pos: right-center">
-                                    <ul class="uk-nav uk-navbar-dropdown-nav">
-                                        {% for direction in directions[focus] %}
-                                    <li>
-                                        <a href="/enroll?sort_type=direction_{{ direction }}">{{ direction }}</a>
-                                    </li>
-                                {% endfor %}
-                                    </ul>
-                                </div>
-                            </li>
-                        {% endfor %}
+                            {% for focus in directions %}
+                                <li>
+                                    <a href="">{{ focus }}</a>
+                                    <div class="uk-navbar-dropdown" style="width: 250px;"
+                                         uk-dropdown="pos: right-center">
+                                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                                            {% for direction in directions[focus] %}
+                                                <li>
+                                                    <a href="/enroll?sort_type=direction_{{ direction }}">{{ direction }}</a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </li>
@@ -69,7 +70,17 @@
             <div class="uk-margin-large-top uk-margin-large-bottom uk-text-center">
                 <div class="uk-alert-success" uk-alert>
                     <a class="uk-alert-close" uk-close></a>
-                    <p>{{ message }}</p>
+                    <p>Ваша запись успешно зарегистрирована.</p>
+                    <p>Ожидайте приглашения на родительское собрание (в конце августа) для оформления пакета
+                        документов:</p>
+                    <ul>
+                        <li>Заявление</li>
+                        <li>Согласие на фото и видеосъемку</li>
+                        <li>Копию свидетельства о рождении ребенка, либо копию паспорта ребенка (для детей старше 14)
+                        </li>
+                    </ul>
+                    <p>Образцы бланков документов - <a href="/download/documents.zip">скачать</a></p>
+                    <p>*Расписание является предварительным, возможна корректировка</p>
                 </div>
             </div>
         {% endif %}
@@ -109,7 +120,7 @@
                                                 <div uk-dropdown>
                                                     <p class="uk-text-primary">{{ schedule }}</p>
                                                     <a href="#{{ course.name_to_id() }}_{{ group }}"
-                                               class="uk-button uk-button-primary" uk-toggle>Записаться</a>
+                                                       class="uk-button uk-button-primary" uk-toggle>Записаться</a>
                                                 </div>
                                             </div>
                                             <br>
@@ -121,7 +132,7 @@
                                                         <h2 id="courseName"
                                                             class="uk-modal-title">{{ course.name }}</h2>
                                                         {% if course.counter >= 20 %}
-                                                        <span class="uk-label uk-label-warning">Вакантные места заняты, идет запись в резервный список</span>
+                                                            <span class="uk-label uk-label-warning">Вакантные места заняты, идет запись в резервный список</span>
                                                         {% endif %}
                                                         <p id="group">Запись в группу {{ group }}</p>
                                                         <p>
