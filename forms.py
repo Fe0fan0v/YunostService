@@ -21,8 +21,8 @@ class RegisterForm(FlaskForm):
 
 
 class NewCourse(FlaskForm):
-    name = StringField('Название курса', validators=[DataRequired()])
-    direction = SelectField('Направление курса', validators=[DataRequired()],
+    name = StringField('Образовательная программа', validators=[DataRequired()])
+    direction = SelectField('Направление объединения', validators=[DataRequired()],
                             choices=['Изобразительное искусство', 'Вокал', 'Хореография', 'Театр', 'Цирк',
                                      'Развивающая акробатика', 'Журналистика', 'Психология',
                                      'Декоративно-прикладное творчество (валяние из шерсти, бисероплетение, текстильная кукла и др.)',
@@ -31,15 +31,16 @@ class NewCourse(FlaskForm):
                                      'Естественные науки (химия, биология, астрономия, геология)',
                                      'IT (программирование, робототехника, технический английский и др.)',
                                      'Фотография и видеография'])
-    area = SelectField('Площадка проведения курса', validators=[DataRequired()],
+    area = SelectField('Площадка объединения', validators=[DataRequired()],
                        choices=['Пр-т Макеева, 39', 'Пр-т Октября, 21', 'Ул. Ст. Разина, 4', 'Ул. 8-е марта, 147',
                                 'ул. Первомайская, 9'])
-    teacher = StringField('Фамилия Имя Отчество педагога', validators=[DataRequired()])
+    teachers = StringField('ФИО педагогов', validators=[DataRequired()])  # список педагогов через ", "
     age_from = StringField('Начало диапазона возраста', validators=[DataRequired()])
     age_to = StringField('Конец диапазона возраста', validators=[DataRequired()])
     group = StringField('Номер группы', validators=[DataRequired()])
     schedule_weekday = SelectField('День недели', validators=[DataRequired()])
-    schedule_time = TimeField('Время занятия', validators=[DataRequired()])
+    schedule_time_start = TimeField('Время начала занятия', validators=[DataRequired()])
+    schedule_time_stop = TimeField('Время окончания занятия', validators=[DataRequired()])
     description = TextAreaField('Описание курса', validators=[DataRequired()])
     submit = SubmitField('Сохранить', validators=[DataRequired()])
 
@@ -49,11 +50,11 @@ class RegisterChild(FlaskForm):
     child_surname = StringField('Фамилия ребенка', validators=[DataRequired()])
     child_patronymic = StringField('Отчество ребенка', validators=[DataRequired()])
     child_birthday = DateField('Дата рождения ребенка', validators=[DataRequired()])
-    educational_institution = StringField('Школа/детский сад', validators=[DataRequired()])
-    edu_class = StringField('Класс в школе', validators=[DataRequired()])
+    educational_institution = StringField('Школа/детский сад/другое', validators=[DataRequired()])
+    edu_class = StringField('Класс/курс (на 1 сентября)', validators=[DataRequired()])
     health = SelectField('Здоровье', validators=[DataRequired()], choices=['Здоров', 'ОВЗ', 'Инвалид'])
-    child_phone = StringField('Телефон ребенка', validators=[DataRequired()])
-    child_email = EmailField('Email ребенка', validators=[DataRequired()])
+    child_phone = StringField('Телефон ребенка')
+    child_email = EmailField('Email ребенка')
     child_residence = StringField('Место жительства ребенка', validators=[DataRequired()])
     # -------------информация о родителе------------#
     parent_name = StringField('Имя родителя/законного представителя', validators=[DataRequired()])

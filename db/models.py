@@ -1,28 +1,8 @@
-import datetime
-from flask_login import UserMixin
 import sqlalchemy
-from sqlalchemy import orm
+from transliterate import translit
+from string import ascii_letters, digits
+
 from .db_session import base
-
-
-# class User(base, UserMixin):
-#     __tablename__ = 'users'
-#
-#     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-#     name = sqlalchemy.Column(sqlalchemy.String)
-#     surname = sqlalchemy.Column(sqlalchemy.String)
-#     patronymic = sqlalchemy.Column(sqlalchemy.String)
-#     courses = sqlalchemy.Column(sqlalchemy.ARRAY(int), default=[])
-#     birthday = sqlalchemy.Column(sqlalchemy.Date)
-#     address = sqlalchemy.Column(sqlalchemy.String)
-#     phone = sqlalchemy.Column(sqlalchemy.String)
-#     email = sqlalchemy.Column(sqlalchemy.String)
-#     health_class = sqlalchemy.Column(sqlalchemy.String)
-#     school = sqlalchemy.Column(sqlalchemy.Integer)
-#     s_class = sqlalchemy.Column(sqlalchemy.String)
-#     role = sqlalchemy.Column(sqlalchemy.String, default='user')
-#     registration_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now())
-#     hashed_password = sqlalchemy.Column(sqlalchemy.String)
 
 
 class Course(base):
@@ -30,20 +10,29 @@ class Course(base):
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.String)
+    focus = sqlalchemy.Column(sqlalchemy.String)
     direction = sqlalchemy.Column(sqlalchemy.String)
     area = sqlalchemy.Column(sqlalchemy.String)
-    teacher = sqlalchemy.Column(sqlalchemy.String)
+    teachers = sqlalchemy.Column(sqlalchemy.ARRAY(sqlalchemy.String))  # список педагогов
     age_from = sqlalchemy.Column(sqlalchemy.Integer)
     age_to = sqlalchemy.Column(sqlalchemy.Integer)
-    schedule = sqlalchemy.Column(sqlalchemy.JSON)
+    schedule = sqlalchemy.Column(sqlalchemy.JSON)  # расписание, пример: {"1": "ПН 15:25-17:10"}
     description = sqlalchemy.Column(sqlalchemy.Text)
+    free = sqlalchemy.Column(sqlalchemy.Boolean)
+    code = sqlalchemy.Column(sqlalchemy.Integer)
+    counter = sqlalchemy.Column(sqlalchemy.Integer, default=0)
+
+    def name_to_id(self):
+        translit_name = translit(self.name, language_code='ru', reversed=True)
+        translit_name = '_'.join(translit_name.split())
+        return ''.join(filter(lambda c: c in ascii_letters + digits + '_', translit_name))
 
 
 class Registration(base):
     __tablename__ = 'registration 22/23'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-    #-------------информация о ребенке------------#
+    # -------------информация о ребенке------------#
     child_name = sqlalchemy.Column(sqlalchemy.String)
     child_surname = sqlalchemy.Column(sqlalchemy.String)
     child_patronymic = sqlalchemy.Column(sqlalchemy.String)
@@ -70,3 +59,4 @@ class Registration(base):
     resident = sqlalchemy.Column(sqlalchemy.Boolean)
     second_parent_fio = sqlalchemy.Column(sqlalchemy.String)
     second_parent_phone = sqlalchemy.Column(sqlalchemy.String)
+    courses = sqlalchemy.Column(sqlalchemy.JSON)  # {'название курса': 'номер группы'}
