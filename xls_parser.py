@@ -5,8 +5,9 @@ from numbers import Number
 from openpyxl import load_workbook
 from db.db_session import global_init, create_session
 from db.models import Course
+from env import path_to_xldata
 
-FILENAME = 'courses.xlsx'
+FILENAME = path_to_xldata
 
 keys = ['name', 'age_from', 'age_to', 'focus', 'direction', 'description',
         'teachers', 'area', 'free', 'code', 'schedule']
