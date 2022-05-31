@@ -178,4 +178,4 @@ def return_files(filename):
 
 if __name__ == '__main__':
     db_session.global_init()
-    app.run()
+    app.run(host='0.0.0.0')
