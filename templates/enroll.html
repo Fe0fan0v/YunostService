@@ -5,10 +5,10 @@
         <div class="uk-navbar-left">
             <ul class="uk-navbar-nav">
                 <li>
-                    <a href="/enroll">Показать все</a>
+                    <a href="/enroll" class="uk-text-emphasis">Показать все</a>
                 </li>
                 <li>
-                    <a href="#">По площадке</a>
+                    <a href="#" class="uk-text-emphasis">По площадке</a>
                     <div class="uk-navbar-dropdown" style="width: 250px;">
                         <ul class="uk-nav uk-navbar-dropdown-nav">
                             {% for area in nav_areas %}
@@ -18,7 +18,7 @@
                     </div>
                 </li>
                 <li>
-                    <a href="#">По направленности</a>
+                    <a href="#" class="uk-text-emphasis">По направленности</a>
                     <div class="uk-navbar-dropdown" style="width: 200px;">
                         <ul class="uk-nav uk-navbar-dropdown-nav">
                             {% for focus in directions %}
@@ -40,7 +40,7 @@
                     </div>
                 </li>
                 <li>
-                    <a href="#">По возрасту</a>
+                    <a href="#" class="uk-text-emphasis">По возрасту</a>
                     <div class="uk-navbar-dropdown">
                         <ul class="uk-nav uk-navbar-dropdown-nav">
                             {% for age in range(3, 19) %}
@@ -50,10 +50,10 @@
                     </div>
                 </li>
                 <li>
-                    <a href="/enroll?sort_type=cube_True">IT-Cube</a>
+                    <a href="/enroll?sort_type=cube_True" class="uk-text-emphasis">IT-Cube</a>
                 </li>
                 <li>
-                    <a href="/enroll?sort_type=success_True">Успех каждого ребенка</a>
+                    <a href="/enroll?sort_type=success_True" class="uk-text-emphasis">Успех каждого ребенка</a>
                 </li>
             </ul>
         </div>
