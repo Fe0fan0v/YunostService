@@ -9,8 +9,8 @@ from showing import show_courses
 from sqlalchemy.orm.attributes import flag_modified
 from sendmail import send
 
-# todo: доменное имя - priem.ddt-miass.ru
-app = Flask(__name__)  # todo: отправка уведомления на email
+
+app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super_secret_key'
 db_session.global_init()
 
@@ -41,7 +41,17 @@ def enroll():
                 db_sess.add(registered)
                 flag_modified(registered, 'courses')
                 db_sess.commit()
-                # send(registered.parent_email, f'Вы успешно записались! Получить ')
+                send(registered.parent_email, 'Запись в ДДТ Юность', f"""<p>Ваша запись в успешно зарегистрирована.</p>
+                    <p>Ожидайте приглашения на родительское собрание (в конце августа) для оформления пакета
+                        документов:</p>
+                    <ul>
+                        <li>Заявление</li>
+                        <li>Согласие на фото и видеосъемку</li>
+                        <li>Копию свидетельства о рождении ребенка, либо копию паспорта ребенка (для детей старше 14)
+                        </li>
+                    </ul>
+                    <p>Образцы бланков документов - <a href="priem.ddt-miass.ru/download/documents.zip">скачать</a></p>
+                    <p>*Расписание является предварительным, возможна корректировка</p>""")
                 return redirect(
                     url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
         else:
