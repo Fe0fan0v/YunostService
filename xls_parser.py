@@ -67,31 +67,12 @@ def create_course(name, age, focus, direction, description, teachers, area, free
     code = int(code) if code else 0
 
     if not courses:  # таблица курсов была пуста - сразу создаем новый
-        ratio = 0
-    else:
-        find_name, ratio = process.extractOne(name, [c[0] for c in courses])  # нечеткий поиск
-    if ratio > 90:  # на 90% и более похожее название
-        relevant_name = list(filter(lambda t: t[0] == find_name, courses))
-        # есть курсы с одинаковыми названиями, отличаются либо возрастом, либо преподавателями
-        if len(relevant_name) > 1:
-            relevant_age = list(filter(lambda t: (t[1], t[2]) == (age_from, age_to), relevant_name))
-            if len(relevant_age) == 1:
-                key = relevant_age[0]
-            else:
-                relevant_all = list(filter(lambda t: t == (find_name, age_from, age_to, ','.join(teachers)), relevant_name))
-                if relevant_all:
-                    key = relevant_all[0]
-                else:
-                    course = Course(**dict(zip(keys, (name, age_from, age_to, focus, direction, description, teachers,
-                                                      area, free, code, schedule, 0))))
-                    db_session.add(course)
-                    print(f'Ничего не найдено. Создан курс "{name}", counter = 0')
-                    return True
-        else:
-            key = relevant_name[0]
-        counter = courses[key]
-    else:
         counter = 0
+    else:
+        template = '^^'.join(map(str, (name, age_from, age_to, ','.join(teachers), area)))
+        fuzzy_result = process.extractOne(template, ['^^'.join(c) for c in courses])  # нечеткий поиск
+        key = tuple(fuzzy_result[0].split('^^'))
+        counter = courses[key]
     course = Course(**dict(zip(keys, (name, age_from, age_to, focus, direction, description, teachers,
                                       area, free, code, schedule, counter))))
     db_session.add(course)
@@ -101,8 +82,9 @@ def create_course(name, age, focus, direction, description, teachers, area, free
 
 global_init()
 db_session = create_session()
-courses = {(c.name, c.age_from, c.age_to, ','.join(c.teachers)): c.counter for c in db_session.query(Course).all()}
-print(len(courses))
+courses = {(c.name, str(c.age_from), str(c.age_to), ','.join(c.teachers), c.area): c.counter
+           for c in db_session.query(Course).all()}
+print('Было курсов до удаления:', len(courses))
 db_session.query(Course).delete()
 create_counter = 0
 total_counter = 0
