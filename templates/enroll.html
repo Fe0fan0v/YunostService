@@ -116,7 +116,7 @@
                                         <div class="uk-grid-small uk-flex-middle" uk-grid>
                                             <div class="uk-width-expand">
                                                 <h3 class="uk-card-title uk-margin-remove-bottom">{{ course.name }}</h3>
-                                                {% if course.age_to <= 6 %}
+                                                {% if not course.free %}
                                                     <span class="uk-label uk-label-warning">Обучение платное</span>
                                                 {% endif %}
                                                 {% for teacher in course.teachers %}
