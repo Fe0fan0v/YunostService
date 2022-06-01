@@ -43,7 +43,7 @@ def enroll():
                 db_sess.add(registered)
                 flag_modified(registered, 'courses')
                 db_sess.commit()
-                send(registered.parent_email, 'Запись в ДДТ Юность')
+                send(registered.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
                 return redirect(
                     url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
         else:
@@ -83,7 +83,7 @@ def enroll():
             course.counter += 1
             db_sess.add(record)
             db_sess.commit()
-            send(record.parent_email, 'Запись в ДДТ Юность')
+            send(record.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
             return redirect(
                 url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
     if not args:
