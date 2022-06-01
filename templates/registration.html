@@ -1,95 +1,111 @@
-<div class="uk-container uk-container-small">
-    <form method="post" id="registration">
-        {{ form.hidden_tag() }}
-        <div class="uk-margin">
-            {{ form.child_surname(class="uk-input", type="text", placeholder=form.child_surname.label.text) }}
-        </div>
-        <div class="uk-margin">
-            {{ form.child_name(class="uk-input", type="text", placeholder=form.child_name.label.text) }}
-        </div>
-        <div class="uk-margin">
-            {{ form.child_patronymic(class="uk-input", type="text", placeholder=form.child_patronymic.label.text) }}
-        </div>
-        <div class="uk-margin">
-             <label class="uk-form-label">{{ form.child_birthday.label.text }}</label>
-             {{ form.child_birthday(class="uk-input", type="date") }}
-        </div>
-        <div class="uk-margin">
-            {{ form.educational_institution(class="uk-input", type="text", placeholder=form.educational_institution.label.text) }}
-        </div>
-        <div class="uk-margin">
-            {{ form.edu_class(class="uk-input", type="text", placeholder=form.edu_class.label.text) }}
-        </div>
-        <div class="uk-margin">
-            {{ form.health(class="uk-select") }}
-        </div>
-        <div class="uk-margin">
-            {{ form.child_phone(class="uk-input", type="text", placeholder=form.child_phone.label.text) }}
-        </div>
-        <div class="uk-margin">
-            {{ form.child_email(class="uk-input", type="text", placeholder=form.child_email.label.text) }}
-        </div>
-        <div class="uk-margin">
-            {{ form.child_residence(class="uk-input", type="text", placeholder=form.child_residence.label.text) }}
-        </div>
-        <div class="uk-margin">
-            {{ form.parent_surname(class="uk-input", type="text", placeholder=form.parent_surname.label.text) }}
-        </div>
-        <div class="uk-margin">
-            {{ form.parent_name(class="uk-input", type="text", placeholder=form.parent_name.label.text) }}
-        </div>
-        <div class="uk-margin">
-            {{ form.parent_patronymic(class="uk-input", type="text", placeholder=form.parent_patronymic.label.text) }}
-        </div>
-        <div class="uk-margin">
-            <label class="uk-form-label">{{ form.parent_birthday.label.text }}</label>
-            {{ form.parent_birthday(class="uk-input", type="date") }}
-        </div>
-        <div class="uk-margin">
-            {{ form.parent_residence(class="uk-input", type="text", placeholder=form.parent_residence.label.text) }}
-        </div>
-        <div class="uk-margin">
-            {{ form.parent_work(class="uk-input", type="text", placeholder=form.parent_work.label.text) }}
-        </div>
-        <div class="uk-margin">
-            {{ form.parent_phone(class="uk-input", type="text", placeholder=form.parent_phone.label.text) }}
-        </div>
-        <div class="uk-margin">
-            {{ form.parent_email(class="uk-input", type="text", placeholder=form.parent_email.label.text) }}
-        </div>
-        <div class="uk-margin">
-            {{ form.full_family(class="uk-select") }}
-        </div>
-        <div class="uk-margin">
-            {{ form.large_family(class="uk-select") }}
-        </div>
-        <div class="uk-margin">
-            {{ form.without_parents(class="uk-select") }}
-        </div>
-        <div class="uk-margin">
-            {{ form.police_record(class="uk-select") }}
-        </div>
-        <div class="uk-margin">
-            {{ form.resident(class="uk-select") }}
-        </div>
-        <div class="uk-margin">
-            {{ form.second_parent_fio(class="uk-input", type="text", placeholder=form.second_parent_fio.label.text) }}
-        </div>
-        <div class="uk-margin">
-            {{ form.second_parent_phone(class="uk-input", type="text", placeholder=form.second_parent_phone.label.text) }}
-        </div>
-        <input type="hidden" name="course_name" value="{{ course.name }}">
-        <input type="hidden" name="group" value="{{ group }}">
-        <p class="uk-text-meta">Нажимая кнопку "Отправить" вы подтверждаете согласие на обработку персональных данных.
-            Обработка персональных данных ведется в соответствии с <a href="http://www.kremlin.ru/acts/bank/24154"
-                                                                      target="_blank">Федеральным законом от 27 июля
-                2006 г. N 152-ФЗ "О персональных данных"</a> и <a href="https://yadi.sk/i/QQo47eA-3GozMW"
-                                                                  target="_blank">Положением об обработке персональных
-                данных в МАУ ДО "ДДТ "Юность" им.П.Макеева"</a></p>
-        <div class="uk-text-center uk-margin-large-top">
-            <div class="uk-form-controls">
-                {{ form.submit(class="uk-button uk-button-primary") }}
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="uk-container uk-container-small">
+        <h2 id="courseName" class="uk-text-center">{{ course.name }}</h2>
+        {% if course.counter >= 20 %}
+            <span class="uk-label uk-label-warning uk-text-center">Вакантные места заняты, идет запись в резервный список</span>
+        {% endif %}
+        <p id="group" class="uk-text-center">Запись в группу {{ group }}</p>
+        <p class="uk-text-center">
+            {{ course.schedule[group] }}
+        </p>
+        <form method="post" id="registration">
+            {{ form.hidden_tag() }}
+            <div class="uk-margin">
+                {{ form.child_surname(class="uk-input", type="text", placeholder=form.child_surname.label.text) }}
             </div>
-        </div>
-    </form>
-</div>
+            <div class="uk-margin">
+                {{ form.child_name(class="uk-input", type="text", placeholder=form.child_name.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.child_patronymic(class="uk-input", type="text", placeholder=form.child_patronymic.label.text) }}
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label">{{ form.child_birthday.label.text }}</label>
+                {{ form.child_birthday(class="uk-input", type="date") }}
+            </div>
+            <div class="uk-margin">
+                {{ form.educational_institution(class="uk-input", type="text", placeholder=form.educational_institution.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.edu_class(class="uk-input", type="text", placeholder=form.edu_class.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.health(class="uk-select") }}
+            </div>
+            <div class="uk-margin">
+                {{ form.child_phone(class="uk-input", type="text", placeholder=form.child_phone.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.child_email(class="uk-input", type="text", placeholder=form.child_email.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.child_residence(class="uk-input", type="text", placeholder=form.child_residence.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.parent_surname(class="uk-input", type="text", placeholder=form.parent_surname.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.parent_name(class="uk-input", type="text", placeholder=form.parent_name.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.parent_patronymic(class="uk-input", type="text", placeholder=form.parent_patronymic.label.text) }}
+            </div>
+            <div class="uk-margin">
+                <label class="uk-form-label">{{ form.parent_birthday.label.text }}</label>
+                {{ form.parent_birthday(class="uk-input", type="date") }}
+            </div>
+            <div class="uk-margin">
+                {{ form.parent_residence(class="uk-input", type="text", placeholder=form.parent_residence.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.parent_work(class="uk-input", type="text", placeholder=form.parent_work.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.parent_phone(class="uk-input", type="text", placeholder=form.parent_phone.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.parent_email(class="uk-input", type="text", placeholder=form.parent_email.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.full_family(class="uk-select") }}
+            </div>
+            <div class="uk-margin">
+                {{ form.large_family(class="uk-select") }}
+            </div>
+            <div class="uk-margin">
+                {{ form.without_parents(class="uk-select") }}
+            </div>
+            <div class="uk-margin">
+                {{ form.police_record(class="uk-select") }}
+            </div>
+            <div class="uk-margin">
+                {{ form.resident(class="uk-select") }}
+            </div>
+            <div class="uk-margin">
+                {{ form.second_parent_fio(class="uk-input", type="text", placeholder=form.second_parent_fio.label.text) }}
+            </div>
+            <div class="uk-margin">
+                {{ form.second_parent_phone(class="uk-input", type="text", placeholder=form.second_parent_phone.label.text) }}
+            </div>
+            <input type="hidden" name="course_name" value="{{ course.name }}">
+            <input type="hidden" name="group" value="{{ group }}">
+            <p class="uk-text-meta">Нажимая кнопку "Отправить" вы подтверждаете согласие на обработку персональных
+                данных.
+                Обработка персональных данных ведется в соответствии с <a href="http://www.kremlin.ru/acts/bank/24154"
+                                                                          target="_blank">Федеральным законом от 27 июля
+                    2006 г. N 152-ФЗ "О персональных данных"</a> и <a href="https://yadi.sk/i/QQo47eA-3GozMW"
+                                                                      target="_blank">Положением об обработке
+                    персональных
+                    данных в МАУ ДО "ДДТ "Юность" им.П.Макеева"</a></p>
+            <div class="uk-text-center uk-margin-large-top">
+                <div class="uk-form-controls">
+                    {{ form.submit(class="uk-button uk-button-primary") }}
+                </div>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
