@@ -21,29 +21,47 @@ def main_page():
     # return render_template('index.html')
 
 
-@app.route('/enroll', methods=['GET', 'POST'])
+@app.route('/enroll')
 def enroll():
-    form = RegisterChild()
+    args = request.args.to_dict()
     db_sess = db_session.create_session()
     courses, areas, directions, nav_areas = show_courses(db_sess)
+    if not args:
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
+                               nav_areas=nav_areas)
+    elif 'message_type' in args.keys():
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
+                               nav_areas=nav_areas, message_type=args['message_type'],
+                               message=args['message'])
+    else:
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
+                               nav_areas=nav_areas)
+
+
+@app.route('/registration', methods=['GET', 'POST'])
+def registration():
+    form = RegisterChild()
+    db_sess = db_session.create_session()
     args = request.args.to_dict()
+    course_name, group_number = args['course'], args['group']
+    course = db_sess.query(Course).filter(Course.name == course_name).first()
     if request.method == 'POST':
         data = request.form
-        registered = db_sess.query(Registration).filter((Registration.child_name == data['child_name'].strip().capitalize()) and (
-                Registration.child_surname == data['child_surname'].strip().capitalize()) and (
-                                                                Registration.child_patronymic == data[
-                                                            'child_patronymic'].strip().capitalize())).first()
+        registered = db_sess.query(Registration).filter(
+            (Registration.child_name == data['child_name'].strip().capitalize()) and (
+                    Registration.child_surname == data['child_surname'].strip().capitalize()) and (
+                    Registration.child_patronymic == data[
+                'child_patronymic'].strip().capitalize())).first()
         if registered:
             if any(map(lambda x: data['course_name'] in x, list(registered.courses.keys()))):
                 return redirect(url_for('enroll', message_type='danger', message='Вы уже записаны в это объединение!'))
             else:
                 registered.courses[data['course_name']] = data['group']
-                course = db_sess.query(Course).filter(Course.name == data['course_name']).first()
                 course.counter += 1
                 db_sess.add(registered)
                 flag_modified(registered, 'courses')
                 db_sess.commit()
-                send(registered.parent_email, 'Запись в ДДТ Юность')
+                send(registered.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
                 return redirect(
                     url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
         else:
@@ -79,23 +97,13 @@ def enroll():
                                       'second_parent_phone'] else None,
                                   courses={data['course_name']: data['group']}
                                   )
-            course = db_sess.query(Course).filter(Course.name == data['course_name']).first()
             course.counter += 1
             db_sess.add(record)
             db_sess.commit()
-            send(record.parent_email, 'Запись в ДДТ Юность')
+            # send(record.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
             return redirect(
                 url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
-    if not args:
-        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
-                               nav_areas=nav_areas, form=form)
-    elif 'message_type' in args.keys():
-        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
-                               nav_areas=nav_areas, form=form, message_type=args['message_type'],
-                               message=args['message'])
-    else:
-        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
-                               nav_areas=nav_areas, form=form)
+    return render_template('registration.html', course=course, form=form, group=group_number)
 
 
 @app.route('/admin', methods=['GET', 'POST'])  # панель администратора

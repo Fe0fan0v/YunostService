@@ -4,11 +4,12 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 
-def send(email: str, subject: str):
-    text = """
+def send(email: str, subject: str, course: str, group: str):
+    text = f"""
 <html>
   <body>
     <p>Ваша запись успешно зарегистрирована.</p>
+    <p>Вы записались на {course} в группу {group}</p>
     <p>Ожидайте приглашения на родительское собрание (в конце августа) для оформления пакета документов:</p>
     <ul>
         <li>Заявление</li>
