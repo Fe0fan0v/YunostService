@@ -3,12 +3,12 @@ import datetime
 from flask import Flask, render_template, request, redirect, url_for, send_file
 from db import db_session
 from db.models import Course, Registration
-from forms import NewCourse, RegisterChild
+from forms import RegisterChild, AdminEnter
 import urllib.parse
 from showing import show_courses
 from sqlalchemy.orm.attributes import flag_modified
 from sendmail import send
-
+from env import admin_password
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super_secret_key'
@@ -41,13 +41,7 @@ def enroll():
                 db_sess.add(registered)
                 flag_modified(registered, 'courses')
                 db_sess.commit()
-                send(registered.parent_email, 'Запись в ДДТ Юность', f"""Ваша запись успешно зарегистрирована.
-Ожидайте приглашения на родительское собрание (в конце августа) для оформления пакета документов:
-                        - Заявление
-                        - Согласие на фото и видеосъемку
-                        - Копию свидетельства о рождении ребенка, либо копию паспорта ребенка (для детей старше 14)
-Образцы бланков документов - priem.ddt-miass.ru/download/documents.zip
-*Расписание является предварительным, возможна корректировка""")
+                send(registered.parent_email, 'Запись в ДДТ Юность')
                 return redirect(
                     url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
         else:
@@ -87,13 +81,7 @@ def enroll():
             course.counter += 1
             db_sess.add(record)
             db_sess.commit()
-            send(record.parent_email, 'Запись в ДДТ Юность', f"""Ваша запись успешно зарегистрирована.
-Ожидайте приглашения на родительское собрание (в конце августа) для оформления пакета документов:
-                     - Заявление
-                     - Согласие на фото и видеосъемку
-                     - Копию свидетельства о рождении ребенка, либо копию паспорта ребенка (для детей старше 14)
-Образцы бланков документов - priem.ddt-miass.ru/download/documents.zip
-*Расписание является предварительным, возможна корректировка""")
+            send(record.parent_email, 'Запись в ДДТ Юность')
             return redirect(
                 url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
     if not args:
@@ -108,67 +96,72 @@ def enroll():
                                nav_areas=nav_areas, form=form)
 
 
-@app.route('/admin')  # панель администратора
+@app.route('/admin', methods=['GET', 'POST'])  # панель администратора
 def admin_panel():
-    db_sess = db_session.create_session()
-    courses, areas, directions, nav_areas = show_courses(db_sess)
-    return render_template('admin.html', title='Панель администратора', courses=courses, areas=areas,
-                           directions=directions, nav_areas=nav_areas)
+    form = AdminEnter()
+    if form.validate_on_submit():
+        if request.form.get('password') == admin_password:
+            db_sess = db_session.create_session()
+            courses, areas, directions, nav_areas = show_courses(db_sess)
+            children = db_sess.query(Registration).all()
+            return render_template('admin_panel.html', courses=courses, areas=areas,
+                                   directions=directions, nav_areas=nav_areas, children=children)
+    return render_template('admin.html', form=form)
 
 
-@app.route('/add_course', methods=['GET', 'POST'])  # добавление нового курса
-def add_course():
-    form = NewCourse()
-    if request.method == 'POST':
-        db_sess = db_session.create_session()
-        data = request.form
-        form_data = urllib.parse.parse_qs(data['form_data'])
-        lessons_data = eval(data['lessons_data'])
-        new_course = Course(name=form_data['name'][0],
-                            direction=form_data['direction'][0],
-                            area=form_data['area'][0],
-                            teachers=form_data['teachers'][0].split(', '),
-                            age_from=int(form_data['age_from'][0]),
-                            age_to=int(form_data['age_to'][0]),
-                            schedule=lessons_data,
-                            description=form_data['description'][0])
-        db_sess.add(new_course)
-        db_sess.commit()
-        return redirect('/add_course')
-    return render_template('add_course.html', title='Добавить новое объединение', form=form)
-
-
-@app.route('/delete_course/<_id>')
-def delete_course(_id):
-    db_sess = db_session.create_session()
-    course = db_sess.query(Course).filter(Course.id == _id).first()
-    db_sess.delete(course)
-    db_sess.commit()
-    return redirect('/admin')
-
-
-@app.route('/redact_course/<_id>', methods=['GET', 'POST'])
-def redact_course(_id):
-    form = NewCourse()
-    db_sess = db_session.create_session()
-    course = db_sess.query(Course).filter(Course.id == _id).first()
-    print(course.name)
-    if request.method == 'POST':  # todo: удаление и добавление группы, отправка данных (ошибка 404)
-        data = request.form
-        form_data = urllib.parse.parse_qs(data['form_data'])
-        lessons_data = eval(data['lessons_data'])
-        course.name = form_data['name'][0]
-        course.direction = form_data['direction'][0]
-        course.area = form_data['area'][0]
-        course.teachers = form_data['teachers'][0].split(', ')
-        course.age_from = int(form_data['age_from'][0])
-        course.age_to = int(form_data['age_to'][0])
-        course.schedule = lessons_data
-        course.description = form_data['description'][0]
-        db_sess.add(course)
-        db_sess.commit()
-        return redirect('/add_course')
-    return render_template('redact_course.html', course=course, form=form, title='Редактирование объединения')
+# @app.route('/add_course', methods=['GET', 'POST'])  # добавление нового курса
+# def add_course():
+#     form = NewCourse()
+#     if request.method == 'POST':
+#         db_sess = db_session.create_session()
+#         data = request.form
+#         form_data = urllib.parse.parse_qs(data['form_data'])
+#         lessons_data = eval(data['lessons_data'])
+#         new_course = Course(name=form_data['name'][0],
+#                             direction=form_data['direction'][0],
+#                             area=form_data['area'][0],
+#                             teachers=form_data['teachers'][0].split(', '),
+#                             age_from=int(form_data['age_from'][0]),
+#                             age_to=int(form_data['age_to'][0]),
+#                             schedule=lessons_data,
+#                             description=form_data['description'][0])
+#         db_sess.add(new_course)
+#         db_sess.commit()
+#         return redirect('/add_course')
+#     return render_template('add_course.html', title='Добавить новое объединение', form=form)
+#
+#
+# @app.route('/delete_course/<_id>')
+# def delete_course(_id):
+#     db_sess = db_session.create_session()
+#     course = db_sess.query(Course).filter(Course.id == _id).first()
+#     db_sess.delete(course)
+#     db_sess.commit()
+#     return redirect('/admin')
+#
+#
+# @app.route('/redact_course/<_id>', methods=['GET', 'POST'])
+# def redact_course(_id):
+#     form = NewCourse()
+#     db_sess = db_session.create_session()
+#     course = db_sess.query(Course).filter(Course.id == _id).first()
+#     print(course.name)
+#     if request.method == 'POST':  # todo: удаление и добавление группы, отправка данных (ошибка 404)
+#         data = request.form
+#         form_data = urllib.parse.parse_qs(data['form_data'])
+#         lessons_data = eval(data['lessons_data'])
+#         course.name = form_data['name'][0]
+#         course.direction = form_data['direction'][0]
+#         course.area = form_data['area'][0]
+#         course.teachers = form_data['teachers'][0].split(', ')
+#         course.age_from = int(form_data['age_from'][0])
+#         course.age_to = int(form_data['age_to'][0])
+#         course.schedule = lessons_data
+#         course.description = form_data['description'][0]
+#         db_sess.add(course)
+#         db_sess.commit()
+#         return redirect('/add_course')
+#     return render_template('redact_course.html', course=course, form=form, title='Редактирование объединения')
 
 
 @app.route('/download/<filename>')

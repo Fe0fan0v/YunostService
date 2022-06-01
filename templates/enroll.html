@@ -131,6 +131,9 @@
                                                     <div class="uk-modal-header">
                                                         <h2 id="courseName"
                                                             class="uk-modal-title">{{ course.name }}</h2>
+                                                        {% if course.age_to <= 6 %}
+                                                            <span class="uk-label uk-label-warning">Обучение платное</span>
+                                                        {% endif %}
                                                         {% if course.counter >= 20 %}
                                                             <span class="uk-label uk-label-warning">Вакантные места заняты, идет запись в резервный список</span>
                                                         {% endif %}
