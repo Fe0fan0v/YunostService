@@ -115,7 +115,7 @@ def admin_panel():
         if request.form.get('password') == admin_password:
             db_sess = db_session.create_session()
             courses, areas, directions, nav_areas = show_courses(db_sess)
-            children = db_sess.query(Registration).all()
+            children = [row.__dict__ for row in db_sess.query(Registration).all()]
             return render_template('admin_panel.html', courses=courses, areas=areas,
                                    directions=directions, nav_areas=nav_areas, children=children)
     return render_template('admin.html', form=form)
