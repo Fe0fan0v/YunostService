@@ -12,6 +12,7 @@ from sqlalchemy import and_
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super_secret_key'
+db_session.global_init()
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -127,5 +128,4 @@ def return_files(filename):
 
 
 if __name__ == '__main__':
-    db_session.global_init()
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0')
