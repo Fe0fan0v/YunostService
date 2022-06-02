@@ -71,6 +71,7 @@ global_init()
 db_session = create_session()
 wb = load_workbook(FILENAME)
 ws = wb.active
+db_session.query(Course).delete()
 for row in filter(lambda r: r[0].value, ws.iter_rows(min_row=5)):
     if len(list(filter(lambda c: c.value, row))) <= 1:
         continue

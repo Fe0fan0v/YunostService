@@ -1,14 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
     <nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
+    <div class="uk-navbar-center">
+                <ul class="uk-navbar-nav">
+                    <li class="uk-active"><a class="uk-navbar-item uk-logo" href="#"><img src="/static/img/logo.png" alt="None"> </a></li>
+                    <li>
+                        <a class="uk-link-reset" href="#">Контакты:</a>
+                    </li>
+                    <ul class="uk-navbar-nav">
+                    <li><a class="uk-link-reset" href="#">83513527785</a></li>
+                    <li><a class="uk-link-reset" href="#">83513532265</a></li>
+                </ul>
+                </ul>
+            </div>
+    </nav>
+    <div class="uk-margin-small-top">
+    <nav class="uk-navbar-container uk-navbar-transparent uk-light uk-background-primary" uk-navbar>
         <div class="uk-navbar-left">
             <ul class="uk-navbar-nav">
                 <li>
-                    <a href="/enroll">Показать все</a>
+                    <a href="/enroll" class="uk-text-emphasis">Показать все</a>
                 </li>
                 <li>
-                    <a href="#">По площадке</a>
+                    <a href="#" class="uk-text-emphasis">По площадке</a>
                     <div class="uk-navbar-dropdown" style="width: 250px;">
                         <ul class="uk-nav uk-navbar-dropdown-nav">
                             {% for area in nav_areas %}
@@ -18,28 +34,29 @@
                     </div>
                 </li>
                 <li>
-                    <a href="#">По направленности</a>
+                    <a href="#" class="uk-text-emphasis">По направленности</a>
                     <div class="uk-navbar-dropdown" style="width: 200px;">
                         <ul class="uk-nav uk-navbar-dropdown-nav">
-                        {% for focus in directions %}
-                            <li>
-                                <a href="">{{ focus }}</a>
-                                <div class="uk-navbar-dropdown" style="width: 250px;" uk-dropdown="pos: right-center">
-                                    <ul class="uk-nav uk-navbar-dropdown-nav">
-                                        {% for direction in directions[focus] %}
-                                    <li>
-                                        <a href="/enroll?sort_type=direction_{{ direction }}">{{ direction }}</a>
-                                    </li>
-                                {% endfor %}
-                                    </ul>
-                                </div>
-                            </li>
-                        {% endfor %}
+                            {% for focus in directions %}
+                                <li>
+                                    <a href="">{{ focus }}</a>
+                                    <div class="uk-navbar-dropdown" style="width: 250px;"
+                                         uk-dropdown="pos: right-center">
+                                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                                            {% for direction in directions[focus] %}
+                                                <li>
+                                                    <a href="/enroll?sort_type=direction_{{ direction }}">{{ direction }}</a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </li>
                 <li>
-                    <a href="#">По возрасту</a>
+                    <a href="#" class="uk-text-emphasis">По возрасту</a>
                     <div class="uk-navbar-dropdown">
                         <ul class="uk-nav uk-navbar-dropdown-nav">
                             {% for age in range(3, 19) %}
@@ -49,14 +66,15 @@
                     </div>
                 </li>
                 <li>
-                    <a href="/enroll?sort_type=cube_True">IT-Cube</a>
+                    <a href="/enroll?sort_type=cube_True" class="uk-text-emphasis">IT-Cube</a>
                 </li>
                 <li>
-                    <a href="/enroll?sort_type=success_True">Успех каждого ребенка</a>
+                    <a href="/enroll?sort_type=success_True" class="uk-text-emphasis">Успех каждого ребенка</a>
                 </li>
             </ul>
         </div>
     </nav>
+    </div>
     {% if message %}
         {% if message_type == "danger" %}
             <div class="uk-margin-large-top uk-margin-large-bottom uk-text-center">
@@ -69,7 +87,17 @@
             <div class="uk-margin-large-top uk-margin-large-bottom uk-text-center">
                 <div class="uk-alert-success" uk-alert>
                     <a class="uk-alert-close" uk-close></a>
-                    <p>{{ message }}</p>
+                    <p>Ваша запись успешно зарегистрирована.</p>
+                    <p>Ожидайте приглашения на родительское собрание (в конце августа) для оформления пакета
+                        документов:</p>
+                    <ul>
+                        <li>Заявление</li>
+                        <li>Согласие на фото и видеосъемку</li>
+                        <li>Копию свидетельства о рождении ребенка, либо копию паспорта ребенка (для детей старше 14)
+                        </li>
+                    </ul>
+                    <p>Образцы бланков документов - <a href="/download/documents.zip">скачать</a></p>
+                    <p>*Расписание является предварительным, возможна корректировка</p>
                 </div>
             </div>
         {% endif %}
@@ -88,6 +116,9 @@
                                         <div class="uk-grid-small uk-flex-middle" uk-grid>
                                             <div class="uk-width-expand">
                                                 <h3 class="uk-card-title uk-margin-remove-bottom">{{ course.name }}</h3>
+                                                {% if not course.free %}
+                                                    <span class="uk-label uk-label-warning">Обучение платное</span>
+                                                {% endif %}
                                                 {% for teacher in course.teachers %}
                                                     <p> {{ teacher }} </p>
                                                 {% endfor %}
@@ -108,36 +139,16 @@
                                                     Группа {{ group }}</button>
                                                 <div uk-dropdown>
                                                     <p class="uk-text-primary">{{ schedule }}</p>
-                                                    <a href="#{{ course.name_to_id() }}_{{ group }}"
-                                               class="uk-button uk-button-primary" uk-toggle>Записаться</a>
+                                                    {% if '+' in course.name %}
+                                                    <a href="/registration?course={{ course.plus_to_html() }}&group={{ group }}"
+                                                       class="uk-button uk-button-primary">Записаться</a>
+                                                    {% else %}
+                                                    <a href="/registration?course={{ course.name}}&group={{ group }}"
+                                                       class="uk-button uk-button-primary">Записаться</a>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                             <br>
-                                            <div id="{{ course.name_to_id() }}_{{ group }}" uk-modal>
-                                                <div class="uk-modal-dialog">
-                                                    <button class="uk-modal-close-default" type="button"
-                                                            uk-close></button>
-                                                    <div class="uk-modal-header">
-                                                        <h2 id="courseName"
-                                                            class="uk-modal-title">{{ course.name }}</h2>
-                                                        {% if course.counter >= 20 %}
-                                                        <span class="uk-label uk-label-warning">Вакантные места заняты, идет запись в резервный список</span>
-                                                        {% endif %}
-                                                        <p id="group">Запись в группу {{ group }}</p>
-                                                        <p>
-                                                            {{ schedule }}
-                                                        </p>
-                                                    </div>
-                                                    <div class="uk-modal-body">
-                                                        {% include 'registration.html' %}
-                                                    </div>
-                                                    <div class="uk-modal-footer uk-text-right">
-                                                        <button class="uk-button uk-button-default uk-modal-close"
-                                                                type="button">Отменить
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -148,4 +159,14 @@
             {% endfor %}
         </div>
     {% endfor %}
+<script>
+function sendData (course, group) {
+    $.ajax({
+        url: "/registration",
+        type: "GET",
+        dataType: "json",
+        data: {"course": course, "group": group},
+    });
+}
+</script>
 {% endblock %}

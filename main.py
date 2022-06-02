@@ -100,7 +100,7 @@ def registration():
             course.counter += 1
             db_sess.add(record)
             db_sess.commit()
-            send(record.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
+            # send(record.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
             return redirect(
                 url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
     return render_template('registration.html', course=course, form=form, group=group_number)
@@ -127,6 +127,4 @@ def return_files(filename):
 
 if __name__ == '__main__':
     db_session.global_init()
-    import logging
-    logging.basicConfig(filename='errors.log',level=logging.DEBUG)
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=True)
