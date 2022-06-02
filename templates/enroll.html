@@ -159,14 +159,4 @@
             {% endfor %}
         </div>
     {% endfor %}
-<script>
-function sendData (course, group) {
-    $.ajax({
-        url: "/registration",
-        type: "GET",
-        dataType: "json",
-        data: {"course": course, "group": group},
-    });
-}
-</script>
 {% endblock %}
