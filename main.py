@@ -4,15 +4,14 @@ from flask import Flask, render_template, request, redirect, url_for, send_file
 from db import db_session
 from db.models import Course, Registration
 from forms import RegisterChild, AdminEnter
-import urllib.parse
 from showing import show_courses
 from sqlalchemy.orm.attributes import flag_modified
 from sendmail import send
 from env import admin_password
+from sqlalchemy import and_
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super_secret_key'
-db_session.global_init()
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -48,10 +47,11 @@ def registration():
     if request.method == 'POST':
         data = request.form
         registered = db_sess.query(Registration).filter(
-            (Registration.child_name == data['child_name'].strip().capitalize()) and (
-                    Registration.child_surname == data['child_surname'].strip().capitalize()) and (
-                    Registration.child_patronymic == data[
-                'child_patronymic'].strip().capitalize())).first()
+            and_(
+                Registration.child_name == data['child_name'].strip().capitalize(),
+                Registration.child_surname == data['child_surname'].strip().capitalize(),
+                Registration.child_patronymic == data['child_patronymic'].strip().capitalize())
+        ).first()
         if registered:
             if any(map(lambda x: data['course_name'] in x, list(registered.courses.keys()))):
                 return redirect(url_for('enroll', message_type='danger', message='Вы уже записаны в это объединение!'))
@@ -63,7 +63,8 @@ def registration():
                 db_sess.commit()
                 send(registered.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
                 return redirect(
-                    url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
+                        url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
+
         else:
             record = Registration(child_name=data['child_name'].strip().capitalize(),
                                   child_surname=data['child_surname'].strip().capitalize(),
@@ -100,7 +101,7 @@ def registration():
             course.counter += 1
             db_sess.add(record)
             db_sess.commit()
-            # send(record.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
+            send(record.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
             return redirect(
                 url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
     return render_template('registration.html', course=course, form=form, group=group_number)
