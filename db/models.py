@@ -27,8 +27,8 @@ class Course(base):
         translit_name = '_'.join(translit_name.split())
         return ''.join(filter(lambda c: c in ascii_letters + digits + '_', translit_name))
 
-    def plus_to_html(self):
-        return self.name.replace('+', '%2B')
+    def str_to_url(self):
+        return self.name.replace('+', '%2B').replace('#', '23%')
 
 
 class Registration(base):
