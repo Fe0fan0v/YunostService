@@ -139,13 +139,8 @@
                                                     Группа {{ group }}</button>
                                                 <div uk-dropdown>
                                                     <p class="uk-text-primary">{{ schedule }}</p>
-                                                    {% if '+' in course.name %}
                                                     <a href="/registration?course={{ course.str_to_url() }}&group={{ group }}"
                                                        class="uk-button uk-button-primary">Записаться</a>
-                                                    {% else %}
-                                                    <a href="/registration?course={{ course.name}}&group={{ group }}"
-                                                       class="uk-button uk-button-primary">Записаться</a>
-                                                    {% endif %}
                                                 </div>
                                             </div>
                                             <br>

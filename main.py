@@ -43,7 +43,7 @@ def registration():
     form = RegisterChild()
     db_sess = db_session.create_session()
     args = request.args.to_dict()
-    course_name, group_number = args['course'], args['group']
+    course_name, group_number = args['course'].replace('23%', '#'), args['group']
     course = db_sess.query(Course).filter(Course.name == course_name).first()
     if request.method == 'POST':
         data = request.form
