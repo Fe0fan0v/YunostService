@@ -1,81 +1,57 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <nav class="uk-navbar-container uk-navbar-transparent uk-margin-large-top" uk-navbar>
-        <div class="uk-navbar-left">
-            <ul class="uk-navbar-nav">
-                <li>
-                    <a href="/admin" class="uk-text-emphasis">Показать все</a>
-                </li>
-                <li>
-                    <a href="#" class="uk-text-emphasis">По площадке</a>
-                    <div class="uk-navbar-dropdown" style="width: 250px;">
-                        <ul class="uk-nav uk-navbar-dropdown-nav">
-                            {% for area in nav_areas %}
-                                <li><a href="/admin?sort_type=area_{{ area }}">{{ area }}</a>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </li>
-                <li>
-                    <a href="#" class="uk-text-emphasis">По направленности</a>
-                    <div class="uk-navbar-dropdown" style="width: 200px;">
-                        <ul class="uk-nav uk-navbar-dropdown-nav">
-                            {% for focus in directions %}
-                                <li>
-                                    <a href="">{{ focus }}</a>
-                                    <div class="uk-navbar-dropdown" style="width: 250px;"
-                                         uk-dropdown="pos: right-center">
-                                        <ul class="uk-nav uk-navbar-dropdown-nav">
-                                            {% for direction in directions[focus] %}
-                                                <li>
-                                                    <a href="/admin?sort_type=direction_{{ direction }}">{{ direction }}</a>
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </li>
-                <li>
-                    <a href="#" class="uk-text-emphasis">По возрасту</a>
-                    <div class="uk-navbar-dropdown">
-                        <ul class="uk-nav uk-navbar-dropdown-nav">
-                            {% for age in range(3, 19) %}
-                                <li><a href="/admin?sort_type=age_{{ age }}">{{ age }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </li>
-                <li>
-                    <a href="/admin?sort_type=cube_True" class="uk-text-emphasis">IT-Cube</a>
-                </li>
-                <li>
-                    <a href="/admin?sort_type=success_True" class="uk-text-emphasis">Успех каждого ребенка</a>
-                </li>
-            </ul>
+    <nav class="uk-navbar-container" uk-navbar>
+    <div class="uk-navbar-left">
+        <div class="uk-navbar-item">
+            <form class="uk-search uk-search-navbar">
+                <span uk-search-icon></span>
+                <input id="search" class="uk-search-input" type="search" placeholder="Умный поиск" autocomplete="off">
+            </form>
         </div>
-    </nav>
+
+    </div>
+</nav>
     <table class="uk-table uk-table-hover uk-table-divider">
         <thead>
         <tr>
             <th>ФИО ребенка</th>
             <th>День рождения ребенка</th>
-            <th>Школа/детский сад/другое</th>
-            <th>Группа/класс</th>
+            <th>Объединение - группа</th>
         </tr>
         </thead>
-        <tbody>
-        {% for record in children %}
-        <tr>
-            <td>{{ record.child_surname }} {{ record.child_name }} {{ record.child_patronymic }}</td>
-            <td>{{ record.child_birthday }}</td>
-            <td>{{ record.educational_institution }}</td>
-            <td>{{ record.edu_class }}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
+        <tbody id="results"></tbody>
     </table>
+<script>
+    const data = {{ children|safe }};
+    const search = document.getElementById("search");
+    const results = document.getElementById("results");
+    let search_term = "";
+
+    const showList = () => {
+        results.innerHTML = "";
+        data
+            .filter((item) => {
+                return (
+                    item.child_name.toLowerCase().includes(search_term) ||
+                    item.child_surname.toLowerCase().includes(search_term) ||
+                    item.child_patronymic.toLowerCase().includes(search_term) ||
+                    item.child_birthday.toLowerCase().includes(search_term) ||
+                    (function c(courses) {for (var key in courses) {return `${key}`}})(item.courses).toLowerCase().includes(search_term)
+                );
+            })
+            .forEach((e) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td>${e.child_surname} ${e.child_name} ${e.child_patronymic}</td><td>${e.child_birthday}</td><td>${(function c(courses) {for (var key in courses) {return `${key} - Группа ${courses[key]}`}})(e.courses)}</td> `;
+                results.appendChild(tr);
+            });
+    };
+
+    showList();
+
+    search.addEventListener("input", (event) => {
+        search_term = event.target.value.toLowerCase();
+        showList();
+    });
+</script>
 {% endblock %}
