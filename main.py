@@ -115,7 +115,6 @@ def admin_panel():
     if form.validate_on_submit():
         if request.form.get('password') == admin_password:
             db_sess = db_session.create_session()
-            courses, areas, directions, nav_areas = show_courses(db_sess)
             children = [row.__dict__ for row in db_sess.query(Registration).all()]
             for child in children:
                 del child['_sa_instance_state']
@@ -128,8 +127,7 @@ def admin_panel():
                 del child['second_parent_phone']
                 child['parent_birthday'] = child['parent_birthday'].strftime("%d.%m.%Y")
                 child['child_birthday'] = child['child_birthday'].strftime("%d.%m.%Y")
-            return render_template('admin_panel.html', courses=courses, areas=areas,
-                                   directions=directions, nav_areas=nav_areas, children=children)
+            return render_template('admin_panel.html', children=children)
     return render_template('admin.html', form=form)
 
 
