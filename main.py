@@ -125,6 +125,7 @@ def admin_panel():
                 del child['without_parents']
                 del child['second_parent_fio']
                 del child['second_parent_phone']
+                del child['id']
                 child['parent_birthday'] = child['parent_birthday'].strftime("%d.%m.%Y")
                 child['child_birthday'] = child['child_birthday'].strftime("%d.%m.%Y")
             return render_template('admin_panel.html', children=children)
