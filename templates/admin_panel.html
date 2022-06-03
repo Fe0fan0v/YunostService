@@ -42,10 +42,18 @@
             })
             .forEach((e) => {
                 const tr = document.createElement("tr");
-                tr.innerHTML = `<td>${e.child_surname} ${e.child_name} ${e.child_patronymic}</td><td>${e.child_birthday}</td><td>${(function c(courses) {for (var key in courses) {return `${key} - Группа ${courses[key]}`}})(e.courses)}</td> `;
+                tr.innerHTML = `<td>${e.child_surname} ${e.child_name} ${e.child_patronymic}</td><td>${e.child_birthday}</td><td>${c(e.courses)}</td> `;
                 results.appendChild(tr);
             });
     };
+
+    function c(courses) {
+        var result = [];
+        for (var key in courses) {
+            result.push(`${key} - Группа ${courses[key]}`)
+        }
+        return result.join('<br>')
+    }
 
     showList();
 
