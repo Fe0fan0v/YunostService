@@ -6,7 +6,7 @@
         <div class="uk-navbar-item">
             <form class="uk-search uk-search-navbar">
                 <span uk-search-icon></span>
-                <input id="search" class="uk-search-input" type="search" placeholder="Умный поиск" autocomplete="off">
+                <input id="search" class="uk-search-input" type="search" placeholder="РЈРјРЅС‹Р№ РїРѕРёСЃРє" autocomplete="off">
             </form>
         </div>
 
@@ -15,9 +15,9 @@
     <table class="uk-table uk-table-hover uk-table-divider">
         <thead>
         <tr>
-            <th>ФИО ребенка</th>
-            <th>День рождения ребенка</th>
-            <th>Объединение - группа</th>
+            <th>Р¤РРћ СЂРµР±РµРЅРєР°</th>
+            <th>Р”РµРЅСЊ СЂРѕР¶РґРµРЅРёСЏ СЂРµР±РµРЅРєР°</th>
+            <th>РћР±СЉРµРґРёРЅРµРЅРёРµ - РіСЂСѓРїРїР°</th>
         </tr>
         </thead>
         <tbody id="results"></tbody>
@@ -42,7 +42,7 @@
             })
             .forEach((e) => {
                 const tr = document.createElement("tr");
-                tr.innerHTML = `<td>${e.child_surname} ${e.child_name} ${e.child_patronymic}</td><td>${e.child_birthday}</td><td>${(function c(courses) {for (var key in courses) {return `${key} - Группа ${courses[key]}`}})(e.courses)}</td> `;
+                tr.innerHTML = `<td>${e.child_surname} ${e.child_name} ${e.child_patronymic}</td><td>${e.child_birthday}</td><td>${(function c(courses) {for (var key in courses) {return `${key} - Р“СЂСѓРїРїР° ${courses[key]}`}})(e.courses)}</td> `;
                 results.appendChild(tr);
             });
     };
