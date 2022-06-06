@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, send_file
 from db import db_session
 from db.models import Course, Registration
 from forms import RegisterChild, AdminEnter
-from showing import show_courses
+from showing import show_courses, show_children_in_admin_panel
 from sqlalchemy.orm.attributes import flag_modified
 from sendmail import send
 from env import admin_password

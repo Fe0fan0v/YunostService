@@ -15,6 +15,7 @@
     <table class="uk-table uk-table-hover uk-table-divider">
         <thead>
         <tr>
+            <th>№</th>
             <th>ФИО ребенка</th>
             <th>Возраст ребенка (лет)</th>
             <th>Объединение - группа</th>
@@ -43,9 +44,10 @@
                     (function c(courses) {let res = []; for (var key in courses) {res.push(`${key}`)} return res.join(' ')})(item.courses).toLowerCase().includes(search_term)
                 );
             })
-            .forEach((e) => {
+            .forEach((e, index) => {
                 const tr = document.createElement("tr");
-                tr.innerHTML = `<td>${e.child_surname} ${e.child_name} ${e.child_patronymic}</td>
+                tr.innerHTML = `<td>${index + 1}</td>
+                                <td>${e.child_surname} ${e.child_name} ${e.child_patronymic}</td>
                                 <td>${e.child_birthday}</td>
                                 <td>${c(e.courses)}</td>
                                 <td>${e.parent_surname} ${e.parent_name} ${e.parent_patronymic}</td>

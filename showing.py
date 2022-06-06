@@ -1,4 +1,4 @@
-from db.models import Course
+from db.models import Course, Registration
 from flask import request
 
 
