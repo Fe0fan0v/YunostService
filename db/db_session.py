@@ -19,7 +19,7 @@ def global_init():
                f'{conn_params}'
     print(f"Подключение к базе данных по адресу {conn_str}")
 
-    engine = create_engine(conn_str, echo=False)
+    engine = create_engine(conn_str, echo=False, pool_size=20, max_overflow=10)
     __factory = sessionmaker(bind=engine)
 
     from . import __all_models
