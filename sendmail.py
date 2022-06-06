@@ -37,4 +37,7 @@ def send(email: str, subject: str, course: str, group: str):
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL('smtp.yandex.ru', 465, context=context) as server:
         server.login(address, password)
-        server.sendmail(address, email, message.as_string())
+        try:
+            server.sendmail(address, email, message.as_string())
+        except:
+            pass

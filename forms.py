@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import EmailField, StringField, SubmitField, PasswordField, DateField, TelField, SelectField, IntegerField, \
     TextAreaField, TimeField, BooleanField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Email
 
 
 # class RegisterForm(FlaskForm):
@@ -64,7 +64,7 @@ class RegisterChild(FlaskForm):
     parent_residence = StringField('Место жительства родителя/законного представителя', validators=[DataRequired()])
     parent_work = StringField('Место работы родителя/законного представителя', validators=[DataRequired()])
     parent_phone = StringField('Телефон родителя/законного представителя', validators=[DataRequired()])
-    parent_email = EmailField('Email родителя/законного представителя', validators=[DataRequired()])
+    parent_email = EmailField('Email родителя/законного представителя', validators=[DataRequired(), Email()])
     full_family = SelectField('Полная семья', validators=[DataRequired()], choices=['Полная семья', 'Неполная семья'])
     large_family = SelectField('Многодетная семья', validators=[DataRequired()], choices=['Многодетная семья', 'Нет'])
     without_parents = SelectField('Оставшийся без попечения родителей', validators=[DataRequired()],
