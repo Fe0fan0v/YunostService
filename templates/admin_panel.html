@@ -3,13 +3,25 @@
 {% block content %}
     <nav class="uk-navbar-container" uk-navbar>
     <div class="uk-navbar-left">
+        <ul class="uk-navbar-nav">
+            <li class="uk-active" id="areas">
+                <div class="uk-navbar-dropdown">
+                    <ul class="uk-nav uk-navbar-dropdown-nav">
+                        {% for area in areas.keys() %}
+                        <li class="uk-active"><a href="#">{{ area }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="uk-navbar-right">
         <div class="uk-navbar-item">
             <form class="uk-search uk-search-navbar">
                 <span uk-search-icon></span>
                 <input id="search" class="uk-search-input" type="search" placeholder="Умный поиск" autocomplete="off">
             </form>
         </div>
-
     </div>
 </nav>
     <table class="uk-table uk-table-hover uk-table-divider">

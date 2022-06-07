@@ -1,7 +1,6 @@
 import datetime
 
 from flask import Flask, render_template, request, redirect, url_for, send_file
-from db import db_session
 from db.models import Course, Registration
 from forms import RegisterChild, AdminEnter
 from showing import show_courses
@@ -9,11 +8,11 @@ from sqlalchemy.orm.attributes import flag_modified
 from sendmail import send
 from env import admin_password
 from sqlalchemy import and_
-
+from db.db_session import db_session, init_db
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super_secret_key'
-db_session.global_init()
+init_db()
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -25,8 +24,7 @@ def main_page():
 @app.route('/enroll')
 def enroll():
     args = request.args.to_dict()
-    db_sess = db_session.create_session()
-    courses, areas, directions, nav_areas = show_courses(db_sess)
+    courses, areas, directions, nav_areas = show_courses(db_session)
     if not args:
         return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
                                nav_areas=nav_areas)
@@ -42,13 +40,12 @@ def enroll():
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
     form = RegisterChild()
-    db_sess = db_session.create_session()
     args = request.args.to_dict()
     course_name, group_number = args['course'].replace('23%', '#'), args['group']
-    course = db_sess.query(Course).filter(Course.name == course_name).first()
+    course = db_session.query(Course).filter(Course.name == course_name).first()
     if request.method == 'POST':
         data = request.form
-        registered = db_sess.query(Registration).filter(
+        registered = db_session.query(Registration).filter(
             and_(
                 Registration.child_name == data['child_name'].strip().capitalize(),
                 Registration.child_surname == data['child_surname'].strip().capitalize(),
@@ -60,12 +57,12 @@ def registration():
             else:
                 registered.courses[data['course_name']] = data['group']
                 course.counter += 1
-                db_sess.add(registered)
+                db_session.add(registered)
                 flag_modified(registered, 'courses')
-                db_sess.commit()
+                db_session.commit()
                 send(registered.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
                 return redirect(
-                        url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
+                    url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
 
         else:
             record = Registration(child_name=data['child_name'].strip().capitalize(),
@@ -101,8 +98,8 @@ def registration():
                                   courses={data['course_name']: data['group']}
                                   )
             course.counter += 1
-            db_sess.add(record)
-            db_sess.commit()
+            db_session.add(record)
+            db_session.commit()
             send(record.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
             return redirect(
                 url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
@@ -114,8 +111,8 @@ def admin_panel():
     form = AdminEnter()
     if form.validate_on_submit():
         if request.form.get('password') == admin_password:
-            db_sess = db_session.create_session()
-            children = [row.__dict__ for row in db_sess.query(Registration).all()]
+            courses, areas, directions, nav_areas = show_courses(db_session)
+            children = [row.__dict__ for row in db_session.query(Registration).all()]
             for child in children:
                 del child['_sa_instance_state']
                 del child['police_record']
@@ -128,7 +125,8 @@ def admin_panel():
                 del child['id']
                 child['parent_birthday'] = child['parent_birthday'].strftime("%d.%m.%Y")
                 child['child_birthday'] = (datetime.date.today() - child['child_birthday']).days // 365
-            return render_template('admin_panel.html', children=children)
+            return render_template('admin_panel.html', children=children, courses=courses, areas=areas,
+                                   directions=directions, nav_areas=nav_areas)
     return render_template('admin.html', form=form)
 
 

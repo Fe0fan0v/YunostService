@@ -5,7 +5,7 @@ from numbers import Number
 from openpyxl import load_workbook
 from thefuzz import process
 
-from db.db_session import global_init, create_session
+from db.db_session import init_db, db_session
 from db.models import Course
 from env import path_to_xldata
 
@@ -80,8 +80,7 @@ def create_course(name, age, focus, direction, description, teachers, area, free
     return True
 
 
-global_init()
-db_session = create_session()
+init_db()
 courses = {(c.name, str(c.age_from), str(c.age_to), ','.join(c.teachers), c.area): c.counter
            for c in db_session.query(Course).all()}
 print('Было курсов до удаления:', len(courses))
