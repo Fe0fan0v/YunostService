@@ -120,19 +120,10 @@ def admin_panel():
     if form.validate_on_submit():
         if request.form.get('password') == admin_password:
             courses, areas, directions, nav_areas = show_courses(db_session)
-            children = [row.__dict__ for row in db_session.query(Registration).all()]
+            children = [child.to_dict() for child in db_session.query(Record).all()]
             for child in children:
-                del child['_sa_instance_state']
-                del child['police_record']
-                del child['resident']
-                del child['full_family']
-                del child['large_family']
-                del child['without_parents']
-                del child['second_parent_fio']
-                del child['second_parent_phone']
-                del child['id']
-                child['parent_birthday'] = child['parent_birthday'].strftime("%d.%m.%Y")
-                child['child_birthday'] = (datetime.date.today() - child['child_birthday']).days // 365
+                child['child_birthday'] = (datetime.date.today() - datetime.date.fromisoformat(
+                    child['child_birthday'])).days // 365
             return render_template('admin_panel.html', children=children, courses=courses, areas=areas,
                                    directions=directions, nav_areas=nav_areas)
     return render_template('admin.html', form=form)

@@ -53,7 +53,12 @@
                     item.child_surname.toLowerCase().includes(search_term) ||
                     item.child_patronymic.toLowerCase().includes(search_term) ||
                     item.child_birthday.toString().includes(search_term) ||
-                    (function c(courses) {let res = []; for (var key in courses) {res.push(`${key}`)} return res.join(' ')})(item.courses).toLowerCase().includes(search_term)
+                    (function c(courses) {
+                        let res = [];
+                        for (let index in courses) {
+                            res.push(`${courses[index].course.name}`)
+                        }
+                        return res.join(' ')})(item.courses).toLowerCase().includes(search_term)
                 );
             })
             .forEach((e, index) => {
@@ -61,7 +66,7 @@
                 tr.innerHTML = `<td>${index + 1}</td>
                                 <td>${e.child_surname} ${e.child_name} ${e.child_patronymic}</td>
                                 <td>${e.child_birthday}</td>
-                                <td>${c(e.courses)}</td>
+                                <td>${to_str(e.courses)}</td>
                                 <td>${e.parent_surname} ${e.parent_name} ${e.parent_patronymic}</td>
                                 <td>${e.parent_phone}</td>
                                 <td>${e.parent_email}</td>
@@ -70,10 +75,10 @@
             });
     };
 
-    function c(courses) {
-        var result = [];
-        for (var key in courses) {
-            result.push(`${key} - Группа ${courses[key]}`)
+    function to_str(courses) {
+        let result = [];
+        for (var index in courses) {
+            result.push(`${courses[index].course.name} - Группа ${courses[index].group}`)
         }
         return result.join('<br>')
     }

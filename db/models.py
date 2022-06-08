@@ -1,12 +1,13 @@
 import sqlalchemy
 from sqlalchemy.orm import relationship
+from sqlalchemy_serializer import SerializerMixin
 from transliterate import translit
 from string import ascii_letters, digits
 
 from .db_session import base
 
 
-class Course(base):
+class Course(base, SerializerMixin):
     __tablename__ = 'courses'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
@@ -72,8 +73,12 @@ class Registration(base):
         return dic
 
 
-class Record(base):
+class Record(base, SerializerMixin):
     __tablename__ = 'records'
+
+    serialize_only = ('child_name', 'child_surname', 'child_patronymic', 'child_birthday',
+                      'parent_name', 'parent_surname', 'parent_patronymic', 'parent_phone', 'parent_email',
+                      'courses.course.name', 'courses.group')
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     # -------------информация о ребенке------------#
@@ -106,7 +111,7 @@ class Record(base):
     courses = relationship("Association", back_populates="record")
 
 
-class Association(base):
+class Association(base, SerializerMixin):
     __tablename__ = "records_courses"
     record_id = sqlalchemy.Column('record_id', sqlalchemy.ForeignKey('records.id'), primary_key=True)
     course_id = sqlalchemy.Column('course_id', sqlalchemy.ForeignKey('courses.id'), primary_key=True)
@@ -114,4 +119,3 @@ class Association(base):
     comment = sqlalchemy.Column(sqlalchemy.String)
     course = relationship("Course", back_populates="records")
     record = relationship("Record", back_populates="courses")
-
