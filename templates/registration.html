@@ -1,7 +1,14 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+    {% if message %}
+        <div class="uk-margin-large-top uk-margin-large-bottom uk-text-center">
+            <div class="uk-alert-danger" uk-alert>
+                <a class="uk-alert-close" uk-close></a>
+                <p>{{ message }}</p>
+            </div>
+        </div>
+    {% endif %}
     <div class="uk-container uk-container-small">
         <h2 id="courseName" class="uk-text-center">{{ course.name }}</h2>
         {% if course.counter >= 20 %}
