@@ -41,15 +41,15 @@ def enroll():
 def registration():
     form = RegisterChild()
     args = request.args.to_dict()
-    course_name, group_number = args['course'].replace('23%', '#'), args['group']
-    course = db_session.query(Course).filter(Course.name == course_name).first()
+    course_name, group_number = args['course'].replace('23%', '#'), args['group']  # todo: id в запросе (шаблон)
+    course = db_session.query(Course).filter(Course.name == course_name).first()  # todo: фильтр по id
     if request.method == 'POST':
         data = request.form
         registered = db_session.query(Registration).filter(
             and_(
                 Registration.child_name == data['child_name'].strip().capitalize(),
                 Registration.child_surname == data['child_surname'].strip().capitalize(),
-                Registration.child_patronymic == data['child_patronymic'].strip().capitalize())
+                Registration.child_patronymic == data['child_patronymic'].strip().capitalize())  # todo: дата рождения
         ).first()
         if registered:
             if any(map(lambda x: data['course_name'] in x, list(registered.courses.keys()))):
@@ -65,10 +65,11 @@ def registration():
                     url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
 
         else:
+            # todo: проверка возраста
             record = Registration(child_name=data['child_name'].strip().capitalize(),
                                   child_surname=data['child_surname'].strip().capitalize(),
                                   child_patronymic=data['child_patronymic'].strip().capitalize(),
-                                  child_birthday=datetime.date(int(data['child_birthday'].split('-')[0]),
+                                  child_birthday=datetime.date(int(data['child_birthday'].split('-')[0]),  # todo datetime
                                                                int(data['child_birthday'].split('-')[1]),
                                                                int(data['child_birthday'].split('-')[2])),
                                   educational_institution=data['educational_institution'],
@@ -97,7 +98,7 @@ def registration():
                                       'second_parent_phone'] else None,
                                   courses={data['course_name']: data['group']}
                                   )
-            course.counter += 1
+            course.counter += 1  # -
             db_session.add(record)
             db_session.commit()
             send(record.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
