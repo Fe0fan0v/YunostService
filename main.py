@@ -42,13 +42,15 @@ def registration():
     args = request.args.to_dict()
     course_id, group_number = args['course'], args['group']
     course = db_session.query(Course).get(course_id)
+    count_records = len(db_session.query(Association).filter(
+        and_(Association.course_id == course_id, Association.group == group_number)).all())
     if request.method == 'POST':
         data = request.form
         child_birthday = datetime.datetime.fromisoformat(data['child_birthday']).date()
         age = (datetime.date.today() - child_birthday).days // 365
         if not course.age_from <= age <= course.age_to:
             return render_template('registration.html', course=course, form=form, group=group_number,
-                                   message='Курс не подходит Вам по возрасту')
+                                   count_records=count_records, message='Курс не подходит Вам по возрасту')
         registered = db_session.query(Record).filter(
             and_(
                 Record.child_name == data['child_name'].strip().capitalize(),
@@ -108,7 +110,8 @@ def registration():
             send(record.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
             return redirect(
                 url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
-    return render_template('registration.html', course=course, form=form, group=group_number)
+    return render_template('registration.html', course=course, form=form, group=group_number,
+                           count_records=count_records)
 
 
 @app.route('/admin', methods=['GET', 'POST'])  # панель администратора
