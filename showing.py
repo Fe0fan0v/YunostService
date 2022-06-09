@@ -1,5 +1,7 @@
+from sqlalchemy import and_
 from db.models import Course, Registration
 from flask import request
+from db.models import Record
 
 
 def show_courses(db_sess):
@@ -34,3 +36,35 @@ def show_courses(db_sess):
         else:
             areas[course.area] = [course.direction]
     return courses, areas, directions, nav_areas
+
+
+def get_filter_criteria(db_sess, area, direction, cube, success):
+    try:
+        area = None if area == 'ВСЕ' else area
+        direction = None if direction == 'ВСЕ' else direction
+        if cube:
+            code = 1
+        elif success:
+            code = 2
+        else:
+            code = -1
+        if direction and area:
+            records = db_sess.query(Record).join("courses", "course").filter(and_(
+                Course.area == area,
+                Course.direction == direction,
+            )).all()
+        elif direction and not area:
+            records = db_sess.query(Record).join("courses", "course").filter(and_(
+                Course.direction == direction,
+            )).all()
+        elif area and not direction:
+            records = db_sess.query(Record).join("courses", "course").filter(and_(
+                Course.area == area,
+            )).all()
+        else:
+            records = db_sess.query(Record).join("courses", "course").filter(and_(
+                Course.code == code
+            )).all()
+        return records
+    except:
+        return None

@@ -1,0 +1,24 @@
+{% block content %}
+
+    <form method="post" id="filter">
+        {{ search_form.hidden_tag() }}
+        <div class="uk-margin">
+            {{ search_form.area_search(class="uk-select") }}
+        </div>
+        <div class="uk-margin">
+            {{ search_form.direction_search(class="uk-select") }}
+        </div>
+        <div class="uk-margin">
+            <label>{{ search_form.cube(class="uk-checkbox", type="checkbox") }} {{ search_form.cube.label.text }}</label>
+        </div>
+        <div class="uk-margin">
+            <label>{{ search_form.success(class="uk-checkbox", type="checkbox") }} {{ search_form.success.label.text }}</label>
+        </div>
+        <div class="uk-text-center uk-margin-large-top">
+            <div class="uk-form-controls">
+                {{ search_form.submit(class="uk-button uk-button-primary", onclick='startLoader()') }}
+            </div>
+        </div>
+    </form>
+
+{% endblock %}

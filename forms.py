@@ -1,8 +1,10 @@
 from flask_wtf import FlaskForm
 from wtforms import EmailField, StringField, SubmitField, PasswordField, DateField, TelField, SelectField, IntegerField, \
-    TextAreaField, TimeField, BooleanField
+    TextAreaField, TimeField, BooleanField, ValidationError
 from wtforms.validators import DataRequired, Email
-
+import datetime
+from db.db_session import db_session
+from db.models import Course
 
 # class RegisterForm(FlaskForm):
 #     email = EmailField('Email', validators=[DataRequired()])
@@ -77,7 +79,27 @@ class RegisterChild(FlaskForm):
     second_parent_phone = StringField('Телефон второго родителя')
     submit = SubmitField('Записаться')
 
+    def validate_age(self, course_age):
+        age = (datetime.date.today() - self.child_birthday.data).days // 365
+        if age >= course_age:
+            return True
+        else:
+            raise ValidationError('Возраст ребёнка слишком мал, пожалуйста выберите более подходящее объединение.')
+
 
 class AdminEnter(FlaskForm):
     password = PasswordField('Пароль', validators=[DataRequired()])
     submit = SubmitField('Войти')
+
+
+class SearchForm(FlaskForm):
+    data = db_session.query(Course).all()
+    areas = list(set([course.area for course in data]))
+    directions = list(set([course.direction for course in data]))
+    areas.append('ВСЕ')
+    directions.append('ВСЕ')
+    area_search = SelectField('Площадка', choices=areas)
+    direction_search = SelectField('Направление', choices=directions)
+    cube = BooleanField('IT-Cube')
+    success = BooleanField('Успех каждого ребенка')
+    submit = SubmitField('Искать')

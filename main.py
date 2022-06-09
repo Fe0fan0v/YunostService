@@ -1,9 +1,11 @@
 import datetime
 
 from flask import Flask, render_template, request, redirect, url_for, send_file
+from sqlalchemy.orm import joinedload, subqueryload
+
 from db.models import Course, Record, Association
-from forms import RegisterChild, AdminEnter
-from showing import show_courses
+from forms import RegisterChild, AdminEnter, SearchForm
+from showing import show_courses, get_filter_criteria
 from sendmail import send
 from env import admin_password
 from sqlalchemy import and_
@@ -117,15 +119,25 @@ def registration():
 @app.route('/admin', methods=['GET', 'POST'])  # панель администратора
 def admin_panel():
     form = AdminEnter()
+    search_form = SearchForm()
+    if search_form.validate_on_submit():
+        records = get_filter_criteria(db_session, search_form.area_search.data, search_form.direction_search.data,
+                                      search_form.cube.data, search_form.success.data)
+        if not records:
+            return render_template('admin_panel.html', message='Ничего не найдено', search_form=search_form)
+        else:
+            children = [child.to_dict() for child in records]
+            for child in children:
+                child['child_birthday'] = (datetime.date.today() - datetime.date.fromisoformat(
+                    child['child_birthday'])).days // 365
+            return render_template('admin_panel.html', children=children, search_form=search_form)
     if form.validate_on_submit():
         if request.form.get('password') == admin_password:
-            courses, areas, directions, nav_areas = show_courses(db_session)
             children = [child.to_dict() for child in db_session.query(Record).all()]
             for child in children:
                 child['child_birthday'] = (datetime.date.today() - datetime.date.fromisoformat(
                     child['child_birthday'])).days // 365
-            return render_template('admin_panel.html', children=children, courses=courses, areas=areas,
-                                   directions=directions, nav_areas=nav_areas)
+            return render_template('admin_panel.html', children=children, search_form=search_form)
     return render_template('admin.html', form=form)
 
 
