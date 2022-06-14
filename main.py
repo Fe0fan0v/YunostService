@@ -24,7 +24,12 @@ def main_page():
 @app.route('/enroll')
 def enroll():
     args = request.args.to_dict()
-    courses, areas, directions, nav_areas = show_courses(db_session)
+    try:
+        courses, areas, directions, nav_areas = show_courses(db_session)
+    except:
+        db_session.rollback()
+    finally:
+        db_session.close()
     if not args:
         return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
                                nav_areas=nav_areas)
@@ -42,7 +47,12 @@ def registration():
     form = RegisterChild()
     args = request.args.to_dict()
     course_name, group_number = args['course'].replace('23%', '#'), args['group']
-    course = db_session.query(Course).filter(Course.name == course_name).first()
+    try:
+        course = db_session.query(Course).filter(Course.name == course_name).first()
+    except:
+        db_session.rollback()
+    finally:
+        db_session.close()
     if request.method == 'POST':
         data = request.form
         registered = db_session.query(Registration).filter(
@@ -111,7 +121,12 @@ def admin_panel():
     form = AdminEnter()
     if form.validate_on_submit():
         if request.form.get('password') == admin_password:
-            courses, areas, directions, nav_areas = show_courses(db_session)
+            try:
+                courses, areas, directions, nav_areas = show_courses(db_session)
+            except:
+                db_session.rollback()
+            finally:
+                db_session.close()
             children = [row.__dict__ for row in db_session.query(Registration).all()]
             for child in children:
                 del child['_sa_instance_state']

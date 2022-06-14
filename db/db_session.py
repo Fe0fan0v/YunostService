@@ -9,6 +9,8 @@ conn_str = f'postgresql://{pg_login}:{pg_password}@{db_host}:{db_port}/{db_name}
                 f'{conn_params}'
 print(f"Подключение к базе данных по адресу {conn_str}")
 engine = create_engine(conn_str, convert_unicode=True)
+
+
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))
