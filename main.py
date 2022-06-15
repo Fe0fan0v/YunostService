@@ -64,6 +64,9 @@ def registration():
         if registered:
             if any(map(lambda x: data['course_name'] in x, list(registered.courses.keys()))):
                 return redirect(url_for('enroll', message_type='danger', message='Вы уже записаны в это объединение!'))
+            elif len(registered.courses) >= 3:
+                return redirect(url_for('enroll', message_type='danger',
+                                        message='Превышен лимит записей.'))
             else:
                 registered.courses[data['course_name']] = data['group']
                 course.counter += 1
