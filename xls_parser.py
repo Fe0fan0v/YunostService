@@ -4,11 +4,14 @@ from numbers import Number
 
 from openpyxl import load_workbook
 from thefuzz import process
+import pandas as pd
+from sqlalchemy.orm.attributes import flag_dirty
 
 from db.db_session import init_db, db_session
 from db.models import Course
 from env import path_to_xldata
 
+pd.set_option('display.max_colwidth', 80)
 FILENAME = path_to_xldata
 
 keys = ['name', 'age_from', 'age_to', 'focus', 'direction', 'description',
@@ -48,9 +51,8 @@ def get_age(data):
         return int(age_from), int(age_to)
 
 
-def create_course(name, age, focus, direction, description, teachers, area, free, code, *schedule):
-    if not code:
-        code = -1
+def create_or_edit_course(name, age, focus, direction, description, teachers, area, free, code, *schedule):
+    code = int(code) if code else -1
     if not all((name, age, focus, direction, description, teachers, area, free, code)):
         return None
     schedule = dict(filter(lambda pair: pair[1], zip((str(i) for i in range(1, 11)),
@@ -64,39 +66,75 @@ def create_course(name, age, focus, direction, description, teachers, area, free
     direction = direction.upper()
     area = correct_area(area)
     free = free is None or free.strip().lower() == 'бюджет'
-    code = int(code) if code else 0
 
-    if not courses:  # таблица курсов была пуста - сразу создаем новый
-        counter = 0
+    template = '^^'.join(map(str, (name, age_from, age_to, description, ','.join(teachers), area)))
+    fuzzy_result = process.extractOne(template, keys_courses)  # нечеткий поиск
+    if fuzzy_result[1] < 95:
+        data = {'Было': fuzzy_result[0].split('^^'), 'Новый': (name, age_from, age_to, description, ','.join(teachers), area)}
+        df = pd.DataFrame(data)
+        print(df)
+        while (choice := input('Что делать (1-принять изменения, 2-новый, 3-вручную):').strip()) not in ('1','2','3'):
+            print('Некорректный ввод')
+        if choice == '1':
+            key = tuple(fuzzy_result[0].split('^^'))
+            course_id = courses[key]
+            course = db_session.query(Course).get(course_id)
+            course.name = name
+            course.age_from = age_from
+            course.age_to = age_to
+            course.focus = focus
+            course.direction = direction
+            course.description = description
+            course.teachers = teachers
+            course.area = area
+            course.free = free
+            course.code = code
+            course.schedule = schedule
+            flag_dirty(course)
+            print(f'Изменен. id: {course_id}')
+        elif choice == '2':
+            course = Course(**dict(zip(keys, (name, age_from, age_to, focus, direction, description, teachers,
+                                              area, free, code, schedule))))
+            db_session.add(course)
+            print('Новая запись')
+        else:
+            key = tuple(fuzzy_result[0].split('^^'))
+            manual.append((name, courses[key]))
+            print('Отложено на потом')
     else:
-        template = '^^'.join(map(str, (name, age_from, age_to, ','.join(teachers), area)))
-        fuzzy_result = process.extractOne(template, ['^^'.join(c) for c in courses])  # нечеткий поиск
         key = tuple(fuzzy_result[0].split('^^'))
-        counter = courses[key]
-    course = Course(**dict(zip(keys, (name, age_from, age_to, focus, direction, description, teachers,
-                                      area, free, code, schedule, counter))))
-    db_session.add(course)
-    print(f'Создан курс "{name}", counter = {counter}')
-    return True
-
+        course_id = courses[key]
+        course = db_session.query(Course).get(course_id)
+        course.name = name
+        course.age_from = age_from
+        course.age_to = age_to
+        course.focus = focus
+        course.direction = direction
+        course.description = description
+        course.teachers = teachers
+        course.area = area
+        course.free = free
+        course.code = code
+        course.schedule = schedule
+        flag_dirty(course)
+        print(f'Изменен курс {name}, id: {course_id}')
+    db_session.commit()
 
 init_db()
-courses = {(c.name, str(c.age_from), str(c.age_to), ','.join(c.teachers), c.area): c.counter
+courses = {(c.name, str(c.age_from), str(c.age_to), c.description, ','.join(c.teachers), c.area): c.id
            for c in db_session.query(Course).all()}
-print('Было курсов до удаления:', len(courses))
-db_session.query(Course).delete()
+keys_courses = ['^^'.join(c) for c in courses]
 create_counter = 0
 total_counter = 0
 wb = load_workbook(FILENAME)
 ws = wb.active
-db_session.query(Course).delete()
+manual = []
 for row in filter(lambda r: r[0].value, ws.iter_rows(min_row=5)):
     if len(list(filter(lambda c: c.value, row))) <= 1:
         continue
     total_counter += 1
-    result = create_course(*(cell.value for cell in row))
-    if result:
-        create_counter += 1
+    create_or_edit_course(*(cell.value for cell in row))
     print()
-db_session.commit()
-print(f'Создано: {create_counter}, всего прочитано строк: {total_counter}')
+print('Разобрать вручную:')
+for name, cid in manual:
+    print(name, 'Вероятный id:', cid)
