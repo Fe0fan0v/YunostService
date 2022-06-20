@@ -25,7 +25,7 @@ def show_courses(db_sess):
             courses = eval(f'db_sess.query(Course).filter(Course.{sort_type} == "{sort_data}").all()')
     else:
         age = int(sort_type.split('_')[1])
-        courses = list(filter(lambda x: x.age_from <= age < x.age_to, courses))
+        courses = list(filter(lambda x: x.age_from <= age <= x.age_to, courses))
     areas = {}
     for course in courses:
         if course.area in areas:

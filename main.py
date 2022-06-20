@@ -1,7 +1,6 @@
 import datetime
 
 from flask import Flask, render_template, request, redirect, url_for, send_file
-from sqlalchemy.orm import joinedload, subqueryload
 
 from db.models import Course, Record, Association
 from forms import RegisterChild, AdminEnter, SearchForm
@@ -64,6 +63,9 @@ def registration():
         if registered:
             if any(map(lambda ass: ass.course_id == course_id, registered.courses)):
                 return redirect(url_for('enroll', message_type='danger', message='Вы уже записаны в это объединение!'))
+            elif len(registered.courses) >= 3:
+                return redirect(url_for('enroll', message_type='danger',
+                                        message='Превышен лимит записей.'))
             else:
                 assoc = Association()
                 assoc.group = data['group']
