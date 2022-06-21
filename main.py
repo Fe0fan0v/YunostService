@@ -2,8 +2,8 @@ import datetime
 
 from flask import Flask, render_template, request, redirect, url_for, send_file
 
-from db.models import Course, Record, Association
-from forms import RegisterChild, AdminEnter, SearchForm
+from db.models import Course, Record, Association, Registration
+from forms import RegisterChild, AdminEnter, SearchForm, OldRegister, CourseForm
 from showing import show_courses, get_filter_criteria
 from sendmail import send
 from env import admin_password
@@ -147,6 +147,51 @@ def admin_panel():
 def return_files(filename):
     file_path = filename
     return send_file(file_path, as_attachment=True, attachment_filename='')
+
+
+@app.route('/old')
+def first_old():
+    reg = db_session.query(Registration).first()
+    return redirect(f'/old/{reg.id}')
+
+
+@app.route('/old/<id>')
+def current_old(id):
+    reg = db_session.query(Registration).get(id)
+    form = OldRegister(
+        child_name=reg.child_name,
+        child_surname=reg.child_surname,
+        child_patronymic=reg.child_patronymic,
+        child_birthday=reg.child_birthday,
+        educational_institution=reg.educational_institution,
+        edu_class=reg.edu_class,
+        health=reg.health,
+        child_phone=reg.child_phone,
+        child_email=reg.child_email,
+        child_residence=reg.child_residence,
+        parent_name=reg.parent_name,
+        parent_surname=reg.parent_surname,
+        parent_patronymic=reg.parent_patronymic,
+        parent_birthday=reg.parent_birthday,
+        parent_residence=reg.parent_residence,
+        parent_work=reg.parent_work,
+        parent_phone=reg.parent_phone,
+        parent_email=reg.parent_email,
+        full_family=reg.full_family,
+        large_family=reg.large_family,
+        without_parents=reg.without_parents,
+        police_record=reg.police_record,
+        resident=reg.resident,
+        second_parent_fio=reg.second_parent_phone,
+        second_parent_phone=reg.second_parent_phone
+    )
+    # courses = db_session.query(Course).all()  # todo: выводить новые курсы и соответствующие группы
+    course_form = CourseForm()
+    for course in reg.courses:
+        subform = form.courses.append_entry(course_form)
+        subform.old_name.data = course
+        # subform.old_group.data = reg.courses[course]
+    return render_template('manual.html', form=form)
 
 
 if __name__ == '__main__':
