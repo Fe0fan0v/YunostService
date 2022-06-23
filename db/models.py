@@ -3,7 +3,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy_serializer import SerializerMixin
 from transliterate import translit
 from string import ascii_letters, digits
-
 from .db_session import base
 
 
