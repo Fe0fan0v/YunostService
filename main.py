@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, send_file
 
 from db.models import Course, Record, Association, Registration
 from forms import RegisterChild, AdminEnter, SearchForm, OldRegister, CourseForm
-from showing import show_courses, get_filter_criteria
+from utilities import show_courses, get_filter_criteria
 from sendmail import send
 from env import admin_password
 from sqlalchemy import and_
