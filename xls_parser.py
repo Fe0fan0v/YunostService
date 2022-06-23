@@ -3,7 +3,6 @@ import re
 from numbers import Number
 
 from openpyxl import load_workbook
-from thefuzz import process
 
 from db.db_session import init_db, db_session
 from db.models import Course
@@ -49,8 +48,7 @@ def get_age(data):
 
 
 def create_course(name, age, focus, direction, description, teachers, area, free, code, *schedule):
-    if not code:
-        code = -1
+    code = int(code) if code else -1
     if not all((name, age, focus, direction, description, teachers, area, free, code)):
         return None
     schedule = dict(filter(lambda pair: pair[1], zip((str(i) for i in range(1, 11)),
@@ -64,39 +62,17 @@ def create_course(name, age, focus, direction, description, teachers, area, free
     direction = direction.upper()
     area = correct_area(area)
     free = free is None or free.strip().lower() == 'бюджет'
-    code = int(code) if code else 0
 
-    if not courses:  # таблица курсов была пуста - сразу создаем новый
-        counter = 0
-    else:
-        template = '^^'.join(map(str, (name, age_from, age_to, ','.join(teachers), area)))
-        fuzzy_result = process.extractOne(template, ['^^'.join(c) for c in courses])  # нечеткий поиск
-        key = tuple(fuzzy_result[0].split('^^'))
-        counter = courses[key]
     course = Course(**dict(zip(keys, (name, age_from, age_to, focus, direction, description, teachers,
-                                      area, free, code, schedule, counter))))
+                                      area, free, code, schedule))))
     db_session.add(course)
-    print(f'Создан курс "{name}", counter = {counter}')
-    return True
 
 
 init_db()
-courses = {(c.name, str(c.age_from), str(c.age_to), ','.join(c.teachers), c.area): c.counter
-           for c in db_session.query(Course).all()}
-print('Было курсов до удаления:', len(courses))
-db_session.query(Course).delete()
-create_counter = 0
-total_counter = 0
 wb = load_workbook(FILENAME)
 ws = wb.active
-db_session.query(Course).delete()
 for row in filter(lambda r: r[0].value, ws.iter_rows(min_row=5)):
     if len(list(filter(lambda c: c.value, row))) <= 1:
         continue
-    total_counter += 1
-    result = create_course(*(cell.value for cell in row))
-    if result:
-        create_counter += 1
-    print()
+    create_course(*(cell.value for cell in row))
 db_session.commit()
-print(f'Создано: {create_counter}, всего прочитано строк: {total_counter}')

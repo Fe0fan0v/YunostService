@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import EmailField, StringField, SubmitField, PasswordField, DateField, TelField, SelectField, IntegerField, \
-    TextAreaField, TimeField, BooleanField, ValidationError
+    TextAreaField, TimeField, BooleanField, ValidationError, FieldList, FormField, Form
 from wtforms.validators import DataRequired, Email
 import datetime
 from db.db_session import db_session
@@ -103,3 +103,40 @@ class SearchForm(FlaskForm):
     cube = BooleanField('IT-Cube')
     success = BooleanField('Успех каждого ребенка')
     submit = SubmitField('Искать')
+
+
+class CourseForm(Form):
+    old_name = StringField('Название')
+    old_group = StringField('Номер группы')
+    new_name = SelectField('Название')
+    new_group = SelectField('Номер группы')
+
+
+class OldRegister(FlaskForm):
+    child_name = StringField('Имя ребенка', validators=[DataRequired()])
+    child_surname = StringField('Фамилия ребенка', validators=[DataRequired()])
+    child_patronymic = StringField('Отчество ребенка', validators=[DataRequired()])
+    child_birthday = DateField('Дата рождения ребенка', validators=[DataRequired()])
+    educational_institution = StringField('Школа/детский сад/другое', validators=[DataRequired()])
+    edu_class = StringField('Класс/курс (на 1 сентября)', validators=[DataRequired()])
+    health = SelectField('Здоровье', validators=[DataRequired()], choices=['Здоров', 'ОВЗ', 'Инвалид'])
+    child_phone = StringField('Телефон ребенка')
+    child_email = EmailField('Email ребенка')
+    child_residence = StringField('Место жительства ребенка', validators=[DataRequired()])
+    parent_name = StringField('Имя родителя/законного представителя', validators=[DataRequired()])
+    parent_surname = StringField('Фамилия родителя/законного представителя', validators=[DataRequired()])
+    parent_patronymic = StringField('Отчество родителя/законного представителя', validators=[DataRequired()])
+    parent_birthday = DateField('Дата рождения родителя/законного представителя', validators=[DataRequired()])
+    parent_residence = StringField('Место жительства родителя/законного представителя', validators=[DataRequired()])
+    parent_work = StringField('Место работы родителя/законного представителя', validators=[DataRequired()])
+    parent_phone = StringField('Телефон родителя/законного представителя', validators=[DataRequired()])
+    parent_email = EmailField('Email родителя/законного представителя', validators=[DataRequired(), Email()])
+    full_family = BooleanField('Полная семья', validators=[DataRequired()])
+    large_family = BooleanField('Многодетная семья', validators=[DataRequired()])
+    without_parents = BooleanField('Оставшийся без попечения родителей', validators=[DataRequired()])
+    police_record = BooleanField('Состоит на учете в инспекции по делах н/летних', validators=[DataRequired()])
+    resident = BooleanField('Гражданин РФ', validators=[DataRequired()])
+    second_parent_fio = StringField('ФИО второго родителя')
+    second_parent_phone = StringField('Телефон второго родителя')
+    courses = FieldList(FormField(CourseForm))
+    submit = SubmitField('Применить')
