@@ -32,6 +32,11 @@ class Course(base, SerializerMixin):
     def str_to_url(self):
         return self.name.replace('+', '%2B').replace('#', '23%')
 
+    def __repr__(self):
+        return f"""'name': {self.name}, 'area': {self.area}, 'focus': {self.focus}, 'direction': {self.direction},
+                'description': {self.description}, 'teachers': {self.teachers}, 'age_from': {self.age_from},
+                'age_to': {self.age_to}, 'free': {self.free}, 'code': {self.code}, 'schedule': {self.schedule}"""
+
 
 class Registration(base):
     __tablename__ = 'registration 22/23'

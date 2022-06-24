@@ -140,3 +140,18 @@ class OldRegister(FlaskForm):
     second_parent_phone = StringField('Телефон второго родителя')
     courses = FieldList(FormField(CourseForm))
     submit = SubmitField('Применить')
+
+
+class RedactCourse(FlaskForm):
+    name = StringField('Название объединения')
+    area = SelectField('Площадка объединения')
+    focus = SelectField('Направленность объединения')
+    direction = SelectField('Направление объединения')
+    teachers = StringField('Педагоги')
+    age_from = IntegerField('Возраст: начало диапазона')
+    age_to = IntegerField('Возраст: конец диапазона')
+    description = TextAreaField('Описание объединения')
+    free = BooleanField('Бюджет')
+    code = SelectField('Код объединения', choices=[(-1, 'Юность'), (1, 'IT-Cube'), (2, 'Успех каждого ребенка')])
+    lessons = StringField()
+    submit = SubmitField('Сохранить')

@@ -1,10 +1,11 @@
 import datetime
+import json
 
 from flask import Flask, render_template, request, redirect, url_for, send_file
 
 from db.models import Course, Record, Association, Registration
-from forms import RegisterChild, AdminEnter, SearchForm, OldRegister, CourseForm
-from showing import show_courses, get_filter_criteria
+from forms import RegisterChild, AdminEnter, SearchForm, OldRegister, CourseForm, RedactCourse
+from utilities import show_courses, get_filter_criteria
 from sendmail import send
 from env import admin_password
 from sqlalchemy import and_
@@ -192,6 +193,45 @@ def current_old(id):
         subform.old_name.data = course
         # subform.old_group.data = reg.courses[course]
     return render_template('manual.html', form=form)
+
+
+@app.route('/to_redact', methods=['GET', 'POST'])
+def redact():
+    form = RedactCourse()
+    courses, areas, directions, nav_areas = show_courses(db_session)
+    course = db_session.query(Course).filter(Course.id == request.args['course']).first()
+    form.area.choices = [(i, area) for i, area in enumerate(nav_areas)]
+    form.area.default = nav_areas.index(course.area)
+    form.focus.choices = [(i, focus) for i, focus in enumerate(directions.keys())]
+    form.focus.default = list(directions.keys()).index(course.focus)
+    form.direction.choices = [(i, direction) for i, direction in enumerate(directions[course.focus])]
+    form.direction.default = directions[course.focus].index(course.direction)
+    form.code.default = course.code
+    form.process()
+    if request.method == 'POST':
+        data = request.form.to_dict()
+        course.name = data['name'].strip()
+        course.area = form.area.choices[int(data['area'])][1]
+        course.focus = form.focus.choices[int(data['focus'])][1]
+        course.direction = form.direction.choices[int(data['direction'])][1]
+        course.teachers = data['teachers'].strip().split(', ')
+        course.description = data['description'].strip()
+        course.age_from = data['age_from']
+        course.age_to = data['age_to']
+        course.free = True if data['free'] == 'y' else False
+        course.code = data['code']
+        db_session.add(course)
+        db_session.commit()
+        return redirect('/redact')
+    return render_template('redact.html', course=course, form=form,
+                           directions=directions, ensure_ascii=False)
+
+
+@app.route('/redact')
+def courses_to_redact():
+    courses, areas, directions, nav_areas = show_courses(db_session)
+    return render_template('courses_to_redact.html', courses=courses, areas=areas, directions=directions,
+                           nav_areas=nav_areas)
 
 
 if __name__ == '__main__':
