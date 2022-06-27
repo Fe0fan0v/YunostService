@@ -46,9 +46,9 @@ def enroll():
 def registration():
     form = RegisterChild()
     args = request.args.to_dict()
-    course_name, group_number = args['course'].replace('23%', '#'), args['group']
+    course_id, group_number = args['course'].replace('23%', '#'), args['group']
     try:
-        course = db_session.query(Course).filter(Course.name == course_name).first()
+        course = db_session.query(Course).filter(Course.id == course_id).first()
     except:
         db_session.rollback()
     finally:
