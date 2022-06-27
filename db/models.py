@@ -38,7 +38,7 @@ class Course(base, SerializerMixin):
                 'age_to': {self.age_to}, 'free': {self.free}, 'code': {self.code}, 'schedule': {self.schedule}"""
 
 
-class Registration(base):
+class Registration(base, SerializerMixin):
     __tablename__ = 'registration 22/23'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)

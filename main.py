@@ -2,6 +2,7 @@ import datetime
 import json
 
 from flask import Flask, render_template, request, redirect, url_for, send_file
+from flask_cors import CORS
 
 from db.models import Course, Record, Association, Registration
 from forms import RegisterChild, AdminEnter, SearchForm, OldRegister, CourseForm, RedactCourse
@@ -10,10 +11,13 @@ from sendmail import send
 from env import admin_password
 from sqlalchemy import and_
 from db.db_session import db_session, init_db
+from api.api import api_bp
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super_secret_key'
 init_db()
+CORS(app)
+app.register_blueprint(api_bp)
 
 
 @app.route('/', methods=['GET', 'POST'])
