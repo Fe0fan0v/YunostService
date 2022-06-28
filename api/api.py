@@ -47,6 +47,8 @@ def api_courses():
 def api_update():
     reg_id = request.json.get('reg_id')
     records = request.json.get('records')
+    if not records:
+        return {'status': 'empty data'}
 
     reg = db_session.query(Registration).get(reg_id)
     rec = Record()
