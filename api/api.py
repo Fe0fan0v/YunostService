@@ -21,7 +21,7 @@ def api_regs():
         current = db_session.query(Registration).first().to_dict()
 
     try:
-        if current['id'] - 1 < 0:
+        if ids.index(current['id']) - 1 < 0:
             raise IndexError
         prev = db_session.query(Registration).get(ids[ids.index(current['id']) - 1]).to_dict()
     except IndexError:
