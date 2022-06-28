@@ -30,6 +30,7 @@ def api_regs():
         next = db_session.query(Registration).get(ids[ids.index(current['id']) + 1]).to_dict()
     except IndexError:
         next = None
+    db_session.close()
     return jsonify({
         'prev': prev,
         'current': current,
@@ -40,6 +41,7 @@ def api_regs():
 @api_bp.route('/courses')
 def api_courses():
     courses = db_session.query(Course).all()
+    db_session.close()
     return jsonify([c.to_dict(rules=('-records',)) for c in courses])
 
 
@@ -87,4 +89,5 @@ def api_update():
         db_session.add(assoc)
     db_session.delete(reg)
     db_session.commit()
+    db_session.close()
     return {'status': 'ok'}
