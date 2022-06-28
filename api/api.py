@@ -11,15 +11,18 @@ def api_regs():
     ids = sorted([r.id for r in db_session.query(Registration).all()])
     if not ids:
         return jsonify(
-            {'data': None}
+            {'nodata': True}
         )
     reg_id = request.args.get('reg_id')
     if reg_id:
         reg_id = int(reg_id)
+        if reg_id not in ids:
+            return jsonify(
+                {'nodata': True}
+            )
         current = db_session.query(Registration).get(reg_id).to_dict()
     else:
         current = db_session.query(Registration).first().to_dict()
-
     try:
         if ids.index(current['id']) - 1 < 0:
             raise IndexError
