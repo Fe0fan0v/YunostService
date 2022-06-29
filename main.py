@@ -1,5 +1,4 @@
 import datetime
-import json
 
 from flask import Flask, render_template, request, redirect, url_for, send_file
 from flask_cors import CORS
@@ -23,7 +22,6 @@ app.register_blueprint(api_bp)
 @app.route('/', methods=['GET', 'POST'])
 def main_page():
     return redirect('/enroll')
-    # return render_template('index.html')
 
 
 @app.route('/enroll')

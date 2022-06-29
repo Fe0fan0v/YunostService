@@ -8,7 +8,7 @@ api_bp = blueprints.Blueprint('api', __name__)
 
 @api_bp.route('/reg')
 def api_regs():
-    ids = sorted([r.id for r in db_session.query(Registration).all()])
+    ids = sorted([r.id for r in filter(lambda c: len(c.courses) < 3, db_session.query(Registration).all())])
     if not ids:
         return jsonify(
             {'nodata': True}
