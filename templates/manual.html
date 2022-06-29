@@ -10,14 +10,6 @@
         </div>
     {% endif %}
     <div class="uk-container uk-container-small">
-        <h2 id="courseName" class="uk-text-center">{{ course.name }}</h2>
-        {% if count_records >= 20 %}
-            <span class="uk-label uk-label-warning uk-text-center">Вакантные места заняты, идет запись в резервный список</span>
-        {% endif %}
-        <p id="group" class="uk-text-center">Запись в группу {{ group }}</p>
-        <p class="uk-text-center">
-            {{ course.schedule[group] }}
-        </p>
         <form method="post" id="registration">
             {{ form.hidden_tag() }}
             <div class="uk-margin">
@@ -77,19 +69,19 @@
                 {{ form.parent_email(class="uk-input", type="text", placeholder=form.parent_email.label.text) }}
             </div>
             <div class="uk-margin">
-                {{ form.full_family(class="uk-select") }}
+                <label>{{ form.full_family(class="uk-checkbox") }} {{ form.full_family.label.text }}</label>
             </div>
             <div class="uk-margin">
-                {{ form.large_family(class="uk-select") }}
+                <label>{{ form.large_family(class="uk-checkbox") }} {{ form.large_family.label.text }}</label>
             </div>
             <div class="uk-margin">
-                {{ form.without_parents(class="uk-select") }}
+                <label>{{ form.without_parents(class="uk-checkbox") }} {{ form.without_parents.label.text }}</label>
             </div>
             <div class="uk-margin">
-                {{ form.police_record(class="uk-select") }}
+                <label>{{ form.police_record(class="uk-checkbox") }} {{ form.police_record.label.text }}</label>
             </div>
             <div class="uk-margin">
-                {{ form.resident(class="uk-select") }}
+                <label>{{ form.resident(class="uk-checkbox") }} {{ form.resident.label.text }}</label>
             </div>
             <div class="uk-margin">
                 {{ form.second_parent_fio(class="uk-input", type="text", placeholder=form.second_parent_fio.label.text) }}
@@ -97,16 +89,19 @@
             <div class="uk-margin">
                 {{ form.second_parent_phone(class="uk-input", type="text", placeholder=form.second_parent_phone.label.text) }}
             </div>
-            <input type="hidden" name="course_name" value="{{ course.name }}">
-            <input type="hidden" name="group" value="{{ group }}">
-            <p class="uk-text-meta">Нажимая кнопку "Отправить" вы подтверждаете согласие на обработку персональных
-                данных.
-                Обработка персональных данных ведется в соответствии с <a href="http://www.kremlin.ru/acts/bank/24154"
-                                                                          target="_blank">Федеральным законом от 27 июля
-                    2006 г. N 152-ФЗ "О персональных данных"</a> и <a href="https://yadi.sk/i/QQo47eA-3GozMW"
-                                                                      target="_blank">Положением об обработке
-                    персональных
-                    данных в МАУ ДО "ДДТ "Юность" им.П.Макеева"</a></p>
+            {% for subform in form.courses %}
+                <div class="uk-margin">
+                    <label class="uk-form-label">{{ subform.old_name.label.text }}</label>
+                    {{ subform.old_name(class="uk-input", type="text", placeholder=subform.old_name.label.text) }}
+                    <label class="uk-form-label">{{ subform.old_group.label.text }}</label>
+                    {{ subform.old_group(class="uk-input", type="text", placeholder=subform.old_group.label.text) }}
+                    <label class="uk-form-label">{{ subform.new_name.label.text }}</label>
+                    {{ subform.new_name(class="uk-input", type="text", placeholder=subform.new_name.label.text) }}
+                    <label class="uk-form-label">{{ subform.new_group.label.text }}</label>
+                    {{ subform.new_group(class="uk-input", type="text", placeholder=subform.new_group.label.text) }}
+                 </div>
+            {% endfor %}
+
             <div class="uk-text-center uk-margin-large-top">
                 <div class="uk-form-controls">
                     {{ form.submit(class="uk-button uk-button-primary") }}
