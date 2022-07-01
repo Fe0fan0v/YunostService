@@ -29,15 +29,17 @@ def main_page():
 def enroll():
     args = request.args.to_dict()
     courses, areas, directions, nav_areas = show_courses(db_session)
-    db_session.close()
     if not args:
+        db_session.close()
         return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
                                nav_areas=nav_areas)
     elif 'message_type' in args.keys():
+        db_session.close()
         return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
                                nav_areas=nav_areas, message_type=args['message_type'],
                                message=args['message'])
     else:
+        db_session.close()
         return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
                                nav_areas=nav_areas)
 
@@ -55,6 +57,7 @@ def registration():
         child_birthday = datetime.datetime.fromisoformat(data['child_birthday']).date()
         age = (datetime.date.today() - child_birthday).days // 365
         if not course.age_from <= age + 1 <= course.age_to:
+            db_session.close()
             return render_template('registration.html', course=course, form=form, group=group_number,
                                    count_records=count_records, message='Курс не подходит Вам по возрасту')
         registered = db_session.query(Record).filter(
@@ -78,8 +81,8 @@ def registration():
                 assoc.record = registered
                 db_session.add(assoc)
                 db_session.commit()
-                db_session.close()
                 send(registered.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
+                db_session.close()
                 return redirect(
                     url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
 
@@ -134,6 +137,7 @@ def admin_panel():
         records = get_filter_criteria(db_session, search_form.area_search.data, search_form.direction_search.data,
                                       search_form.cube.data, search_form.success.data)
         if not records:
+            db_session.close()
             return render_template('admin_panel.html', message='Ничего не найдено', search_form=search_form)
         else:
             children = [child.to_dict() for child in records]
