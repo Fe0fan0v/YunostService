@@ -38,33 +38,38 @@ def show_courses(db_sess):
     return courses, areas, directions, nav_areas
 
 
-def get_filter_criteria(db_sess, area, direction, cube, success):
+def get_filter_criteria(db_sess, area: str, direction: str, cube: bool, success: bool):
     try:
-        area = None if area == 'ВСЕ' else area
-        direction = None if direction == 'ВСЕ' else direction
+        queries = {}
+        if area != 'ВСЕ':
+            queries['area'] = area
+        if direction != 'ВСЕ':
+            queries['direction'] = direction
         if cube:
-            code = 1
-        elif success:
-            code = 2
-        else:
-            code = -1
-        if direction and area:
-            records = db_sess.query(Record).join("courses", "course").filter(and_(
-                Course.area == area,
-                Course.direction == direction,
-            )).all()
-        elif direction and not area:
-            records = db_sess.query(Record).join("courses", "course").filter(and_(
-                Course.direction == direction,
-            )).all()
-        elif area and not direction:
-            records = db_sess.query(Record).join("courses", "course").filter(and_(
-                Course.area == area,
-            )).all()
-        else:
-            records = db_sess.query(Record).join("courses", "course").filter(and_(
-                Course.code == code
-            )).all()
+            queries['code'] = 1
+        if success:
+            queries['code'] = 2
+        # if direction and area and code:
+        records = db_sess.query(Record).join("courses", "course").filter(and_(
+            (Course.direction == queries['direction']) if queries['direction'] else ,
+            Course.area == queries['area'],
+            Course.code == queries['code']
+        )).all()
+        # elif direction and not area:
+        #     records = db_sess.query(Record).join("courses", "course").filter(and_(
+        #         Course.direction == direction,
+        #     )).all()
+        # elif area and not direction:
+        #     records = db_sess.query(Record).join("courses", "course").filter(and_(
+        #         Course.area == area,
+        #     )).all()
+        # else:
+        #     if code in (1, 2):
+        #         records = db_sess.query(Record).join("courses", "course").filter(and_(
+        #             Course.code == code
+        #         )).all()
+        #     else:
+        #         records = db_sess.query(Record).all()
         return records
     except:
         return None
