@@ -48,7 +48,6 @@ def registration():
     args = request.args.to_dict()
     course_id, group_number = args['course'], args['group']
     course = db_session.query(Course).get(course_id)
-    db_session.close()
     count_records = len(db_session.query(Association).filter(
         and_(Association.course_id == course_id, Association.group == group_number)).all())
     if request.method == 'POST':
@@ -66,7 +65,6 @@ def registration():
                     Record.child_birthday == child_birthday
                 )
             ).first()
-        db_session.close()
         if registered:
             if any(map(lambda ass: ass.course_id == course_id, registered.courses)):
                 return redirect(url_for('enroll', message_type='danger', message='Вы уже записаны в это объединение!'))
@@ -119,10 +117,11 @@ def registration():
             db_session.add(assoc)
             db_session.add(record)
             db_session.commit()
-            db_session.close()
             send(record.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
+            db_session.close()
             return redirect(
                 url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
+    db_session.close()
     return render_template('registration.html', course=course, form=form, group=group_number,
                            count_records=count_records)
 
