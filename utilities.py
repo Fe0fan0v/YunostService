@@ -35,6 +35,7 @@ def show_courses(db_sess):
                 continue
         else:
             areas[course.area] = [course.direction]
+    db_sess.close()
     return courses, areas, directions, nav_areas
 
 
@@ -72,3 +73,5 @@ def get_filter_criteria(db_sess, area: str, direction: str, cube: bool, success:
         return records
     except:
         return None
+    finally:
+        db_sess.close()
