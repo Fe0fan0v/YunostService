@@ -28,12 +28,8 @@ def main_page():
 @app.route('/enroll')
 def enroll():
     args = request.args.to_dict()
-    try:
-        courses, areas, directions, nav_areas = show_courses(db_session)
-    except:
-        db_session.rollback()
-    finally:
-        db_session.close()
+    courses, areas, directions, nav_areas = show_courses(db_session)
+    db_session.close()
     if not args:
         return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
                                nav_areas=nav_areas)
@@ -51,12 +47,8 @@ def registration():
     form = RegisterChild()
     args = request.args.to_dict()
     course_id, group_number = args['course'], args['group']
-    try:
-        course = db_session.query(Course).get(course_id)
-    except:
-        db_session.rollback()
-    finally:
-        db_session.close()
+    course = db_session.query(Course).get(course_id)
+    db_session.close()
     count_records = len(db_session.query(Association).filter(
         and_(Association.course_id == course_id, Association.group == group_number)).all())
     if request.method == 'POST':
@@ -66,8 +58,7 @@ def registration():
         if not course.age_from <= age <= course.age_to:
             return render_template('registration.html', course=course, form=form, group=group_number,
                                    count_records=count_records, message='Курс не подходит Вам по возрасту')
-        try:
-            registered = db_session.query(Record).filter(
+        registered = db_session.query(Record).filter(
                 and_(
                     Record.child_name == data['child_name'].strip().capitalize(),
                     Record.child_surname == data['child_surname'].strip().capitalize(),
@@ -75,10 +66,7 @@ def registration():
                     Record.child_birthday == child_birthday
                 )
             ).first()
-        except:
-            db_session.rollback()
-        finally:
-            db_session.close()
+        db_session.close()
         if registered:
             if any(map(lambda ass: ass.course_id == course_id, registered.courses)):
                 return redirect(url_for('enroll', message_type='danger', message='Вы уже записаны в это объединение!'))
