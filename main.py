@@ -140,6 +140,7 @@ def admin_panel():
             for child in children:
                 child['child_birthday'] = (datetime.date.today() - datetime.date.fromisoformat(
                     child['child_birthday'])).days // 365
+            db_session.close()
             return render_template('admin_panel.html', children=children, search_form=search_form)
     if form.validate_on_submit():
         if request.form.get('password') == admin_password:
@@ -147,7 +148,9 @@ def admin_panel():
             for child in children:
                 child['child_birthday'] = (datetime.date.today() - datetime.date.fromisoformat(
                     child['child_birthday'])).days // 365
+            db_session.close()
             return render_template('admin_panel.html', children=children, search_form=search_form)
+    db_session.close()
     return render_template('admin.html', form=form)
 
 

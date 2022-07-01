@@ -50,6 +50,8 @@ def get_filter_criteria(db_sess, area: str, direction: str, cube: bool, success:
         if success:
             queries['code'] = 2
         result = ', '.join(f'Course.{key} == queries["{key}"]' for key in queries)
-        records = eval('db_sess.query(Record).join("courses", "course").filter(and_(' + result + ')).all()')
-        db_sess.close()
+        if queries:
+            records = eval('db_sess.query(Record).join("courses", "course").filter(and_(' + result + ')).all()')
+        else:
+            records = db_sess.query(Record).join("courses", "course").all()
         return records
