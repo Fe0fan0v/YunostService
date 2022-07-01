@@ -40,7 +40,6 @@ def show_courses(db_sess):
 
 
 def get_filter_criteria(db_sess, area: str, direction: str, cube: bool, success: bool):
-    try:
         queries = {}
         if area != 'ВСЕ':
             queries['area'] = area
@@ -50,28 +49,7 @@ def get_filter_criteria(db_sess, area: str, direction: str, cube: bool, success:
             queries['code'] = 1
         if success:
             queries['code'] = 2
-        if direction and area:
-            records = db_sess.query(Record).join("courses", "course").filter(and_(
-                (Course.direction == queries['direction'],
-                Course.area == queries['area']
-            ))).all()
-        elif direction and not area:
-            records = db_sess.query(Record).join("courses", "course").filter(and_(
-                Course.direction == direction,
-            )).all()
-        elif area and not direction:
-            records = db_sess.query(Record).join("courses", "course").filter(and_(
-                Course.area == area,
-            )).all()
-        else:
-            if queries['code'] in (1, 2):
-                records = db_sess.query(Record).join("courses", "course").filter(and_(
-                    Course.code == queries['code']
-                )).all()
-            else:
-                records = db_sess.query(Record).all()
-        return records
-    except:
-        return None
-    finally:
+        result = ', '.join(f'Course.{key} == queries["{key}"]' for key in queries)
+        records = eval('db_sess.query(Record).join("courses", "course").filter(and_(' + result + ')).all()')
         db_sess.close()
+        return records
