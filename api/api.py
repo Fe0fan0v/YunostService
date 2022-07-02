@@ -23,7 +23,7 @@ def api_regs():
             )
         current = db_session.query(Registration).get(reg_id).to_dict()
     else:
-        current = db_session.query(Registration).first().to_dict()
+        current = next(filter(lambda c: len(c.courses) < 3, db_session.query(Registration).all())).to_dict()
     try:
         if ids.index(current['id']) - 1 < 0:
             raise IndexError
@@ -31,14 +31,14 @@ def api_regs():
     except IndexError:
         prev = None
     try:
-        next = db_session.query(Registration).get(ids[ids.index(current['id']) + 1]).to_dict()
+        next_ = db_session.query(Registration).get(ids[ids.index(current['id']) + 1]).to_dict()
     except IndexError:
-        next = None
+        next_ = None
     db_session.close()
     return jsonify({
         'prev': prev,
         'current': current,
-        'next': next
+        'next': next_
     })
 
 
