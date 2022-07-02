@@ -3,7 +3,7 @@ from wtforms import EmailField, StringField, SubmitField, PasswordField, DateFie
     TextAreaField, TimeField, BooleanField, ValidationError, FieldList, FormField, Form
 from wtforms.validators import DataRequired, Email
 import datetime
-from db.db_session import db_session
+from db.db_session import create_db_session
 from db.models import Course
 
 # class RegisterForm(FlaskForm):
@@ -93,7 +93,9 @@ class AdminEnter(FlaskForm):
 
 
 class SearchForm(FlaskForm):
+    db_session = create_db_session()
     data = db_session.query(Course).all()
+    db_session.close()
     areas = list(set([course.area for course in data]))
     directions = list(set([course.direction for course in data]))
     areas.append('ВСЕ')

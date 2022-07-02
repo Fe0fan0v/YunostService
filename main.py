@@ -9,7 +9,7 @@ from utilities import show_courses, get_filter_criteria
 from sendmail import send
 from env import admin_password
 from sqlalchemy import and_
-from db.db_session import db_session, init_db
+from db.db_session import create_db_session, init_db
 from api.api import api_bp
 
 app = Flask(__name__)
@@ -28,6 +28,7 @@ def main_page():
 @app.route('/enroll')
 def enroll():
     args = request.args.to_dict()
+    db_session = create_db_session()
     courses, areas, directions, nav_areas = show_courses(db_session)
     if not args:
         db_session.close()
@@ -49,6 +50,7 @@ def registration():
     form = RegisterChild()
     args = request.args.to_dict()
     course_id, group_number = args['course'], args['group']
+    db_session = create_db_session()
     course = db_session.query(Course).get(course_id)
     count_records = len(db_session.query(Association).filter(
         and_(Association.course_id == course_id, Association.group == group_number)).all())
@@ -133,6 +135,7 @@ def registration():
 def admin_panel():
     form = AdminEnter()
     search_form = SearchForm()
+    db_session = create_db_session()
     if search_form.validate_on_submit():
         records = get_filter_criteria(db_session, search_form.area_search.data, search_form.direction_search.data,
                                       search_form.cube.data, search_form.success.data)

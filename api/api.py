@@ -1,6 +1,6 @@
 from flask import blueprints, request, jsonify
 
-from db.db_session import db_session
+from db.db_session import create_db_session
 from db.models import Registration, Course, Record, Association
 
 api_bp = blueprints.Blueprint('api', __name__)
@@ -8,6 +8,7 @@ api_bp = blueprints.Blueprint('api', __name__)
 
 @api_bp.route('/reg')
 def api_regs():
+    db_session = create_db_session()
     ids = sorted([r.id for r in filter(lambda c: len(c.courses) < 3, db_session.query(Registration).all())])
     if not ids:
         return jsonify(
@@ -43,6 +44,7 @@ def api_regs():
 
 @api_bp.route('/courses')
 def api_courses():
+    db_session = create_db_session()
     courses = db_session.query(Course).all()
     db_session.close()
     return jsonify([c.to_dict(rules=('-records',)) for c in courses])
@@ -55,6 +57,7 @@ def api_update():
     if not records:
         return {'status': 'empty data'}
 
+    db_session = create_db_session()
     reg = db_session.query(Registration).get(reg_id)
     rec = Record()
     rec.child_name = reg.child_name
