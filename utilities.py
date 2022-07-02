@@ -6,7 +6,10 @@ from db.models import Record
 
 def show_courses(db_sess):
     sort_type = request.args.get('sort_type')
-    courses = db_sess.query(Course).all()
+    try:
+        courses = db_sess.query(Course).all()
+    except:
+        db_sess.rollback()
     nav_areas = list(set(course.area for course in courses))
     directions = {}
     for course in courses:
