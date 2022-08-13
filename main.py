@@ -167,5 +167,13 @@ def return_files(filename):
     return send_file(file_path, as_attachment=True, attachment_filename='')
 
 
+@app.route('/report')
+def report():
+    from db.tools.report import get_report
+    filename = 'report.xlsx'
+    get_report(filename)
+    return send_file(filename, as_attachment=True, attachment_filename='report.xlsx')
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

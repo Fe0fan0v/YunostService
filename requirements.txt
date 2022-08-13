@@ -34,7 +34,9 @@ Jinja2==3.1.2
 Mako==1.2.0
 MarkupSafe==2.1.1
 motor==3.0.0
+numpy==1.23.1
 openpyxl==3.0.10
+pandas==1.4.3
 passlib==1.7.4
 psycopg2-binary==2.9.3
 pycparser==2.21
@@ -56,3 +58,4 @@ urllib3==1.26.9
 uvicorn==0.17.6
 Werkzeug==2.1.2
 WTForms==3.0.1
+XlsxWriter==3.0.3
