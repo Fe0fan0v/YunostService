@@ -17,14 +17,13 @@ def get_report(filename):
 
 
     df_main = pd.read_sql_query(query_all, con=engine)
-    df_double = pd.read_sql_query(query_doubles, con=engine)
+    df_triples = pd.read_sql_query(query_doubles, con=engine)
 
     df_main['teachers'] = df_main['teachers'].apply(lambda lst: ', '.join(lst))
     df_main['code'] = df_main['code'].apply(lambda code: {1: 'КУБ', 2: 'УСПЕХ', 3: 3, -1: 'ЮНОСТЬ'}[code])
     df_main['free'] = df_main['free'].apply(lambda code: {0: 'ПЛАТНО', 1: 'БЮДЖЕТ'}[code])
     df_main.to_excel(writer, 'общая')
-    df_double.to_excel(writer, 'дубликаты')
+    df_main.loc[df_main.duplicated(subset=['child_name', 'child_surname', 'child_patronymic'], keep=False)].to_excel(writer, 'дубликаты')
+    df_triples.to_excel(writer, '3+ направлний')
 
     writer.save()
-
-get_report('rep.xlsx')
