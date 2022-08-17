@@ -21,6 +21,8 @@
             <th>№</th>
             <th>ФИО ребенка</th>
             <th>Возраст ребенка (лет)</th>
+            <th>Школа</th>
+            <th>Класс</th>
             <th>Объединение - группа</th>
             <th>ФИО родителя</th>
             <th>Телефон родителя</th>
@@ -65,6 +67,8 @@
                     tr.innerHTML = `<td>${index + 1}</td>
                                 <td>${e.child_surname} ${e.child_name} ${e.child_patronymic}</td>
                                 <td>${e.child_birthday}</td>
+                                <td>${e.educational_institution}</td>
+                                <td>${e.edu_class}</td>
                                 <td>${to_str(e.courses)}</td>
                                 <td>${e.parent_surname} ${e.parent_name} ${e.parent_patronymic}</td>
                                 <td>${e.parent_phone}</td>

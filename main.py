@@ -1,4 +1,5 @@
 import datetime
+from pprint import pprint
 
 from flask import Flask, render_template, request, redirect, url_for, send_file
 from flask_cors import CORS
@@ -58,7 +59,7 @@ def registration():
         data = request.form
         child_birthday = datetime.datetime.fromisoformat(data['child_birthday']).date()
         age = (datetime.date.today() - child_birthday).days // 365
-        if not course.age_from <= age <= course.age_to + 1:
+        if not course.age_from - 2 <= age <= course.age_to + 2:
             db_session.close()
             return render_template('registration.html', course=course, form=form, group=group_number,
                                    count_records=count_records, message='Курс не подходит Вам по возрасту')
@@ -73,7 +74,7 @@ def registration():
         if registered:
             if any(map(lambda ass: ass.course_id == course_id, registered.courses)):
                 return redirect(url_for('enroll', message_type='danger', message='Вы уже записаны в это объединение!'))
-            elif len(registered.courses) >= 3:
+            elif len(registered.courses) > 3:
                 return redirect(url_for('enroll', message_type='danger',
                                         message='Превышен лимит записей.'))
             else:
@@ -144,6 +145,7 @@ def admin_panel():
             return render_template('admin_panel.html', message='Ничего не найдено', search_form=search_form)
         else:
             children = [child.to_dict() for child in records]
+            pprint(children)
             for child in children:
                 child['child_birthday'] = (datetime.date.today() - datetime.date.fromisoformat(
                     child['child_birthday'])).days // 365
