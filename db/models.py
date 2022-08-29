@@ -78,6 +78,8 @@ class Course(base, SerializerMixin):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
+    focus_id = Column(Integer, ForeignKey('focuses.id'))
+    focus = relationship('Focus', back_populates='courses')
     direction_id = Column(Integer, ForeignKey('directions.id'))
     direction = relationship('Direction', back_populates='courses')
     area_id = Column(Integer, ForeignKey('areas.id'))
@@ -218,6 +220,16 @@ class Area(base, SerializerMixin):
     courses = relationship('Course', back_populates='area')
 
 
+class Focus(base, SerializerMixin):
+    __tablename__ = 'focuses'
+
+    serialize_rules = ('-courses',)
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String)
+    courses = relationship('Course', back_populates='focus')
+
+
 class Direction(base, SerializerMixin):
     __tablename__ = 'directions'
 
@@ -248,6 +260,10 @@ teachers_courses = Table('teachers_courses', base.metadata,
 students_groups = Table('students_groups', base.metadata,
                         Column('student_id', ForeignKey('students.id'), primary_key=True),
                         Column('group_id', ForeignKey('groups.id'), primary_key=True))
+
+students_competitions = Table('students_competitions', base.metadata,
+                        Column('student_id', ForeignKey('students.id'), primary_key=True),
+                        Column('competition_id', ForeignKey('competitions.id'), primary_key=True))
 
 
 def keys_only_for(cls, **kwargs):
