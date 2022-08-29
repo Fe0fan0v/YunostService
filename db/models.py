@@ -97,7 +97,7 @@ class Group(base, SerializerMixin):
     number = Column(Integer)
     teacher_id = Column(Integer, ForeignKey('teachers.id'))
     teacher = relationship('Teacher', back_populates='groups')
-    schedule = Column(JSON)  # {"ПН": ["15:25", "17:10"], "СР": ["15:25", "17:10"]}
+    schedule = Column(JSON)  # {0: [300, 420], 2: [125, 230]}
     students = relationship('Student', secondary='students_groups', backref='groups')
 
 
@@ -155,6 +155,16 @@ class Teacher(base, SerializerMixin):
         group = Group(**kwargs)
         group.teacher = self
         db_session.add(group)
+
+
+class Methodist(base, SerializerMixin):
+    __tablename__ = 'methodist'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship('User', backref=backref('methodist', uselist=False))
+
+    courses = relationship('Course', backref='methodist')
 
 
 class Parent(base, SerializerMixin):
@@ -217,6 +227,18 @@ class Direction(base, SerializerMixin):
     name = Column(String)
     description = Column(String)
     courses = relationship('Course', back_populates='direction')
+
+
+class Competition(base, SerializerMixin):
+    __tablename__ = 'competitions'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String)
+    description = Column(String)
+    date = Column(DateTime)
+    venue = Column(String)  # место проведения
+    level = Column(String)
+    participants = relationship('Student', secondary='students_competitions', backref='competition')
 
 
 teachers_courses = Table('teachers_courses', base.metadata,
