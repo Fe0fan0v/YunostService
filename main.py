@@ -31,6 +31,28 @@ def enroll():
     args = request.args.to_dict()
     db_session = create_db_session()
     courses, areas, directions, nav_areas = show_courses(db_session)
+    courses = courses.filter(Course.counter == 0).all()
+    if not args:
+        db_session.close()
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
+                               nav_areas=nav_areas)
+    elif 'message_type' in args.keys():
+        db_session.close()
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
+                               nav_areas=nav_areas, message_type=args['message_type'],
+                               message=args['message'])
+    else:
+        db_session.close()
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
+                               nav_areas=nav_areas)
+
+
+@app.route('/additional')
+def enroll():
+    args = request.args.to_dict()
+    db_session = create_db_session()
+    _, areas, directions, nav_areas = show_courses(db_session)
+    courses = db_session.query(Course).filter(Course.counter == 1).all()
     if not args:
         db_session.close()
         return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
