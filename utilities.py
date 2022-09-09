@@ -4,10 +4,13 @@ from flask import request
 from db.models import Record
 
 
-def show_courses(db_sess):
+def show_courses(db_sess, addit=False):
     sort_type = request.args.get('sort_type')
     try:
-        courses = db_sess.query(Course).filter(Course.counter == 0).all()
+        if not addit:
+            courses = db_sess.query(Course).all()
+        else:
+            courses = db_sess.query(Course).filter(Course.counter == 1).all()
     except:
         db_sess.rollback()
     nav_areas = list(set(course.area for course in courses))
