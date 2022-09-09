@@ -31,7 +31,6 @@ def enroll():
     args = request.args.to_dict()
     db_session = create_db_session()
     courses, areas, directions, nav_areas = show_courses(db_session)
-    courses = filter(lambda x: x.counter == 0, courses)
     if not args:
         db_session.close()
         return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,

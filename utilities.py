@@ -8,7 +8,7 @@ def show_courses(db_sess, addit=False):
     sort_type = request.args.get('sort_type')
     try:
         if not addit:
-            courses = db_sess.query(Course).all()
+            courses = db_sess.query(Course).filter(Course.counter == 0).all()
         else:
             courses = db_sess.query(Course).filter(Course.counter == 1).all()
     except:
