@@ -47,7 +47,7 @@ def enroll():
 
 
 @app.route('/additional')
-def enroll():
+def additional():
     args = request.args.to_dict()
     db_session = create_db_session()
     _, areas, directions, nav_areas = show_courses(db_session)
