@@ -22,8 +22,13 @@ app.register_blueprint(api_bp)
 
 @app.route('/', methods=['GET', 'POST'])
 def main_page():
-    return redirect('/enroll')
+    return redirect('/reconstruction')
     # return render_template('index.html')
+
+
+@app.route('/reconstruction')
+def recon():
+    return render_template('technical_work.html')
 
 
 @app.route('/enroll')
