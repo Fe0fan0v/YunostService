@@ -4,8 +4,8 @@ from pprint import pprint
 from flask import Flask, render_template, request, redirect, url_for, send_file
 from flask_cors import CORS
 
-from db.models import Course, Record, Association, Registration
-from forms import RegisterChild, AdminEnter, SearchForm, OldRegister, CourseForm, RedactCourse
+from db.models import Course, Record, Association
+from forms import RegisterChild, AdminEnter, OldRegister, CourseForm, RedactCourse, SearchForm
 from utilities import show_courses, get_filter_criteria
 from sendmail import send
 from env import admin_password
@@ -122,6 +122,7 @@ def registration():
                             educational_institution=data['educational_institution'],
                             edu_class=data['edu_class'],
                             health=data['health'],
+                            snils=data['snils'],
                             child_phone=data['child_phone'],
                             child_email=data['child_email'],
                             child_residence=data['child_residence'],

@@ -1,7 +1,7 @@
 from flask import blueprints, request, jsonify
 
 from db.db_session import create_db_session
-from db.models import Registration, Course, Record, Association
+from db.models import Course, Record, Association
 
 api_bp = blueprints.Blueprint('api', __name__)
 

@@ -119,6 +119,9 @@
                                                 {% if not course.free %}
                                                     <span class="uk-label uk-label-warning">Обучение платное</span>
                                                 {% endif %}
+                                                {% if course.certificate %}
+                                                    <span class="uk-label">Обучение по сертификату</span>
+                                                {% endif %}
                                                 {% for teacher in course.teachers %}
                                                     <p> {{ teacher }} </p>
                                                 {% endfor %}
@@ -133,16 +136,18 @@
                                     </div>
                                     <div class="uk-card-footer">
                                         <p class="uk-text-center">Выбрать группу</p>
-                                        {% for group, schedule in course.schedule.items() %}
+                                        {% for group in course.groups %}
+                                            {% if group.opened %}
                                             <div class="uk-inline">
                                                 <button class="uk-button uk-button-text uk-text-primary">
-                                                    Группа {{ group }}</button>
+                                                    Группа {{ group.number }}</button>
                                                 <div uk-dropdown>
-                                                    <p class="uk-text-primary">{{ schedule }}</p>
-                                                    <a href="/registration?course={{ course.id }}&group={{ group }}"
+                                                    <p class="uk-text-primary">{{ group.schedule }}</p>
+                                                    <a href="/registration?course={{ course.id }}&group={{ group.number }}"
                                                        class="uk-button uk-button-primary">Записаться</a>
                                                 </div>
                                             </div>
+                                            {% endif %}
                                             <br>
                                         {% endfor %}
                                     </div>
