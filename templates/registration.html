@@ -14,9 +14,9 @@
         {% if count_records >= 20 %}
             <span class="uk-label uk-label-warning uk-text-center">Вакантные места заняты, идет запись в резервный список</span>
         {% endif %}
-        <p id="group" class="uk-text-center">Запись в группу {{ group }}</p>
+        <p id="group" class="uk-text-center">Запись в группу {{ group.number }}</p>
         <p class="uk-text-center">
-            {{ course.schedule[group] }}
+            {{ group.schedule }}
         </p>
         <form method="post" id="registration">
             {{ form.hidden_tag() }}
@@ -45,6 +45,11 @@
             <div class="uk-margin">
                 {{ form.snils(class="uk-input", type="text", placeholder=form.snils.label.text) }}
             </div>
+            {% if course.certificate %}
+            <div class="uk-margin">
+                {{ form.certificate(class="uk-input", type="text", placeholder=form.certificate.label.text) }}
+            </div>
+            {% endif %}
             <div class="uk-margin">
                 {{ form.child_phone(class="uk-input", type="text", placeholder=form.child_phone.label.text) }}
             </div>

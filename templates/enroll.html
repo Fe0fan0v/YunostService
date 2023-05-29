@@ -1,80 +1,25 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
+    <!--Общая информация----------------------------------------------->
     <nav class="uk-navbar-container uk-navbar-transparent" uk-navbar>
-    <div class="uk-navbar-center">
+        <div class="uk-navbar-center">
+            <ul class="uk-navbar-nav">
+                <li class="uk-active">
+                    <a class="uk-navbar-item uk-logo" href="#">
+                        <img src="/static/img/logo.png" alt="None"> </a>
+                </li>
+                <li>
+                    <a class="uk-link-reset" href="#">Контакты:</a>
+                </li>
                 <ul class="uk-navbar-nav">
-                    <li class="uk-active"><a class="uk-navbar-item uk-logo" href="#"><img src="/static/img/logo.png" alt="None"> </a></li>
-                    <li>
-                        <a class="uk-link-reset" href="#">Контакты:</a>
-                    </li>
-                    <ul class="uk-navbar-nav">
                     <li><a class="uk-link-reset" href="#">83513527785</a></li>
                     <li><a class="uk-link-reset" href="#">83513532265</a></li>
                 </ul>
-                </ul>
-            </div>
-    </nav>
-    <div class="uk-margin-small-top">
-    <nav class="uk-navbar-container uk-navbar-transparent uk-light uk-background-primary" uk-navbar>
-        <div class="uk-navbar-left">
-            <ul class="uk-navbar-nav">
-                <li>
-                    <a href="/enroll" class="uk-text-emphasis">Показать все</a>
-                </li>
-                <li>
-                    <a href="#" class="uk-text-emphasis">По площадке</a>
-                    <div class="uk-navbar-dropdown" style="width: 250px;">
-                        <ul class="uk-nav uk-navbar-dropdown-nav">
-                            {% for area in nav_areas %}
-                                <li><a href="/enroll?sort_type=area_{{ area }}">{{ area }}</a>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </li>
-                <li>
-                    <a href="#" class="uk-text-emphasis">По направленности</a>
-                    <div class="uk-navbar-dropdown" style="width: 200px;">
-                        <ul class="uk-nav uk-navbar-dropdown-nav">
-                            {% for focus in directions %}
-                                <li>
-                                    <a href="">{{ focus }}</a>
-                                    <div class="uk-navbar-dropdown" style="width: 250px;"
-                                         uk-dropdown="pos: right-center">
-                                        <ul class="uk-nav uk-navbar-dropdown-nav">
-                                            {% for direction in directions[focus] %}
-                                                <li>
-                                                    <a href="/enroll?sort_type=direction_{{ direction }}">{{ direction }}</a>
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </li>
-                <li>
-                    <a href="#" class="uk-text-emphasis">По возрасту</a>
-                    <div class="uk-navbar-dropdown">
-                        <ul class="uk-nav uk-navbar-dropdown-nav">
-                            {% for age in range(3, 19) %}
-                                <li><a href="/enroll?sort_type=age_{{ age }}">{{ age }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </li>
-                <li>
-                    <a href="/enroll?sort_type=cube_True" class="uk-text-emphasis">IT-Cube</a>
-                </li>
-                <li>
-                    <a href="/enroll?sort_type=success_True" class="uk-text-emphasis">Успех каждого ребенка</a>
-                </li>
             </ul>
         </div>
     </nav>
-    </div>
+    <!--Всплывающие сообщения------------------------------------------>
     {% if message %}
         {% if message_type == "danger" %}
             <div class="uk-margin-large-top uk-margin-large-bottom uk-text-center">
@@ -85,78 +30,135 @@
             </div>
         {% else %}
             <div class="uk-margin-large-top uk-margin-large-bottom uk-text-center">
-                <div class="uk-alert-success" uk-alert>
-                    <a class="uk-alert-close" uk-close></a>
-                    <p>Ваша запись успешно зарегистрирована.</p>
-                    <p>Ожидайте приглашения на родительское собрание (в конце августа) для оформления пакета
-                        документов:</p>
-                    <ul>
-                        <li>Заявление</li>
-                        <li>Согласие на фото и видеосъемку</li>
-                        <li>Копию свидетельства о рождении ребенка, либо копию паспорта ребенка (для детей старше 14)
-                        </li>
-                    </ul>
-                    <p>Образцы бланков документов - <a href="/download/documents.zip">скачать</a></p>
-                    <p>*Расписание является предварительным, возможна корректировка</p>
-                </div>
+                {% if overflow %}
+                    <div class="uk-alert-warning" uk-alert>
+                        <a class="uk-alert-close" uk-close></a>
+                        <h3>Группа заполнена, вы записаны в резерв</h3>
+                        <p>Ваша запись успешно зарегистрирована</p>
+                        <p>Ожидайте приглашения на родительское собрание (в конце августа) для оформления пакета
+                            документов:</p>
+                        <ul>
+                            <li>Заявление</li>
+                            <li>Согласие на фото и видеосъемку</li>
+                            <li>Копию свидетельства о рождении ребенка, либо копию паспорта ребенка (для детей старше
+                                14)
+                            </li>
+                        </ul>
+                        <p>Образцы бланков документов - <a href="/download/documents.zip">скачать</a></p>
+                        <p>*Расписание является предварительным, возможна корректировка</p>
+                    </div>
+                {% else %}
+                    <div class="uk-alert-success" uk-alert>
+                        <a class="uk-alert-close" uk-close></a>
+                        <p>Ваша запись успешно зарегистрирована.</p>
+                        <p>Ожидайте приглашения на родительское собрание (в конце августа) для оформления пакета
+                            документов:</p>
+                        <ul>
+                            <li>Заявление</li>
+                            <li>Согласие на фото и видеосъемку</li>
+                            <li>Копию свидетельства о рождении ребенка, либо копию паспорта ребенка (для детей старше
+                                14)
+                            </li>
+                        </ul>
+                        <p>Образцы бланков документов - <a href="/download/documents.zip">скачать</a></p>
+                        <p>*Расписание является предварительным, возможна корректировка</p>
+                    </div>
+                {% endif %}
             </div>
         {% endif %}
     {% endif %}
-    {% for area in areas %}
-        <h2 class="uk-heading-divider uk-text-center">{{ area }}</h2>
-        <div class="uk-margin-medium-left uk-margin-medium-right">
-            {% for direction in areas[area] %}
-                <h4 class="uk-heading">{{ direction }}</h4>
-                <div class="uk-child-width-expand@l uk-grid-small " uk-grid uk-height-match=".uk-card">
-                    {% for course in courses %}
-                        {% if (course.area == area) and (course.direction == direction) %}
-                            <div class="uk-width-1-4@s">
-                                <div class="uk-card uk-card-default uk-box-shadow-hover-small">
-                                    <div class="uk-card-header">
-                                        <div class="uk-grid-small uk-flex-middle" uk-grid>
-                                            <div class="uk-width-expand">
-                                                <h3 class="uk-card-title uk-margin-remove-bottom">{{ course.name }}</h3>
-                                                {% if not course.free %}
-                                                    <span class="uk-label uk-label-warning">Обучение платное</span>
-                                                {% endif %}
-                                                {% if course.certificate %}
-                                                    <span class="uk-label">Обучение по сертификату</span>
-                                                {% endif %}
-                                                {% for teacher in course.teachers %}
-                                                    <p> {{ teacher }} </p>
-                                                {% endfor %}
-                                                <p class="uk-text-meta uk-margin-remove-top">
-                                                    С {{ course.age_from }} до {{ course.age_to }} лет
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="uk-card-body">
-                                        <p>{{ course.description }}</p>
-                                    </div>
-                                    <div class="uk-card-footer">
-                                        <p class="uk-text-center">Выбрать группу</p>
-                                        {% for group in course.groups %}
-                                            {% if group.opened %}
-                                            <div class="uk-inline">
-                                                <button class="uk-button uk-button-text uk-text-primary">
-                                                    Группа {{ group.number }}</button>
-                                                <div uk-dropdown>
-                                                    <p class="uk-text-primary">{{ group.schedule }}</p>
-                                                    <a href="/registration?course={{ course.id }}&group={{ group.number }}"
-                                                       class="uk-button uk-button-primary">Записаться</a>
-                                                </div>
-                                            </div>
-                                            {% endif %}
-                                            <br>
-                                        {% endfor %}
-                                    </div>
+    <!--Карточки курсов с меню----------------------------------------------->
+    <div uk-filter="target: .js-filter" class="uk-margin-small-top">
+        <!--Меню----------------------------------------------->
+        <div class="uk-grid-small uk-grid-divider uk-child-width-auto" uk-grid>
+            <div>
+                <ul class="uk-subnav uk-subnav-pill" uk-margin>
+                    <li class="uk-active" uk-filter-control><a href="#">ПОКАЗАТЬ ВСЕ</a></li>
+                </ul>
+            </div>
+            <div>
+                <ul class="uk-subnav uk-subnav-pill" uk-margin>
+                    {% for area in areas %}
+                        <li uk-filter-control="filter: [data-area='{{ area }}']; group: data-area"><a
+                                href="#">{{ area }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <ul class="uk-subnav uk-subnav-pill" uk-margin>
+                    {% for direction in directions %}
+                        <li uk-filter-control="filter: [data-direction='{{ direction }}']; group: data-direction"><a
+                                href="#">{{ direction }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <ul class="uk-subnav uk-subnav-pill" uk-margin>
+                    <li uk-filter-control="filter: [data-code='1']">
+                        <a href="#">IT-Куб</a></li>
+                    <li uk-filter-control="filter: [data-code='2']">
+                        <a href="#">Успех каждого ребёнка</a></li>
+                </ul>
+            </div>
+            <div>
+                <ul class="uk-subnav uk-subnav-pill" uk-margin>
+                    {% for age in [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17] %}
+                        <li uk-filter-control="[data-age*='{{ age }}']; group: data-age"><a href="#">{{ age }}
+                            лет</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <!--Карточки курсов----------------------------------------------->
+        <ul class="js-filter uk-child-width-1-3@m uk-text-center uk-grid-match" uk-grid="masonry: true">
+            {% for course in courses %}
+                {% if course.age_from and course.age_to %}
+                {% set ages = range(course.age_from, course.age_to + 1)|join(' ') %}
+                {% endif %}
+                <li data-area="{{ course.area }}" data-direction="{{ course.direction }}" data-age="{{ ages }}" data-code="{{ course.code }}">
+                    <div class="uk-card uk-card-default uk-box-shadow-hover-small uk-border-rounded">
+                        <div class="uk-card-header">
+                            <div class="uk-grid-small uk-flex-middle" uk-grid>
+                                <div class="uk-width-expand">
+                                    <h3 class="uk-card-title uk-margin-remove-bottom">{{ course.name }}</h3>
+                                    {% if course.free == false %}
+                                        <span class="uk-label uk-label-warning">Обучение платное</span>
+                                    {% endif %}
+                                    {% if course.certificate %}
+                                        <span class="uk-label">Обучение по сертификату</span>
+                                    {% endif %}
+                                    {% for teacher in course.teachers %}
+                                        <p> {{ teacher }} </p>
+                                    {% endfor %}
+                                    <p class="uk-text-meta uk-margin-remove-top">
+                                        С {{ course.age_from }} до {{ course.age_to }} лет
+                                    </p>
                                 </div>
                             </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
+                        </div>
+                        <div class="uk-card-body">
+                            <p>{{ course.description }}</p>
+                        </div>
+                        <div class="uk-card-footer">
+                            <p class="uk-text-center">Выбрать группу</p>
+                            {% for group in course.groups %}
+                                {% if group.opened %}
+                                    <div class="uk-inline">
+                                        <button class="uk-button uk-button-text uk-text-primary">
+                                            Группа {{ group.number }}</button>
+                                        <div uk-dropdown="pos: top-left">
+                                            <p class="uk-text-primary">{{ group.schedule }}</p>
+                                            <a href="/registration?course={{ course.id }}&group={{ group.id }}"
+                                               class="uk-button uk-button-primary">Записаться</a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <br>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </li>
             {% endfor %}
-        </div>
-    {% endfor %}
+        </ul>
+    </div>
 {% endblock %}
