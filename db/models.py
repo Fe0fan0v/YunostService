@@ -18,7 +18,6 @@ records_courses = sqlalchemy.Table("records_courses_23",
                                    sqlalchemy.Column('course_id', sqlalchemy.ForeignKey('courses_23.id')))
 
 
-
 class Course(base, SerializerMixin):
     __tablename__ = 'courses_23'
 
