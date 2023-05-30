@@ -57,94 +57,97 @@ def update_database():
     db_session = create_db_session()
     courses = db_session.query(Course).all()
     for i, course in enumerate(data.itertuples()):
-        existing_course = list(filter(lambda x: x.table_id == course.id, courses))
-        if existing_course:
-            existing_course = existing_course[0]
-            existing_course.name = course.Программа.upper(),
-            existing_course.focus = course.Направленность.upper(),
-            existing_course.teachers = course.Педагоги.split(", ")
-            if type(course.Возраст) != float:
-                if '-' in course.Возраст:
-                    existing_course.age_from = course.Возраст.split("-")[0],
-                    existing_course.age_to = course.Возраст.split("-")[1]
-                elif '+' in course.Возраст:
-                    existing_course.age_from = course.Возраст[:-1]
-                else:
-                    existing_course.age_from = course.Возраст
-            if type(course.Направление) != float:
-                existing_course.direction = course.Направление.upper()
-            if type(course.Форма) != float:
-                if course.Форма == 'Бюджет':
-                    existing_course.free = True
-                elif course.Форма == 'Платно':
-                    existing_course.free = False
-                if course.Форма == 'Сертификат':
-                    existing_course.certificate = True
-                else:
-                    existing_course.certificate = False
-            if type(course.Описание) != float:
-                existing_course.description = course.Описание
-            if type(course.Код) != float:
-                existing_course.code = int(course.Код)
-            if type(course.Площадка) != float:
-                existing_course.area = course.Площадка.upper()
-            groups = db_session.query(Group).filter(Group.course_id == existing_course.id).all()
-            for n in range(1, 7):
-                if type(eval(f'course.Расписание{n}')) != float:
-                    existing_group = list(filter(lambda x: x.number == n, existing_course.groups))
-                    if existing_group:
-                        existing_group = existing_group[0]
-                        existing_group.schedule = eval(f'course.Расписание{n}')
-                        existing_group.opened = True if eval(f'course.Статус{n}') == 'Набор открыт' else False
+        if type(course.Программа) != float:
+            existing_course = list(filter(lambda x: x.table_id == course.id, courses))
+            if existing_course:
+                existing_course = existing_course[0]
+                existing_course.name = course.Программа.upper(),
+                existing_course.focus = course.Направленность.upper(),
+                existing_course.teachers = course.Педагоги.split(", ")
+                if type(course.Возраст) != float:
+                    if '-' in course.Возраст:
+                        existing_course.age_from = course.Возраст.split("-")[0],
+                        existing_course.age_to = course.Возраст.split("-")[1]
+                    elif '+' in course.Возраст:
+                        existing_course.age_from = course.Возраст[:-1]
                     else:
-                        group = Group()
+                        existing_course.age_from = course.Возраст
+                if type(course.Направление) != float:
+                    existing_course.direction = course.Направление.upper()
+                if type(course.Форма) != float:
+                    if course.Форма == 'Бюджет':
+                        existing_course.free = True
+                    elif course.Форма == 'Платно':
+                        existing_course.free = False
+                    if course.Форма == 'Сертификат':
+                        existing_course.certificate = True
+                    else:
+                        existing_course.certificate = False
+                if type(course.Описание) != float:
+                    existing_course.description = course.Описание
+                if type(course.Код) != float:
+                    existing_course.code = int(course.Код)
+                if type(course.Площадка) != float:
+                    existing_course.area = course.Площадка.upper()
+                groups = db_session.query(Group).filter(Group.course_id == existing_course.id).all()
+                for n in range(1, 7):
+                    if type(eval(f'course.Расписание{n}')) != float:
+                        existing_group = list(filter(lambda x: x.number == n, existing_course.groups))
+                        if existing_group:
+                            existing_group = existing_group[0]
+                            existing_group.schedule = eval(f'course.Расписание{n}')
+                            existing_group.opened = True if eval(f'course.Статус{n}') == 'Набор открыт' else False
+                        else:
+                            group = Group()
+                            group.number = n
+                            group.schedule = eval(f'course.Расписание{n}')
+                            group.opened = True if eval(f'course.Статус{n}') == 'Набор открыт' else False
+                            existing_course.groups.append(group)
+                db_session.add(existing_course)
+                db_session.commit()
+                print(f'{existing_course.name} updated')
+            else:
+                new_course = Course(
+                    name=course.Программа.upper(),
+                    focus=course.Направленность.upper(),
+                    teachers=course.Педагоги.split(", "),
+                    table_id=course.id
+                )
+                if type(course.Возраст) != float:
+                    if '-' in course.Возраст:
+                        new_course.age_from = course.Возраст.split("-")[0]
+                        new_course.age_to = course.Возраст.split("-")[1]
+                    elif '+' in course.Возраст:
+                        new_course.age_from = course.Возраст[:-1]
+                    else:
+                        new_course.age_from = course.Возраст
+                if type(course.Направление) != float:
+                    new_course.direction = course.Направление.upper()
+                if type(course.Форма) != float:
+                    if course.Форма == 'Бюджет':
+                        new_course.free = True
+                    elif course.Форма == 'Платно':
+                        new_course.free = False
+                    if course.Форма == 'Сертификат':
+                        new_course.certificate = True
+                    else:
+                        new_course.certificate = False
+                if type(course.Описание) != float:
+                    new_course.description = course.Описание
+                if type(course.Код) != float:
+                    new_course.code = int(course.Код)
+                if type(course.Площадка) != float:
+                    new_course.area = course.Площадка.upper()
+                for n in range(1, 7):
+                    group = Group()
+                    if type(eval(f'course.Расписание{n}')) != float:
                         group.number = n
                         group.schedule = eval(f'course.Расписание{n}')
                         group.opened = True if eval(f'course.Статус{n}') == 'Набор открыт' else False
-                        existing_course.groups.append(group)
-            db_session.add(existing_course)
-            db_session.commit()
-        else:
-            new_course = Course(
-                name=course.Программа.upper(),
-                focus=course.Направленность.upper(),
-                teachers=course.Педагоги.split(", "),
-                table_id=course.id
-            )
-            if type(course.Возраст) != float:
-                if '-' in course.Возраст:
-                    new_course.age_from = course.Возраст.split("-")[0]
-                    new_course.age_to = course.Возраст.split("-")[1]
-                elif '+' in course.Возраст:
-                    new_course.age_from = course.Возраст[:-1]
-                else:
-                    new_course.age_from = course.Возраст
-            if type(course.Направление) != float:
-                new_course.direction = course.Направление.upper()
-            if type(course.Форма) != float:
-                if course.Форма == 'Бюджет':
-                    new_course.free = True
-                elif course.Форма == 'Платно':
-                    new_course.free = False
-                if course.Форма == 'Сертификат':
-                    new_course.certificate = True
-                else:
-                    new_course.certificate = False
-            if type(course.Описание) != float:
-                new_course.description = course.Описание
-            if type(course.Код) != float:
-                new_course.code = int(course.Код)
-            if type(course.Площадка) != float:
-                new_course.area = course.Площадка.upper()
-            for n in range(1, 7):
-                group = Group()
-                if type(eval(f'course.Расписание{n}')) != float:
-                    group.number = n
-                    group.schedule = eval(f'course.Расписание{n}')
-                    group.opened = True if eval(f'course.Статус{n}') == 'Набор открыт' else False
-                    new_course.groups.append(group)
-            db_session.add(new_course)
-            db_session.commit()
+                        new_course.groups.append(group)
+                db_session.add(new_course)
+                db_session.commit()
+                print(f'{new_course.name} created')
 
 
-update_database()
+# update_database()

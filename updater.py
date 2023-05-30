@@ -11,4 +11,4 @@ def job():
 
 while True:
     run_pending()
-    time.sleep(1)
+    time.sleep(600)
