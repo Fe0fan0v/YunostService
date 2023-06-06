@@ -148,6 +148,3 @@ def update_database():
                 db_session.add(new_course)
                 db_session.commit()
                 print(f'{new_course.name} created')
-
-
-# update_database()
