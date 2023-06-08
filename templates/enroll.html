@@ -82,31 +82,31 @@
                 <li class="uk-active" uk-filter-control><a href="#">ПОКАЗАТЬ ВСЕ</a></li>
             </ul>
             <span class="uk-nav-header">Выбрать площадку</span>
-            <ul class="uk-nav uk-nav-default">
+            <ul class="uk-subnav uk-subnav-pill">
                 {% for area in areas %}
                 <li uk-filter-control="filter: [data-area='{{ area }}']; group: data-area"><a
                         href="#">{{ area }}</a></li>
                 {% endfor %}
             </ul>
-            <span class="uk-nav-header">Выбрать направленность</span>
-            <ul class="uk-nav uk-nav-default">
+            <span class="uk-nav-header">Выбрать направление</span>
+            <ul class="uk-subnav uk-subnav-pill">
                 {% for direction in directions %}
                 <li uk-filter-control="filter: [data-direction='{{ direction }}']; group: data-direction"><a
                         href="#">{{ direction }}</a></li>
                 {% endfor %}
             </ul>
             <span class="uk-nav-header">Выбрать возраст</span>
-            <ul class="uk-nav uk-nav-default">
+            <ul class="uk-subnav uk-subnav-pill">
                 {% for age in [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17] %}
                 <li uk-filter-control="filter: [data-age*='{{ age }}']; group: data-age"><a href="#">{{ age }}
                     лет</a></li>
                 {% endfor %}
             </ul>
             <span class="uk-nav-header">Федеральный проект</span>
-            <ul class="uk-nav uk-nav-default">
-                <li uk-filter-control="filter: [data-code=1]">
+            <ul class="uk-subnav uk-subnav-pill">
+                <li uk-filter-control="filter: [data-code='1']">
                 <a href="#">IT-Куб</a></li>
-                <li uk-filter-control="filter: [data-code=2]">
+                <li uk-filter-control="filter: [data-code='2']">
                     <a href="#">Успех каждого ребёнка</a></li>
             </ul>
             </div>

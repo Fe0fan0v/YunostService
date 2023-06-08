@@ -85,7 +85,7 @@ def update_database():
                         existing_course.certificate = False
                 if type(course.Описание) != float:
                     existing_course.description = course.Описание
-                if type(course.Код) != float:
+                if course.Код == 2.0 or course.Код == 1.0:
                     existing_course.code = int(course.Код)
                 if type(course.Площадка) != float:
                     existing_course.area = course.Площадка.upper()
