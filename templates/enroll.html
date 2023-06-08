@@ -89,11 +89,62 @@
                 {% endfor %}
             </ul>
             <span class="uk-nav-header">Выбрать направление</span>
-            <ul class="uk-subnav uk-subnav-pill">
-                {% for direction in directions %}
-                <li uk-filter-control="filter: [data-direction='{{ direction }}']; group: data-direction"><a
-                        href="#">{{ direction }}</a></li>
-                {% endfor %}
+            <ul uk-accordion="multiple: true">
+                <li>
+                    <a class="uk-accordion-title">Художественная направленность</a>
+                    <div class="uk-accordion-content">
+                        <ul class="uk-subnav uk-subnav-pill">
+                        {% for direction in directions['Художественная'] %}
+                        <li uk-filter-control="filter: [data-direction='{{ direction }}']; group: data-direction"><a
+                                href="#">{{ direction }}</a></li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a class="uk-accordion-title">Физкультурно-спортивная направленность</a>
+                    <div class="uk-accordion-content">
+                        <ul class="uk-subnav uk-subnav-pill">
+                        {% for direction in directions['Физкультурно-спортивная'] %}
+                        <li uk-filter-control="filter: [data-direction='{{ direction }}']; group: data-direction"><a
+                                href="#">{{ direction }}</a></li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a class="uk-accordion-title">Социально-гуманитарная направленность</a>
+                    <div class="uk-accordion-content">
+                        <ul class="uk-subnav uk-subnav-pill">
+                        {% for direction in directions['Социально-гуманитарная'] %}
+                        <li uk-filter-control="filter: [data-direction='{{ direction }}']; group: data-direction"><a
+                                href="#">{{ direction }}</a></li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a class="uk-accordion-title">Техническая направленность</a>
+                    <div class="uk-accordion-content">
+                        <ul class="uk-subnav uk-subnav-pill">
+                        {% for direction in directions['Техническая'] %}
+                        <li uk-filter-control="filter: [data-direction='{{ direction }}']; group: data-direction"><a
+                                href="#">{{ direction }}</a></li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a class="uk-accordion-title">Естественно-научная направленность</a>
+                    <div class="uk-accordion-content">
+                        <ul class="uk-subnav uk-subnav-pill">
+                        {% for direction in directions['Естественно-научная'] %}
+                        <li uk-filter-control="filter: [data-direction='{{ direction }}']; group: data-direction"><a
+                                href="#">{{ direction }}</a></li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </li>
             </ul>
             <span class="uk-nav-header">Выбрать возраст</span>
             <ul class="uk-subnav uk-subnav-pill">

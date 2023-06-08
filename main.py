@@ -19,6 +19,12 @@ init_db()
 CORS(app)
 # app.register_blueprint(api_bp)
 
+DIRECTIONS = {'Художественная': ['ИЗОБРАЗИТЕЛЬНОЕ ИСКУССТВО', 'ВОКАЛ', 'ХОРЕОГРАФИЯ', 'ТЕАТР', 'ЦИРК', 'ДЕКОРАТИВНО-ПРИКЛАДНОЕ ТВОРЧЕСТВО (ВАЛЯНИЕ ИЗ ШЕРСТИ, БИСЕРОПЛЕТЕНИЕ, ТЕКСТИЛЬНАЯ КУКЛА И ДР.)', 'ПРОЕКТИРОВАНИЕ СОВРЕМЕННОЙ ОДЕЖДЫ'],
+              'Физкультурно-спортивная': ['РАЗВИВАЮЩАЯ АКРОБАТИКА', 'СПОРТ', 'ШАХМАТЫ'],
+              'Социально-гуманитарная': ['ЖУРНАЛИСТИКА', 'ПСИХОЛОГИЯ', 'АНГЛИЙСКИЙ ЯЗЫК', 'ПОДГОТОВКА К ШКОЛЕ', 'МУЛЬТИМЕДИА', 'МЕДИА', 'ФИНАНСОВАЯ ГРАМОТНОСТЬ', 'ОБЩЕСТВОЗНАНИЕ', 'ПРОФЕССИОНАЛЬНОЕ САМООПРЕДЕЛЕНИЕ.', 'СКОРОЧТЕНИЕ, МНЕМОТЕХНИКА, УСТНЫЙ СЧЁТ.'],
+              'Техническая': [' КОНСТРУИРОВАНИЕ, МОДЕЛИРОВАНИЕ', 'IT (ПРОГРАММИРОВАНИЕ, РОБОТОТЕХНИКА, ТЕХНИЧЕСКИЙ АНГЛИЙСКИЙ И ДР.)', 'СТОЛЯРНОЕ ДЕЛО', 'РЕЗЬБА ПО ДЕРЕВУ', 'ЭЛЕКТРОНИКА'],
+              'Естественно-научная': ['ЕСТЕСТВЕННЫЕ НАУКИ (ХИМИЯ, БИОЛОГИЯ, АСТРОНОМИЯ, ГЕОЛОГИЯ)']}
+
 
 @app.route('/', methods=['GET', 'POST'])
 def main_page():
@@ -38,18 +44,18 @@ def enroll():
     courses, areas, directions = show_courses(db_session)
     if not args:
         db_session.close()
-        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions)
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS)
     elif 'message_type' in args.keys():
         db_session.close()
-        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions, message_type=args['message_type'],
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS, message_type=args['message_type'],
                                message=args['message'])
     if 'overflow' in args.keys():
-        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS,
                                message_type=args['message_type'],
                                message=args['message'], overflow=True)
     else:
         db_session.close()
-        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions)
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS)
 
 
 @app.route('/registration', methods=['GET', 'POST'])
