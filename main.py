@@ -1,87 +1,79 @@
 import datetime
 from pprint import pprint
 
-from flask import Flask, render_template, request, redirect, url_for, send_file
+from flask import Flask, render_template, request, redirect, send_file, url_for
 from flask_cors import CORS
 
-from db.models import Course, Record, Association, Registration
-from forms import RegisterChild, AdminEnter, SearchForm, OldRegister, CourseForm, RedactCourse
+from db.models import Course, Record, Group
+from forms import RegisterChild, AdminEnter, SearchForm
 from utilities import show_courses, get_filter_criteria
 from sendmail import send
 from env import admin_password
 from sqlalchemy import and_
 from db.db_session import create_db_session, init_db
-from api.api import api_bp
+# from api.api import api_bp
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super_secret_key'
 init_db()
 CORS(app)
-app.register_blueprint(api_bp)
+# app.register_blueprint(api_bp)
+
+DIRECTIONS = {'Художественная': ['ИЗОБРАЗИТЕЛЬНОЕ ИСКУССТВО', 'ВОКАЛ', 'ХОРЕОГРАФИЯ', 'ТЕАТР', 'ЦИРК', 'ДЕКОРАТИВНО-ПРИКЛАДНОЕ ТВОРЧЕСТВО (ВАЛЯНИЕ ИЗ ШЕРСТИ, БИСЕРОПЛЕТЕНИЕ, ТЕКСТИЛЬНАЯ КУКЛА И ДР.)', 'ПРОЕКТИРОВАНИЕ СОВРЕМЕННОЙ ОДЕЖДЫ'],
+              'Физкультурно-спортивная': ['РАЗВИВАЮЩАЯ АКРОБАТИКА', 'СПОРТ', 'ШАХМАТЫ'],
+              'Социально-гуманитарная': ['ЖУРНАЛИСТИКА', 'ПСИХОЛОГИЯ', 'АНГЛИЙСКИЙ ЯЗЫК', 'ПОДГОТОВКА К ШКОЛЕ', 'МУЛЬТИМЕДИА', 'МЕДИА', 'ФИНАНСОВАЯ ГРАМОТНОСТЬ', 'ОБЩЕСТВОЗНАНИЕ', 'ПРОФЕССИОНАЛЬНОЕ САМООПРЕДЕЛЕНИЕ.', 'СКОРОЧТЕНИЕ, МНЕМОТЕХНИКА, УСТНЫЙ СЧЁТ.'],
+              'Техническая': [' КОНСТРУИРОВАНИЕ, МОДЕЛИРОВАНИЕ', 'IT (ПРОГРАММИРОВАНИЕ, РОБОТОТЕХНИКА, ТЕХНИЧЕСКИЙ АНГЛИЙСКИЙ И ДР.)', 'СТОЛЯРНОЕ ДЕЛО', 'РЕЗЬБА ПО ДЕРЕВУ', 'ЭЛЕКТРОНИКА'],
+              'Естественно-научная': ['ЕСТЕСТВЕННЫЕ НАУКИ (ХИМИЯ, БИОЛОГИЯ, АСТРОНОМИЯ, ГЕОЛОГИЯ)']}
 
 
 @app.route('/', methods=['GET', 'POST'])
 def main_page():
-    return redirect('/enroll')
+    return redirect('/reconstruction')
     # return render_template('index.html')
+
+
+@app.route('/reconstruction')
+def recon():
+    return render_template('technical_work.html')
 
 
 @app.route('/enroll')
 def enroll():
     args = request.args.to_dict()
     db_session = create_db_session()
-    courses, areas, directions, nav_areas = show_courses(db_session)
+    courses, areas, directions = show_courses(db_session)
     if not args:
         db_session.close()
-        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
-                               nav_areas=nav_areas)
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS)
     elif 'message_type' in args.keys():
         db_session.close()
-        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
-                               nav_areas=nav_areas, message_type=args['message_type'],
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS, message_type=args['message_type'],
                                message=args['message'])
+    if 'overflow' in args.keys():
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS,
+                               message_type=args['message_type'],
+                               message=args['message'], overflow=True)
     else:
         db_session.close()
-        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
-                               nav_areas=nav_areas)
-
-
-@app.route('/additional')
-def additional():
-    args = request.args.to_dict()
-    db_session = create_db_session()
-    courses, areas, directions, nav_areas = show_courses(db_session, True)
-    if not args:
-        db_session.close()
-        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
-                               nav_areas=nav_areas)
-    elif 'message_type' in args.keys():
-        db_session.close()
-        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
-                               nav_areas=nav_areas, message_type=args['message_type'],
-                               message=args['message'])
-    else:
-        db_session.close()
-        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=directions,
-                               nav_areas=nav_areas)
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS)
 
 
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
     form = RegisterChild()
     args = request.args.to_dict()
-    course_id, group_number = args['course'], args['group']
+    course_id, group_id = args['course'], args['group']
     db_session = create_db_session()
     course = db_session.query(Course).get(course_id)
-    count_records = len(db_session.query(Association).filter(
-        and_(Association.course_id == course_id, Association.group == group_number)).all())
+    group = db_session.query(Group).get(group_id)
+    count_records = len(group.records)
     if request.method == 'POST':
         data = request.form
         child_birthday = datetime.datetime.fromisoformat(data['child_birthday']).date()
         age = (datetime.date.today() - child_birthday).days // 365
         if not course.age_from - 2 <= age <= course.age_to + 2:
             db_session.close()
-            return render_template('registration.html', course=course, form=form, group=group_number,
+            return render_template('registration.html', course=course, form=form, group=group,
                                    count_records=count_records, message='Курс не подходит Вам по возрасту')
         registered = db_session.query(Record).filter(
                 and_(
@@ -92,20 +84,30 @@ def registration():
                 )
             ).first()
         if registered:
-            if any(map(lambda ass: ass.course_id == course_id, registered.courses)):
+            if course in registered.courses:
                 return redirect(url_for('enroll', message_type='danger', message='Вы уже записаны в это объединение!'))
             elif len(registered.courses) > 3:
                 return redirect(url_for('enroll', message_type='danger',
-                                        message='Превышен лимит записей.'))
+                                        message='Вы уже записаны в три объединения.'))
+            elif course.code == 1 and any(map(lambda cour: cour.code == 1, registered.courses)):
+                return redirect(url_for('enroll', message_type='danger',
+                                        message='Вы уже записаны в IT-Cube.'))
+            elif course.code == 2 and any(map(lambda cour: cour.code == 2, registered.courses)):
+                return redirect(url_for('enroll', message_type='danger',
+                                        message='Вы уже записаны в Успех каждого ребёнка.'))
             else:
-                assoc = Association()
-                assoc.group = data['group']
-                assoc.course = course
-                assoc.record = registered
-                db_session.add(assoc)
+                registered.courses.append(course)
+                registered.groups.append(group)
+                db_session.add(registered)
+                if course.certificate:
+                    registered.certificate_number = data['certificate']
                 db_session.commit()
                 send(registered.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
                 db_session.close()
+                if count_records > 15:
+                    return redirect(
+                        url_for('enroll', message_type='success',
+                                message="Ваша запись успешно зарегистрирована", overflow=True))
                 return redirect(
                     url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
 
@@ -117,6 +119,7 @@ def registration():
                             educational_institution=data['educational_institution'],
                             edu_class=data['edu_class'],
                             health=data['health'],
+                            snils=data['snils'],
                             child_phone=data['child_phone'],
                             child_email=data['child_email'],
                             child_residence=data['child_residence'],
@@ -136,19 +139,20 @@ def registration():
                             second_parent_fio=data['second_parent_fio'] if data['second_parent_fio'] else None,
                             second_parent_phone=data['second_parent_phone'] if data[
                                 'second_parent_phone'] else None)
-            assoc = Association()
-            assoc.group = data['group']
-            assoc.course = course
-            assoc.record = record
-            db_session.add(assoc)
+            record.courses.append(course)
+            record.groups.append(group)
             db_session.add(record)
             db_session.commit()
             send(record.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
             db_session.close()
+            if count_records > 15:
+                return redirect(
+                    url_for('enroll', message_type='success',
+                            message="Ваша запись успешно зарегистрирована", overflow=True))
             return redirect(
                 url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
     db_session.close()
-    return render_template('registration.html', course=course, form=form, group=group_number,
+    return render_template('registration.html', course=course, form=form, group=group,
                            count_records=count_records)
 
 

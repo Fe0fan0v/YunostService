@@ -15,7 +15,8 @@ engine = create_engine(conn_str, convert_unicode=True, json_serializer=lambda ob
 def create_db_session():
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
-                                             bind=engine))
+                                             bind=engine,
+                                             expire_on_commit=False))
     base.query = db_session.query_property()
     return db_session
 
