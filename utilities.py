@@ -11,7 +11,11 @@ from urllib.parse import urlencode
 
 
 def show_courses(db_sess):
-    courses = db_sess.query(Course).all()
+    courses_to_find = db_sess.query(Course).all()
+    courses = []
+    for c in courses_to_find:
+        if len([g for g in c.groups]) > 0:
+            courses.append(c)
     areas = list(filter(lambda x: x is not None, list(set([course.area for course in courses]))))
     directions = list(filter(lambda x: x is not None, list(set([course.direction for course in courses]))))
     db_sess.close()
@@ -61,6 +65,7 @@ def update_database():
             existing_course = list(filter(lambda x: x.table_id == course.id, courses))
             if existing_course:
                 existing_course = existing_course[0]
+                print(f'Обновляю курс {existing_course.table_id}')
                 existing_course.name = course.Программа.upper(),
                 existing_course.focus = course.Направленность.upper(),
                 existing_course.teachers = course.Педагоги.split(", ")
@@ -113,6 +118,7 @@ def update_database():
                     teachers=course.Педагоги.split(", "),
                     table_id=course.id
                 )
+                print(f'Создаю курс {new_course.table_id}')
                 if type(course.Возраст) != float:
                     if '-' in course.Возраст:
                         new_course.age_from = course.Возраст.split("-")[0]
