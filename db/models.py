@@ -1,3 +1,5 @@
+import datetime
+
 import sqlalchemy
 from sqlalchemy.orm import relationship
 from sqlalchemy_serializer import SerializerMixin
@@ -9,13 +11,15 @@ from .db_session import base
 records_groups = sqlalchemy.Table("records_groups_23",
                                   base.metadata,
                                   sqlalchemy.Column('record_id', sqlalchemy.ForeignKey('records_23.id')),
-                                  sqlalchemy.Column('group_id', sqlalchemy.ForeignKey('groups_23.id')))
+                                  sqlalchemy.Column('group_id', sqlalchemy.ForeignKey('groups_23.id')),
+                                  sqlalchemy.Column('reg_date', sqlalchemy.Date(), default=datetime.date.today()))
 
 
 records_courses = sqlalchemy.Table("records_courses_23",
                                    base.metadata,
                                    sqlalchemy.Column('record_id', sqlalchemy.ForeignKey('records_23.id')),
-                                   sqlalchemy.Column('course_id', sqlalchemy.ForeignKey('courses_23.id')))
+                                   sqlalchemy.Column('course_id', sqlalchemy.ForeignKey('courses_23.id')),
+                                   )
 
 
 class Course(base, SerializerMixin):
@@ -57,7 +61,7 @@ class Record(base, SerializerMixin):
 
     serialize_only = ('child_name', 'child_surname', 'child_patronymic', 'child_birthday',
                       'parent_name', 'parent_surname', 'parent_patronymic', 'parent_phone', 'parent_email',
-                      'courses.course.name', 'courses.group')
+                      'courses.name', 'groups.number', 'educational_institution', 'edu_class')
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     # -------------информация о ребенке------------#

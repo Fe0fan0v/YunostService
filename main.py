@@ -5,7 +5,7 @@ from flask import Flask, render_template, request, redirect, send_file, url_for
 from flask_cors import CORS
 
 from db.models import Course, Record, Group
-from forms import RegisterChild, AdminEnter, SearchForm
+from forms import RegisterChild, AdminEnter
 from utilities import show_courses, get_filter_criteria
 from sendmail import send
 from env import admin_password
@@ -19,25 +19,15 @@ init_db()
 CORS(app)
 # app.register_blueprint(api_bp)
 
-DIRECTIONS = {'Художественная': ['ИЗОБРАЗИТЕЛЬНОЕ ИСКУССТВО', 'ВОКАЛ', 'ХОРЕОГРАФИЯ', 'ТЕАТР', 'ЦИРК', 'ДЕКОРАТИВНО-ПРИКЛАДНОЕ ТВОРЧЕСТВО (ВАЛЯНИЕ ИЗ ШЕРСТИ, БИСЕРОПЛЕТЕНИЕ, ТЕКСТИЛЬНАЯ КУКЛА И ДР.)', 'ПРОЕКТИРОВАНИЕ СОВРЕМЕННОЙ ОДЕЖДЫ'],
-              'Физкультурно-спортивная': ['РАЗВИВАЮЩАЯ АКРОБАТИКА', 'СПОРТ', 'ШАХМАТЫ'],
+DIRECTIONS = {'Художественная': ['ИЗОБРАЗИТЕЛЬНОЕ ИСКУССТВО', 'ВОКАЛ', 'ХОРЕОГРАФИЯ', 'ТЕАТР', 'ЦИРК', 'ДЕКОРАТИВНО-ПРИКЛАДНОЕ ТВОРЧЕСТВО (ВАЛЯНИЕ ИЗ ШЕРСТИ, БИСЕРОПЛЕТЕНИЕ, ТЕКСТИЛЬНАЯ КУКЛА И ДР.)', 'ПРОЕКТИРОВАНИЕ СОВРЕМЕННОЙ ОДЕЖДЫ', 'МУЗЫКАЛЬНАЯ ДЕЯТЕЛЬНОСТЬ'],
+              'Физкультурно-спортивная': ['СПОРТ', 'ШАХМАТЫ'],
               'Социально-гуманитарная': ['ЖУРНАЛИСТИКА', 'ПСИХОЛОГИЯ', 'АНГЛИЙСКИЙ ЯЗЫК', 'ПОДГОТОВКА К ШКОЛЕ', 'МУЛЬТИМЕДИА', 'МЕДИА', 'ФИНАНСОВАЯ ГРАМОТНОСТЬ', 'ОБЩЕСТВОЗНАНИЕ', 'ПРОФЕССИОНАЛЬНОЕ САМООПРЕДЕЛЕНИЕ.', 'СКОРОЧТЕНИЕ, МНЕМОТЕХНИКА, УСТНЫЙ СЧЁТ.'],
-              'Техническая': [' КОНСТРУИРОВАНИЕ, МОДЕЛИРОВАНИЕ', 'IT (ПРОГРАММИРОВАНИЕ, РОБОТОТЕХНИКА, ТЕХНИЧЕСКИЙ АНГЛИЙСКИЙ И ДР.)', 'СТОЛЯРНОЕ ДЕЛО', 'РЕЗЬБА ПО ДЕРЕВУ', 'ЭЛЕКТРОНИКА'],
-              'Естественно-научная': ['ЕСТЕСТВЕННЫЕ НАУКИ (ХИМИЯ, БИОЛОГИЯ, АСТРОНОМИЯ, ГЕОЛОГИЯ)']}
+              'Техническая': [' КОНСТРУИРОВАНИЕ, МОДЕЛИРОВАНИЕ', 'IT (ПРОГРАММИРОВАНИЕ, РОБОТОТЕХНИКА, ТЕХНИЧЕСКИЙ АНГЛИЙСКИЙ И ДР.)', 'СТОЛЯРНОЕ ДЕЛО', 'РЕЗЬБА ПО ДЕРЕВУ', 'ЭЛЕКТРОНИКА', 'БУМАГОПЛАСТИКА'],
+              'Естественно-научная': ['ЕСТЕСТВЕННЫЕ НАУКИ (ХИМИЯ, БИОЛОГИЯ, АСТРОНОМИЯ, ГЕОЛОГИЯ)'],
+              'Туристско-краеведческая': ['ЕСТЕСТВЕННЫЕ НАУКИ']}
 
 
-@app.route('/', methods=['GET', 'POST'])
-def main_page():
-    return redirect('/reconstruction')
-    # return render_template('index.html')
-
-
-@app.route('/reconstruction')
-def recon():
-    return render_template('technical_work.html')
-
-
-@app.route('/enroll')
+@app.route('/')
 def enroll():
     args = request.args.to_dict()
     db_session = create_db_session()
@@ -86,7 +76,7 @@ def registration():
         if registered:
             if course in registered.courses:
                 return redirect(url_for('enroll', message_type='danger', message='Вы уже записаны в это объединение!'))
-            elif len(registered.courses) > 3:
+            elif len(registered.courses) >= 3:
                 return redirect(url_for('enroll', message_type='danger',
                                         message='Вы уже записаны в три объединения.'))
             elif course.code == 1 and any(map(lambda cour: cour.code == 1, registered.courses)):
@@ -159,32 +149,29 @@ def registration():
 @app.route('/admin', methods=['GET', 'POST'])  # панель администратора
 def admin_panel():
     form = AdminEnter()
-    search_form = SearchForm()
     db_session = create_db_session()
-    if search_form.validate_on_submit():
-        records = get_filter_criteria(db_session, search_form.area_search.data, search_form.direction_search.data,
-                                      search_form.cube.data, search_form.success.data)
-        if not records:
-            db_session.close()
-            return render_template('admin_panel.html', message='Ничего не найдено', search_form=search_form)
-        else:
-            children = [child.to_dict() for child in records]
-            pprint(children)
-            for child in children:
-                child['child_birthday'] = (datetime.date.today() - datetime.date.fromisoformat(
-                    child['child_birthday'])).days // 365
-            db_session.close()
-            return render_template('admin_panel.html', children=children, search_form=search_form)
     if form.validate_on_submit():
         if request.form.get('password') == admin_password:
-            children = [child.to_dict() for child in db_session.query(Record).all()]
-            for child in children:
-                child['child_birthday'] = (datetime.date.today() - datetime.date.fromisoformat(
-                    child['child_birthday'])).days // 365
+            records = db_session.query(Record).all()
+            courses, areas, directions = show_courses(db_session)
+            teachers = list(set([course.teachers[0] for course in courses]))
+            for record in records:
+                record.child_birthday = (datetime.date.today() - record.child_birthday).days // 365
+            # records = list(map(lambda x: x.to_dict(), records))
             db_session.close()
-            return render_template('admin_panel.html', children=children, search_form=search_form)
+            return render_template('admin_panel.html', children=records, teachers=teachers, courses=courses,
+                                   areas=areas, directions=DIRECTIONS)
     db_session.close()
     return render_template('admin.html', form=form)
+
+
+@app.route('/admin/group/<num>')
+def get_group(num):
+    db_sess = create_db_session()
+    records = db_sess.query(Record).select_from(Group).join(Record.groups).filter(Group.id == num).all()
+    for record in records:
+        record.child_birthday = (datetime.date.today() - record.child_birthday).days // 365
+    return render_template('show_records.html', records=enumerate(records))
 
 
 @app.route('/download/<filename>')

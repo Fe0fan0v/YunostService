@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+        <table class="uk-table uk-table-hover uk-table-divider">
+        <thead>
+        <tr>
+            <th>№</th>
+            <th>ФИО ребенка</th>
+            <th>Возраст ребенка (лет)</th>
+            <th>Школа</th>
+            <th>Класс</th>
+            <th>ФИО родителя</th>
+            <th>Телефон родителя</th>
+            <th>Электронная почта родителя</th>
+            <th>Приоритет записи</th>
+        </tr>
+        </thead>
+        <tbody id="results">
+            {% for i, record in records %}
+                <tr>
+                <td>{{ i + 1 }}</td>
+                <td>{{ record.child_surname }} {{ record.child_name }} {{ record.child_patronymic }}</td>
+                <td>{{ record.child_birthday }}</td>
+                <td>{{ record.educational_institution }}</td>
+                <td>{{ record.edu_class }}</td>
+                <td>{{ record.parent_surname }} {{ record.parent_name }} {{ record.parent_patronymic }}</td>
+                <td>{{ record.parent_phone }}</td>
+                <td>{{ parent_email }}</td>
+                {% if i < 15 %}
+                <td>Основной набор</td>
+                {% else %}
+                <td>Резерв</td>
+                {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+{% endblock %}

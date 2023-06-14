@@ -7,7 +7,7 @@
             <ul class="uk-navbar-nav">
                 <li class="uk-active">
                     <a class="uk-navbar-item uk-logo" href="#">
-                        <img src="/static/img/logo.png" alt="None"> </a>
+                        <img src="/static/img/newlogo.jpg" alt="None"> </a>
                 </li>
                 <li>
                     <a class="uk-link-reset" href="#">Контакты:</a>
@@ -145,6 +145,17 @@
                         </ul>
                     </div>
                 </li>
+                <li>
+                    <a class="uk-accordion-title">Туристско-краеведческая направленность</a>
+                    <div class="uk-accordion-content">
+                        <ul class="uk-subnav uk-subnav-pill">
+                        {% for direction in directions['Туристско-краеведческая'] %}
+                        <li uk-filter-control="filter: [data-direction='{{ direction }}']; group: data-direction"><a
+                                href="#">{{ direction }}</a></li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </li>
             </ul>
             <span class="uk-nav-header">Выбрать возраст</span>
             <ul class="uk-subnav uk-subnav-pill">
@@ -182,6 +193,7 @@
                                     {% if course.certificate %}
                                         <span class="uk-label">Обучение по сертификату</span>
                                     {% endif %}
+                                    <p>{{ course.area }}</p>
                                     {% for teacher in course.teachers %}
                                         <p> {{ teacher }} </p>
                                     {% endfor %}

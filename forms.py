@@ -16,7 +16,7 @@ class RegisterChild(FlaskForm):
     edu_class = StringField('Класс/курс (на 1 сентября)', validators=[DataRequired()])
     health = SelectField('Здоровье', validators=[DataRequired()], choices=['Здоров', 'ОВЗ', 'Инвалид'])
     snils = StringField('Номер СНИЛС ребенка')
-    certificate = StringField('Номер сертификата')
+    certificate = StringField('Номер сертификата вноситься после 15 августа с сайта Госуслуги')
     child_phone = StringField('Телефон ребенка')
     child_email = EmailField('Email ребенка')
     child_residence = StringField('Место жительства ребенка', validators=[DataRequired()])
@@ -52,21 +52,6 @@ class RegisterChild(FlaskForm):
 class AdminEnter(FlaskForm):
     password = PasswordField('Пароль', validators=[DataRequired()])
     submit = SubmitField('Войти')
-
-
-class SearchForm(FlaskForm):
-    db_session = create_db_session()
-    data = db_session.query(Course).all()
-    db_session.close()
-    areas = list(set([course.area for course in data]))
-    directions = list(set([course.direction for course in data]))
-    areas.append('ВСЕ')
-    directions.append('ВСЕ')
-    area_search = SelectField('Площадка', choices=areas)
-    direction_search = SelectField('Направление', choices=directions)
-    cube = BooleanField('IT-Cube')
-    success = BooleanField('Успех каждого ребенка')
-    submit = SubmitField('Искать')
 
 
 class CourseForm(Form):
