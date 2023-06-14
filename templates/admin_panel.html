@@ -119,6 +119,7 @@
                                     {% if course.certificate %}
                                         <span class="uk-label">Обучение по сертификату</span>
                                     {% endif %}
+                                    <p>{{ course.area }}</p>
                                     {% for teacher in course.teachers %}
                                         <p> {{ teacher }} </p>
                                     {% endfor %}
@@ -133,7 +134,7 @@
                             {% for group in course.groups %}
                                 {% if group.opened %}
                                     <div class="uk-inline">
-                                        <a href="/admin/group/{{ group.id }}" class="uk-button uk-button-text uk-text-primary">
+                                        <a href="/admin/group/{{ group.id }}" target="_blank" class="uk-button uk-button-text uk-text-primary">
                                             Группа {{ group.number }}</a>
                                     </div>
                                 {% endif %}
@@ -145,96 +146,27 @@
             {% endfor %}
         </ul>
     </div>
-{##}
-{##}
-{#    <table class="uk-table uk-table-hover uk-table-divider">#}
-{#        <thead>#}
-{#        <tr>#}
-{#            <th>№</th>#}
-{#            <th>ФИО ребенка</th>#}
-{#            <th>Возраст ребенка (лет)</th>#}
-{#            <th>Школа</th>#}
-{#            <th>Класс</th>#}
-{#            <th>Объединение - группа</th>#}
-{#            <th>ФИО родителя</th>#}
-{#            <th>Телефон родителя</th>#}
-{#            <th>Электронная почта родителя</th>#}
-{#        </tr>#}
-{#        </thead>#}
-{#        <tbody id="results"></tbody>#}
-{#        <span uk-spinner="ratio: 4.5" id="loader" class="uk-position-center">#}
-{#        </span>#}
-{#    </table>#}
-{#    {% if message %}#}
-{#    <h1 class="uk-position-center" id="message">{{ message }}</h1>#}
-{#    {% endif %}#}
-{#    <script>#}
-{#        const data = {{ children|safe }};#}
-{#        const search = document.getElementById("search");#}
-{#        const results = document.getElementById("results");#}
-{#        let search_term = "";#}
-{#        let loader = document.getElementById('loader');#}
-{#        let message = document.getElementById('message');#}
-{##}
-{#        const showList = () => {#}
-{#            results.innerHTML = "";#}
-{#            data#}
-{#                .filter((item) => {#}
-{#                    return (#}
-{#                        item.child_name.toLowerCase().includes(search_term) ||#}
-{#                        item.child_surname.toLowerCase().includes(search_term) ||#}
-{#                        item.child_patronymic.toLowerCase().includes(search_term) ||#}
-{#                        item.child_birthday.toString().includes(search_term) ||#}
-{#                        (function c(courses) {#}
-{#                            let res = [];#}
-{#                            for (let index in courses) {#}
-{#                                res.push(`${courses[index].course.name}`)#}
-{#                            }#}
-{#                            return res.join(' ')#}
-{#                        })(item.courses).toLowerCase().includes(search_term)#}
-{#                    );#}
-{#                })#}
-{#                .forEach((e, index) => {#}
-{#                    const tr = document.createElement("tr");#}
-{#                    tr.innerHTML = `<td>${index + 1}</td>#}
-{#                                <td>${e.child_surname} ${e.child_name} ${e.child_patronymic}</td>#}
-{#                                <td>${e.child_birthday}</td>#}
-{#                                <td>${e.educational_institution}</td>#}
-{#                                <td>${e.edu_class}</td>#}
-{#                                <td>${courses_groups(e)}</td>#}
-{#                                <td>${e.parent_surname} ${e.parent_name} ${e.parent_patronymic}</td>#}
-{#                                <td>${e.parent_phone}</td>#}
-{#                                <td>${e.parent_email}</td>#}
-{#                               `;#}
-{#                    results.appendChild(tr);#}
-{#                });#}
-{#        };#}
-{##}
-{#        function courses_groups(record) {#}
-{#            let result = [];#}
-{#            for (var index in record.courses) {#}
-{#                result.push(`${record.courses[index].name} - Группа ${record.groups[index].number}`)#}
-{#            }#}
-{#            return result.join('<br>')#}
-{#        }#}
-{##}
-{#        showList();#}
-{##}
-{#        search.addEventListener("input", (event) => {#}
-{#            search_term = event.target.value.toLowerCase();#}
-{#            showList();#}
-{#        });#}
-{#    </script>#}
-{#    <script>#}
-{#     window.onload = function() {#}
-{#            results.style.display = "";#}
-{#            loader.style.display = "none";#}
-{#	    };#}
-{#        function startLoader() {#}
-{#            results.style.display = "none";#}
-{#            loader.style.display = "";#}
-{#            message.style.display="none";#}
-{#        }#}
-{#    </script>#}
+
+    <script>
+        let courses = {{ courses|safe }};
+        const results = document.getElementById('results');
+        const search_input = document.getElementById('search');
+        let search_term = '';
+        search_input.addEventListener('input', e => {
+            search_term = e.target.value;
+            showCourses();
+        });
+
+        const showCourses = async () => {
+            results.innerHTML = '';
+
+            courses
+                .filter(course =>
+                    course.name.toLowerCase().includes(search_term.toLowerCase()))
+                .forEach(course => {
+                    
+                })
+        }
+    </script>
 
 {% endblock %}

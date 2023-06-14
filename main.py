@@ -24,7 +24,7 @@ DIRECTIONS = {'Художественная': ['ИЗОБРАЗИТЕЛЬНОЕ �
               'Социально-гуманитарная': ['ЖУРНАЛИСТИКА', 'ПСИХОЛОГИЯ', 'АНГЛИЙСКИЙ ЯЗЫК', 'ПОДГОТОВКА К ШКОЛЕ', 'МУЛЬТИМЕДИА', 'МЕДИА', 'ФИНАНСОВАЯ ГРАМОТНОСТЬ', 'ОБЩЕСТВОЗНАНИЕ', 'ПРОФЕССИОНАЛЬНОЕ САМООПРЕДЕЛЕНИЕ.', 'СКОРОЧТЕНИЕ, МНЕМОТЕХНИКА, УСТНЫЙ СЧЁТ.'],
               'Техническая': [' КОНСТРУИРОВАНИЕ, МОДЕЛИРОВАНИЕ', 'IT (ПРОГРАММИРОВАНИЕ, РОБОТОТЕХНИКА, ТЕХНИЧЕСКИЙ АНГЛИЙСКИЙ И ДР.)', 'СТОЛЯРНОЕ ДЕЛО', 'РЕЗЬБА ПО ДЕРЕВУ', 'ЭЛЕКТРОНИКА', 'БУМАГОПЛАСТИКА'],
               'Естественно-научная': ['ЕСТЕСТВЕННЫЕ НАУКИ (ХИМИЯ, БИОЛОГИЯ, АСТРОНОМИЯ, ГЕОЛОГИЯ)'],
-              'Туристско-краеведческая': ['ЕСТЕСТВЕННЫЕ НАУКИ']}
+              'Туристско-краеведческая': ['ЕСТЕСТВЕННЫЕ НАУКИ.']}
 
 
 @app.route('/')
@@ -151,13 +151,12 @@ def admin_panel():
     form = AdminEnter()
     db_session = create_db_session()
     if form.validate_on_submit():
-        if request.form.get('password') == admin_password:
+        if request.form.get('password') == admin_password :
             records = db_session.query(Record).all()
             courses, areas, directions = show_courses(db_session)
-            teachers = list(set([course.teachers[0] for course in courses]))
+            teachers = sorted(list(set([course.teachers[0] for course in courses])))
             for record in records:
                 record.child_birthday = (datetime.date.today() - record.child_birthday).days // 365
-            # records = list(map(lambda x: x.to_dict(), records))
             db_session.close()
             return render_template('admin_panel.html', children=records, teachers=teachers, courses=courses,
                                    areas=areas, directions=DIRECTIONS)
@@ -168,10 +167,12 @@ def admin_panel():
 @app.route('/admin/group/<num>')
 def get_group(num):
     db_sess = create_db_session()
+    course = db_sess.query(Course).select_from(Group).join(Course.groups).filter(Group.id == num).first()
+    group_num = db_sess.query(Group).filter(Group.id == num).first().number
     records = db_sess.query(Record).select_from(Group).join(Record.groups).filter(Group.id == num).all()
     for record in records:
         record.child_birthday = (datetime.date.today() - record.child_birthday).days // 365
-    return render_template('show_records.html', records=enumerate(records))
+    return render_template('show_records.html', course=course, group_num=group_num, records=enumerate(records))
 
 
 @app.route('/download/<filename>')

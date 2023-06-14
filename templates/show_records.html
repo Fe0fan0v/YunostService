@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="uk-container uk-text-center uk-margin-medium-top uk-margin-medium-bottom">
+    <h3>{{ course.name }}</h3>
+    <h4>Группа {{ group_num }}</h4>
+</div>
 
-
+<div class="uk-container">
         <table class="uk-table uk-table-hover uk-table-divider">
         <thead>
         <tr>
@@ -38,5 +42,5 @@
         </tbody>
 
     </table>
-
+</div>
 {% endblock %}

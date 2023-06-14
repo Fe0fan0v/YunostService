@@ -1,5 +1,7 @@
 import datetime
 
+from flask_login import UserMixin
+
 import sqlalchemy
 from sqlalchemy.orm import relationship
 from sqlalchemy_serializer import SerializerMixin
@@ -106,3 +108,4 @@ class Group(base, SerializerMixin):
     opened = sqlalchemy.Column(sqlalchemy.Boolean)
     group_course = relationship("Course", back_populates="groups")
     records = relationship("Record", secondary=records_groups, back_populates='groups')
+
