@@ -132,12 +132,10 @@
                         <div class="uk-card-footer">
                             <p class="uk-text-center">Выбрать группу</p>
                             {% for group in course.groups %}
-                                {% if group.opened %}
                                     <div class="uk-inline">
                                         <a href="/admin/group/{{ group.id }}" target="_blank" class="uk-button uk-button-text uk-text-primary">
                                             Группа {{ group.number }}</a>
                                     </div>
-                                {% endif %}
                                 <br>
                             {% endfor %}
                         </div>
