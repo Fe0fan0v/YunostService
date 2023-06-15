@@ -10,12 +10,17 @@ import requests
 from urllib.parse import urlencode
 
 
-def show_courses(db_sess):
+def show_courses(db_sess, access=False):
     courses_to_find = db_sess.query(Course).all()
     courses = []
-    for c in courses_to_find:
-        if len([g for g in c.groups]) > 0 and all([group.opened for group in c.groups]):
-            courses.append(c)
+    if access:
+        for c in courses_to_find:
+            if len([g for g in c.groups]) > 0:
+                courses.append(c)
+    else:
+        for c in courses_to_find:
+            if len([g for g in c.groups]) > 0 and all([group.opened for group in c.groups]):
+                courses.append(c)
     areas = list(filter(lambda x: x is not None, list(set([course.area for course in courses]))))
     directions = list(filter(lambda x: x is not None, list(set([course.direction for course in courses]))))
     db_sess.close()

@@ -153,7 +153,7 @@ def admin_panel():
     if form.validate_on_submit():
         if request.form.get('password') == admin_password :
             records = db_session.query(Record).all()
-            courses, areas, directions = show_courses(db_session)
+            courses, areas, directions = show_courses(db_session, access=True)
             teachers = sorted(list(set([course.teachers[0] for course in courses])))
             for record in records:
                 record.child_birthday = (datetime.date.today() - record.child_birthday).days // 365
