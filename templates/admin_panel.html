@@ -107,12 +107,12 @@
                 {% if course.age_from and course.age_to %}
                     {% set ages = range(course.age_from, course.age_to + 1)|join(' ') %}
                 {% endif %}
-                <li data-area="{{ course.area }}" data-direction="{{ course.direction }}" data-teacher="{{ course.teachers[0] }}">
+                <li class="courseCard" data-area="{{ course.area }}" data-direction="{{ course.direction }}" data-teacher="{{ course.teachers[0] }}">
                     <div class="uk-card uk-card-default uk-box-shadow-hover-small uk-border-rounded">
                         <div class="uk-card-header">
                             <div class="uk-grid-small uk-flex-middle" uk-grid>
                                 <div class="uk-width-expand">
-                                    <h3 class="uk-card-title uk-margin-remove-bottom">{{ course.name }}</h3>
+                                    <h3 id="courseName" class="uk-card-title uk-margin-remove-bottom">{{ course.name }}</h3>
                                     {% if course.free == false %}
                                         <span class="uk-label uk-label-warning">Обучение платное</span>
                                     {% endif %}
@@ -146,23 +146,21 @@
     </div>
 
     <script>
-        let courses = {{ courses|safe }};
-        const results = document.getElementById('results');
+        let courses = Array.from(document.getElementsByClassName('courseCard'));
         const search_input = document.getElementById('search');
         let search_term = '';
         search_input.addEventListener('input', e => {
             search_term = e.target.value;
             showCourses();
         });
-
+        console.log(courses[0]);
         const showCourses = async () => {
-            results.innerHTML = '';
-
+            courses.forEach(course => {course.setAttribute('hidden', true)});
             courses
                 .filter(course =>
-                    course.name.toLowerCase().includes(search_term.toLowerCase()))
+                    course.outerHTML.toLowerCase().includes(search_term.toLowerCase()))
                 .forEach(course => {
-                    
+                    course.removeAttribute('hidden');
                 })
         }
     </script>
