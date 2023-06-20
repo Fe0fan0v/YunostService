@@ -19,7 +19,7 @@ def show_courses(db_sess, access=False):
                 courses.append(c)
     else:
         for c in courses_to_find:
-            if len([g for g in c.groups]) > 0 and all([group.opened for group in c.groups]):
+            if len([g for g in c.groups]) > 0 and any([group.opened for group in c.groups]):
                 courses.append(c)
     areas = list(filter(lambda x: x is not None, list(set([course.area for course in courses]))))
     directions = list(filter(lambda x: x is not None, list(set([course.direction for course in courses]))))
