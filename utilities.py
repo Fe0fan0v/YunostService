@@ -1,3 +1,5 @@
+from pprint import pprint
+
 import numpy
 import sqlalchemy
 from sqlalchemy import and_, update
@@ -159,3 +161,24 @@ def update_database():
                 db_session.add(new_course)
                 db_session.commit()
                 print(f'{new_course.name} created')
+
+
+def get_all_records(filename):
+    db_sess = create_db_session()
+    all_recs = db_sess.query(Record.child_surname,
+                             Record.child_name,
+                             Record.child_patronymic,
+                             Record.parent_phone,
+                             Record.parent_email,
+                             Record.child_birthday,
+                             Record.educational_institution,
+                             Record.edu_class,
+                             Course.name).select_from(Course).join(Course.records).all()
+    all_records = pandas.DataFrame(all_recs, columns=['Ф', 'И', 'О', 'Телефон', 'Email', 'Дата Рождения',
+                                                      'Школа', 'Класс', 'Программа'])
+    all_records['ФИО'] = all_records[['Ф', 'И', 'О']].agg(' '.join, axis=1)
+    FIO = all_records['ФИО']
+    all_records.drop(columns=['Ф', 'И', 'О'], axis=1, inplace=True)
+    all_records.drop(columns=['ФИО'], axis=1, inplace=True)
+    all_records.insert(0, 'ФИО', FIO)
+    all_records.to_excel(filename)

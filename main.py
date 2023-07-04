@@ -172,13 +172,27 @@ def get_group(num):
     records = db_sess.query(Record).select_from(Group).join(Record.groups).filter(Group.id == num).all()
     for record in records:
         record.child_birthday = (datetime.date.today() - record.child_birthday).days // 365
-    return render_template('show_records.html', course=course, group_num=group_num, records=enumerate(records))
+    return render_template('show_records.html', course=course, group_num=group_num, group_id=num, records=enumerate(records))
+
+
+@app.route('/get_group_table/<num>')
+def get_group_table(num):
+    db_sess = create_db_session()
+    records = db_sess.query(Record).select_from(Group).join(Record.groups).filter(Group.id == num).all()
+
 
 
 @app.route('/download/<filename>')
 def return_files(filename):
     file_path = filename
     return send_file(file_path, as_attachment=True, attachment_filename='')
+
+
+@app.route('/get_all')
+def get_all():
+    from utilities import get_all_records
+    get_all_records(f'table.xlsx')
+    return send_file('table.xlsx')
 
 
 @app.route('/report')
