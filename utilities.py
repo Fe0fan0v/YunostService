@@ -1,4 +1,6 @@
+import datetime
 from pprint import pprint
+import os
 
 import numpy
 import sqlalchemy
@@ -182,3 +184,23 @@ def get_all_records(filename):
     all_records.drop(columns=['ФИО'], axis=1, inplace=True)
     all_records.insert(0, 'ФИО', FIO)
     all_records.to_excel(filename)
+
+
+def get_group_records(filename, num):
+    db_sess = create_db_session()
+    recs = db_sess.query(Record.child_surname,
+                            Record.child_name,
+                            Record.child_patronymic,
+                            Record.parent_phone,
+                            Record.parent_email,
+                            Record.child_birthday,
+                            Record.educational_institution,
+                            Record.edu_class).join(Record.groups).filter(Group.id == num).all()
+    records = pandas.DataFrame(recs, columns=['Ф', 'И', 'О', 'Телефон', 'Email', 'Дата Рождения',
+                                                      'Школа', 'Класс'])
+    records['ФИО'] = records[['Ф', 'И', 'О']].agg(' '.join, axis=1)
+    FIO = records['ФИО']
+    records.drop(columns=['Ф', 'И', 'О'], axis=1, inplace=True)
+    records.drop(columns=['ФИО'], axis=1, inplace=True)
+    records.insert(0, 'ФИО', FIO)
+    records.to_excel(filename)

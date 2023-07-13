@@ -1,12 +1,12 @@
 import datetime
 from pprint import pprint
-
+import os
 from flask import Flask, render_template, request, redirect, send_file, url_for
 from flask_cors import CORS
 
 from db.models import Course, Record, Group
 from forms import RegisterChild, AdminEnter
-from utilities import show_courses, get_filter_criteria
+from utilities import show_courses, get_filter_criteria, get_group_records
 from sendmail import send
 from env import admin_password
 from sqlalchemy import and_
@@ -177,22 +177,22 @@ def get_group(num):
 
 @app.route('/get_group_table/<num>')
 def get_group_table(num):
-    db_sess = create_db_session()
-    records = db_sess.query(Record).select_from(Group).join(Record.groups).filter(Group.id == num).all()
+    filename = f'группа{num}.xlsx'
+    get_group_records(filename, num)
+    return send_file(filename)
 
+
+@app.route('/get_all')
+def get_all():
+    from utilities import get_all_records
+    get_all_records('table.xlsx')
+    return send_file('table.xlsx')
 
 
 @app.route('/download/<filename>')
 def return_files(filename):
     file_path = filename
     return send_file(file_path, as_attachment=True, attachment_filename='')
-
-
-@app.route('/get_all')
-def get_all():
-    from utilities import get_all_records
-    get_all_records(f'table.xlsx')
-    return send_file('table.xlsx')
 
 
 @app.route('/report')
