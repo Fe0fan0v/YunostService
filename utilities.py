@@ -175,9 +175,10 @@ def get_all_records(filename):
                              Record.child_birthday,
                              Record.educational_institution,
                              Record.edu_class,
-                             Course.name).select_from(Course).join(Course.records).all()
+                             Course.name,
+                             Course.teachers).select_from(Course).join(Course.records).all()
     all_records = pandas.DataFrame(all_recs, columns=['Ф', 'И', 'О', 'Телефон', 'Email', 'Дата Рождения',
-                                                      'Школа', 'Класс', 'Программа'])
+                                                      'Школа', 'Класс', 'Программа', 'Педагог'])
     all_records['ФИО'] = all_records[['Ф', 'И', 'О']].agg(' '.join, axis=1)
     FIO = all_records['ФИО']
     all_records.drop(columns=['Ф', 'И', 'О'], axis=1, inplace=True)

@@ -37,7 +37,7 @@ def get_groups_and_courses():
     if todo == 'd':
         id_to_delete = input('Введите id записи ребёнка для удаления\n')
         group_num_to_delete = input('Введите id группы из которой необходимо удалить ребёнка\n')
-        print(f'Удаляем запись {id_to_delete} из группы {group_num_to_delete}? (Y/N)')
+        print(f'Удаляем запись {id_to_delete} из группы {group_num_to_delete}? (Y/N)\n')
         answer = input().lower()
         while answer != 'y':
             if answer == 'n':
