@@ -48,6 +48,7 @@ def get_groups_and_courses():
                                                           records_groups.group_id == group_num_to_delete)).delete()
                 db_sess.query(records_courses).filter(and_(records_courses.record_id == id_to_delete,
                                                            records_groups.course_id == course_to_delete.course_id)).delete()
+                db_sess.commit()
 
             else:
                 answer = input('Не понял, удаляем или нет? (Y/N)\n').lower()
