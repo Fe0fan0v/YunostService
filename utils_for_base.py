@@ -1,11 +1,12 @@
 from db import db_session
 from db.models import Group, Course, Record, records_groups, records_courses
 from sqlalchemy import and_
+from sqlalchemy.dialects.postgresql import Any
 
 from utilities import get_all_records
 
 
-def get_groups_and_courses():
+def find_and_delete_record():
     db_sess = db_session.create_db_session()
     print('Введите <Фамилию Имя> ребёнка\n')
     surname, name = input().split()
@@ -56,4 +57,31 @@ def get_groups_and_courses():
         return
 
 
-get_groups_and_courses()
+def find_course_and_group():
+    print('Введите примерное название программы\n')
+    answer = input().upper()
+    db_sess = db_session.create_db_session()
+    courses = db_sess.query(Course).filter(Course.name.contains(answer))
+    if not courses:
+        print('Ничего не найдено')
+        return
+    for course in courses:
+        print('-------------------------------------------------------------------------------------------------------')
+        groups = db_sess.query(Group).filter(Group.course_id == course.id).all()
+        print(f'{course.teachers} - {course.name}')
+        for group in groups:
+            print(f'Группа {group.id} - {group.schedule}')
+        print('-------------------------------------------------------------------------------------------------------')
+        return
+
+
+def run():
+    print('Ищем курс или запись?(С - курс, R - запись)\n')
+    answer = input().lower()
+    if answer == 'c':
+        find_course_and_group()
+    elif answer == 'r':
+        find_and_delete_record()
+
+
+run()
