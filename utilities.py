@@ -172,12 +172,13 @@ def get_all_records(filename):
                              Record.child_patronymic,
                              Record.parent_phone,
                              Record.parent_email,
+                             Record.parent_work,
                              Record.child_birthday,
                              Record.educational_institution,
                              Record.edu_class,
                              Course.name,
                              Course.teachers).select_from(Course).join(Course.records).all()
-    all_records = pandas.DataFrame(all_recs, columns=['Ф', 'И', 'О', 'Телефон', 'Email', 'Дата Рождения',
+    all_records = pandas.DataFrame(all_recs, columns=['Ф', 'И', 'О', 'Телефон', 'Email', 'Место работы родителя', 'Дата Рождения',
                                                       'Школа', 'Класс', 'Программа', 'Педагог'])
     all_records['ФИО'] = all_records[['Ф', 'И', 'О']].agg(' '.join, axis=1)
     FIO = all_records['ФИО']
