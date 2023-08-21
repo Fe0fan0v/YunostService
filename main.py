@@ -172,7 +172,8 @@ def get_group(num):
     records = db_sess.query(Record).select_from(Group).join(Record.groups).filter(Group.id == num).all()
     for record in records:
         record.child_birthday = (datetime.date.today() - record.child_birthday).days // 365
-    return render_template('show_records.html', course=course, group_num=group_num, group_id=num, records=enumerate(records))
+    return render_template('show_records.html', course=course, group_num=group_num, group_id=num,
+                           records=enumerate(records))
 
 
 @app.route('/get_group_table/<num>')
