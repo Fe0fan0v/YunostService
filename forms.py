@@ -16,7 +16,7 @@ class RegisterChild(FlaskForm):
     edu_class = StringField('Класс/курс (на 1 сентября)', validators=[DataRequired()])
     health = SelectField('Здоровье', validators=[DataRequired()], choices=['Здоров', 'ОВЗ', 'Инвалид'])
     snils = StringField('Номер СНИЛС ребенка')
-    certificate = StringField('Номер сертификата вноситься после 31 августа с сайта Госуслуги')
+    certificate = StringField('Номер сертификата вносится после 31 августа с сайта Госуслуги')
     child_phone = StringField('Телефон ребенка')
     child_email = EmailField('Email ребенка')
     child_residence = StringField('Место жительства ребенка', validators=[DataRequired()])
