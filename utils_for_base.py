@@ -70,9 +70,12 @@ def find_course_and_group():
         groups = db_sess.query(Group).filter(Group.course_id == course.id).all()
         print(f'{course.teachers} - {course.name}')
         for group in groups:
-            print(f'Группа {group.id} - {group.schedule}')
+            print(f'Группа № {group.number} id{group.id} - {group.schedule} / {"opened" if group.opened else "closed"}')
         print('-------------------------------------------------------------------------------------------------------')
         return
+    answer = int(input('Какую группу открыть/закрыть?(ID)\n'))
+    group = db_sess.query(Group).filter(Group.id == answer).first()
+    
 
 
 def run():
