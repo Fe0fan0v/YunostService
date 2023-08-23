@@ -134,7 +134,11 @@
                             <p class="uk-text-center">Выбрать группу</p>
                             {% for group in course.groups %}
                                     <div class="uk-inline">
-                                        <a href="/admin/group/{{ group.id }}" target="_blank" class="uk-button uk-button-text uk-text-primary">
+                                        {% if group.opened %}
+                                        <a href="/admin/group/{{ group.id }}" target="_blank" class="uk-button uk-button-text uk-text-success">
+                                            Группа {{ group.number }}</a>
+                                        {% else %}
+                                        <a href="/admin/group/{{ group.id }}" target="_blank" class="uk-button uk-button-text uk-text-danger">
                                             Группа {{ group.number }}</a>
                                     </div>
                                 <br>

@@ -1,6 +1,6 @@
 from db import db_session
 from db.models import Group, Course, Record, records_groups, records_courses
-from sqlalchemy import and_
+from sqlalchemy import and_, update
 from sqlalchemy.dialects.postgresql import Any
 
 from utilities import get_all_records
@@ -44,13 +44,15 @@ def find_and_delete_record():
             if answer == 'n':
                 return
             elif answer == 'y':
-                course_to_delete = db_sess.query(Group).filter(Group.id == group_num_to_delete).first()
-                db_sess.query(records_groups).filter(and_(records_groups.record_id == id_to_delete,
-                                                          records_groups.group_id == group_num_to_delete)).delete()
-                db_sess.query(records_courses).filter(and_(records_courses.record_id == id_to_delete,
-                                                           records_groups.course_id == course_to_delete.course_id)).delete()
+                course_to_delete = db_sess.query(Course).select_from(Group).join(Course.groups).filter(
+                    Group.id == group_num_to_delete).first()
+                group_to_del = db_sess.query(records_groups).filter(and_(records_groups.record_id == id_to_delete,
+                                                                         records_groups.group_id == group_num_to_delete)).first()
+                course_to_del = db_sess.query(records_courses).filter(and_(records_courses.record_id == id_to_delete,
+                                                                           records_groups.course_id == course_to_delete.course_id)).first()
+                db_sess.delete(group_to_del)
+                db_sess.delete(course_to_del)
                 db_sess.commit()
-
             else:
                 answer = input('Не понял, удаляем или нет? (Y/N)\n').lower()
     else:
@@ -61,7 +63,7 @@ def find_course_and_group():
     print('Введите примерное название программы\n')
     answer = input().upper()
     db_sess = db_session.create_db_session()
-    courses = db_sess.query(Course).filter(Course.name.contains(answer))
+    courses = db_sess.query(Course).filter(Course.name.contains(answer)).all()
     if not courses:
         print('Ничего не найдено')
         return
@@ -70,12 +72,19 @@ def find_course_and_group():
         groups = db_sess.query(Group).filter(Group.course_id == course.id).all()
         print(f'{course.teachers} - {course.name}')
         for group in groups:
-            print(f'Группа № {group.number} id{group.id} - {group.schedule} / {"opened" if group.opened else "closed"}')
+            print(f'ID{group.id} Группа № {group.number} - {group.schedule} / {"открыта" if group.opened else "закрыта"}')
         print('-------------------------------------------------------------------------------------------------------')
-        return
-    answer = int(input('Какую группу открыть/закрыть?(ID)\n'))
-    group = db_sess.query(Group).filter(Group.id == answer).first()
-    
+    group_to_work = int(input('Какую группу открыть/закрыть?(ID)\n'))
+    group = db_sess.query(Group).filter(Group.id == group_to_work).first()
+    todo = input('Что делать с группой? (O - открыть, С - закрыть\n').lower()
+    if todo == 'o':
+        group.opened = True
+    elif todo == 'c':
+        group.opened = False
+    db_sess.add(group)
+    db_sess.commit()
+    print('Done')
+    return
 
 
 def run():
