@@ -53,6 +53,7 @@ def find_and_delete_record():
                 db_sess.delete(group_to_del)
                 db_sess.delete(course_to_del)
                 db_sess.commit()
+                db_sess.close()
             else:
                 answer = input('Не понял, удаляем или нет? (Y/N)\n').lower()
     else:
@@ -83,6 +84,7 @@ def find_course_and_group():
         group.opened = False
     db_sess.add(group)
     db_sess.commit()
+    db_sess.close()
     print('Done')
     return
 
