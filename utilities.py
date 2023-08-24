@@ -1,4 +1,6 @@
+import base64
 import datetime
+import struct
 from pprint import pprint
 import os
 
@@ -206,3 +208,14 @@ def get_group_records(filename, num):
     records.drop(columns=['ФИО'], axis=1, inplace=True)
     records.insert(0, 'ФИО', FIO)
     records.to_excel(filename)
+
+
+INT_PAIR_STRUCT_FORMAT = '>II'
+
+
+def get_encoded_str_from_int_pair(first, second):
+    return base64.b64encode(struct.pack(INT_PAIR_STRUCT_FORMAT, first, second)).decode()
+
+
+def get_decoded_int_pair_from_str(string):
+    return struct.unpack(INT_PAIR_STRUCT_FORMAT, base64.b64decode(string.encode()))

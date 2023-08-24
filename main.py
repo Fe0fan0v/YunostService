@@ -1,12 +1,14 @@
 import datetime
-from pprint import pprint
-import os
+import io
+
+from docxtpl import DocxTemplate
 from flask import Flask, render_template, request, redirect, send_file, url_for
 from flask_cors import CORS
 
 from db.models import Course, Record, Group
 from forms import RegisterChild, AdminEnter
-from utilities import show_courses, get_filter_criteria, get_group_records
+from utilities import show_courses, get_filter_criteria, get_group_records, get_encoded_str_from_int_pair, \
+    get_decoded_int_pair_from_str
 from sendmail import send
 from env import admin_password
 from sqlalchemy import and_
@@ -18,7 +20,6 @@ app.config['SECRET_KEY'] = 'super_secret_key'
 init_db()
 CORS(app)
 # app.register_blueprint(api_bp)
-
 DIRECTIONS = {'Художественная': ['ИЗОБРАЗИТЕЛЬНОЕ ИСКУССТВО', 'ВОКАЛ', 'ХОРЕОГРАФИЯ', 'ТЕАТР', 'ЦИРК', 'ДЕКОРАТИВНО-ПРИКЛАДНОЕ ТВОРЧЕСТВО (ВАЛЯНИЕ ИЗ ШЕРСТИ, БИСЕРОПЛЕТЕНИЕ, ТЕКСТИЛЬНАЯ КУКЛА И ДР.)', 'ПРОЕКТИРОВАНИЕ СОВРЕМЕННОЙ ОДЕЖДЫ', 'МУЗЫКАЛЬНАЯ ДЕЯТЕЛЬНОСТЬ'],
               'Физкультурно-спортивная': ['СПОРТ', 'ШАХМАТЫ'],
               'Социально-гуманитарная': ['ЖУРНАЛИСТИКА', 'ПСИХОЛОГИЯ', 'АНГЛИЙСКИЙ ЯЗЫК', 'ПОДГОТОВКА К ШКОЛЕ', 'МУЛЬТИМЕДИА', 'МЕДИА', 'ФИНАНСОВАЯ ГРАМОТНОСТЬ', 'ОБЩЕСТВОЗНАНИЕ', 'ПРОФЕССИОНАЛЬНОЕ САМООПРЕДЕЛЕНИЕ.', 'СКОРОЧТЕНИЕ, МНЕМОТЕХНИКА, УСТНЫЙ СЧЁТ.'],
@@ -94,13 +95,13 @@ def registration():
                 db_session.commit()
                 send(registered.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
                 db_session.close()
-                if count_records > 15:
-                    return redirect(
-                        url_for('enroll', message_type='success',
-                                message="Ваша запись успешно зарегистрирована", overflow=True))
-                return redirect(
-                    url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
-
+                overflow = count_records > 15
+                encoded_pair = get_encoded_str_from_int_pair(registered.id, course.id)
+                return redirect(url_for('enroll',
+                                        message_type='success',
+                                        message="Ваша запись успешно зарегистрирована",
+                                        overflow=overflow,
+                                        pair_id=encoded_pair))
         else:
             record = Record(child_name=data['child_name'].strip().capitalize(),
                             child_surname=data['child_surname'].strip().capitalize(),
@@ -135,12 +136,13 @@ def registration():
             db_session.commit()
             send(record.parent_email, 'Запись в ДДТ Юность', course.name, data['group'])
             db_session.close()
-            if count_records > 15:
-                return redirect(
-                    url_for('enroll', message_type='success',
-                            message="Ваша запись успешно зарегистрирована", overflow=True))
-            return redirect(
-                url_for('enroll', message_type='success', message="Ваша запись успешно зарегистрирована"))
+            overflow = count_records > 15
+            encoded_pair = get_encoded_str_from_int_pair(record.id, course.id)
+            return redirect(url_for('enroll',
+                                    message_type='success',
+                                    message="Ваша запись успешно зарегистрирована",
+                                    overflow=overflow,
+                                    pair_id=encoded_pair))
     db_session.close()
     return render_template('registration.html', course=course, form=form, group=group,
                            count_records=count_records)
@@ -170,10 +172,12 @@ def get_group(num):
     course = db_sess.query(Course).select_from(Group).join(Course.groups).filter(Group.id == num).first()
     group_num = db_sess.query(Group).filter(Group.id == num).first().number
     records = db_sess.query(Record).select_from(Group).join(Record.groups).filter(Group.id == num).all()
+    pairs = []
     for record in records:
         record.child_birthday = (datetime.date.today() - record.child_birthday).days // 365
+        pairs.append(get_encoded_str_from_int_pair(record.id, course.id))
     return render_template('show_records.html', course=course, group_num=group_num, group_id=num,
-                           records=enumerate(records))
+                           records=enumerate(records), pairs_id=pairs)
 
 
 @app.route('/get_group_table/<num>')
@@ -194,6 +198,43 @@ def get_all():
 def return_files(filename):
     file_path = filename
     return send_file(file_path, as_attachment=True, attachment_filename='')
+
+
+@app.route('/documents/<pair_id>')
+def record_documents(pair_id):
+    record_id, course_id = get_decoded_int_pair_from_str(pair_id)
+    db_session = create_db_session()
+    record = db_session.query(Record).get(record_id)
+    course = db_session.query(Course).get(course_id)
+    doc = DocxTemplate("documents/statement_tpl.docx")
+    *course_department, course_name = course.name.strip(' .').rsplit('.', maxsplit=1)
+    context = {
+        "course_name": course_name.strip(),
+        "course_department": course_department[0].strip() if course_department else course_name.strip(),
+        "course_focus": course.focus,
+        "child_fullname": ' '.join(map(str.strip, (record.child_surname, record.child_name, record.child_patronymic))),
+        "child_birthday": record.child_birthday.strftime("%d.%m.%Y"),
+        "child_home_address": record.child_residence,
+        "educational_institution": record.educational_institution,
+        "edu_class": record.edu_class,
+        "health": record.health,
+        "snils": record.snils,
+        "without_parents": record.without_parents,
+        "police_record": record.police_record,
+        "parent_fullname": ' '.join(map(str.strip, (record.parent_surname, record.parent_name, record.parent_patronymic))),
+        "parent_birthday": record.parent_birthday.strftime("%d.%m.%Y"),
+        "parent_phone": record.parent_phone,
+        "parent_email": record.parent_email,
+        "parent_residence": record.parent_residence,
+        "parent_work": record.parent_work,
+        "full_family": record.full_family,
+        "large_family": record.large_family,
+    }
+    doc.render(context)
+    file_stream = io.BytesIO()
+    doc.save(file_stream)
+    file_stream.seek(0)
+    return send_file(file_stream, as_attachment=True, attachment_filename='statement.docx')
 
 
 @app.route('/report')
