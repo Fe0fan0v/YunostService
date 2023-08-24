@@ -11,6 +11,7 @@ from sendmail import send
 from env import admin_password
 from sqlalchemy import and_
 from db.db_session import create_db_session, init_db
+
 # from api.api import api_bp
 
 app = Flask(__name__)
@@ -19,10 +20,17 @@ init_db()
 CORS(app)
 # app.register_blueprint(api_bp)
 
-DIRECTIONS = {'Художественная': ['ИЗОБРАЗИТЕЛЬНОЕ ИСКУССТВО', 'ВОКАЛ', 'ХОРЕОГРАФИЯ', 'ТЕАТР', 'ЦИРК', 'ДЕКОРАТИВНО-ПРИКЛАДНОЕ ТВОРЧЕСТВО (ВАЛЯНИЕ ИЗ ШЕРСТИ, БИСЕРОПЛЕТЕНИЕ, ТЕКСТИЛЬНАЯ КУКЛА И ДР.)', 'ПРОЕКТИРОВАНИЕ СОВРЕМЕННОЙ ОДЕЖДЫ', 'МУЗЫКАЛЬНАЯ ДЕЯТЕЛЬНОСТЬ'],
+DIRECTIONS = {'Художественная': ['ИЗОБРАЗИТЕЛЬНОЕ ИСКУССТВО', 'ВОКАЛ', 'ХОРЕОГРАФИЯ', 'ТЕАТР', 'ЦИРК',
+                                 'ДЕКОРАТИВНО-ПРИКЛАДНОЕ ТВОРЧЕСТВО (ВАЛЯНИЕ ИЗ ШЕРСТИ, БИСЕРОПЛЕТЕНИЕ, ТЕКСТИЛЬНАЯ КУКЛА И ДР.)',
+                                 'ПРОЕКТИРОВАНИЕ СОВРЕМЕННОЙ ОДЕЖДЫ', 'МУЗЫКАЛЬНАЯ ДЕЯТЕЛЬНОСТЬ'],
               'Физкультурно-спортивная': ['СПОРТ', 'ШАХМАТЫ'],
-              'Социально-гуманитарная': ['ЖУРНАЛИСТИКА', 'ПСИХОЛОГИЯ', 'АНГЛИЙСКИЙ ЯЗЫК', 'ПОДГОТОВКА К ШКОЛЕ', 'МУЛЬТИМЕДИА', 'МЕДИА', 'ФИНАНСОВАЯ ГРАМОТНОСТЬ', 'ОБЩЕСТВОЗНАНИЕ', 'ПРОФЕССИОНАЛЬНОЕ САМООПРЕДЕЛЕНИЕ.', 'СКОРОЧТЕНИЕ, МНЕМОТЕХНИКА, УСТНЫЙ СЧЁТ.'],
-              'Техническая': [' КОНСТРУИРОВАНИЕ, МОДЕЛИРОВАНИЕ', 'IT (ПРОГРАММИРОВАНИЕ, РОБОТОТЕХНИКА, ТЕХНИЧЕСКИЙ АНГЛИЙСКИЙ И ДР.)', 'СТОЛЯРНОЕ ДЕЛО', 'РЕЗЬБА ПО ДЕРЕВУ', 'ЭЛЕКТРОНИКА', 'БУМАГОПЛАСТИКА', 'МУЛЬТИПЛИКАЦИЯ'],
+              'Социально-гуманитарная': ['ЖУРНАЛИСТИКА', 'ПСИХОЛОГИЯ', 'АНГЛИЙСКИЙ ЯЗЫК', 'ПОДГОТОВКА К ШКОЛЕ',
+                                         'МУЛЬТИМЕДИА', 'МЕДИА', 'ФИНАНСОВАЯ ГРАМОТНОСТЬ', 'ОБЩЕСТВОЗНАНИЕ',
+                                         'ПРОФЕССИОНАЛЬНОЕ САМООПРЕДЕЛЕНИЕ.',
+                                         'СКОРОЧТЕНИЕ, МНЕМОТЕХНИКА, УСТНЫЙ СЧЁТ.'],
+              'Техническая': [' КОНСТРУИРОВАНИЕ, МОДЕЛИРОВАНИЕ',
+                              'IT (ПРОГРАММИРОВАНИЕ, РОБОТОТЕХНИКА, ТЕХНИЧЕСКИЙ АНГЛИЙСКИЙ И ДР.)', 'СТОЛЯРНОЕ ДЕЛО',
+                              'РЕЗЬБА ПО ДЕРЕВУ', 'ЭЛЕКТРОНИКА', 'БУМАГОПЛАСТИКА', 'МУЛЬТИПЛИКАЦИЯ'],
               'Естественно-научная': ['ЕСТЕСТВЕННЫЕ НАУКИ (ХИМИЯ, БИОЛОГИЯ, АСТРОНОМИЯ, ГЕОЛОГИЯ)'],
               'Туристско-краеведческая': ['ЕСТЕСТВЕННЫЕ НАУКИ.']}
 
@@ -37,7 +45,8 @@ def enroll():
         return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS)
     elif 'message_type' in args.keys():
         db_session.close()
-        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS, message_type=args['message_type'],
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS,
+                               message_type=args['message_type'],
                                message=args['message'])
     if 'overflow' in args.keys():
         return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS,
@@ -66,13 +75,13 @@ def registration():
             return render_template('registration.html', course=course, form=form, group=group,
                                    count_records=count_records, message='Курс не подходит Вам по возрасту')
         registered = db_session.query(Record).filter(
-                and_(
-                    Record.child_name == data['child_name'].strip().capitalize(),
-                    Record.child_surname == data['child_surname'].strip().capitalize(),
-                    Record.child_patronymic == data['child_patronymic'].strip().capitalize(),
-                    Record.child_birthday == child_birthday
-                )
-            ).first()
+            and_(
+                Record.child_name == data['child_name'].strip().capitalize(),
+                Record.child_surname == data['child_surname'].strip().capitalize(),
+                Record.child_patronymic == data['child_patronymic'].strip().capitalize(),
+                Record.child_birthday == child_birthday
+            )
+        ).first()
         if registered:
             if course in registered.courses:
                 return redirect(url_for('enroll', message_type='danger', message='Вы уже записаны в это объединение!'))
@@ -151,7 +160,7 @@ def admin_panel():
     form = AdminEnter()
     db_session = create_db_session()
     if form.validate_on_submit():
-        if request.form.get('password') == admin_password :
+        if request.form.get('password') == admin_password:
             records = db_session.query(Record).all()
             courses, areas, directions = show_courses(db_session, access=True)
             teachers = sorted(list(set([course.teachers[0] for course in courses])))

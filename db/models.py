@@ -12,7 +12,7 @@ records_groups = sqlalchemy.Table("records_groups_23",
                                   base.metadata,
                                   sqlalchemy.Column('record_id', sqlalchemy.ForeignKey('records_23.id')),
                                   sqlalchemy.Column('group_id', sqlalchemy.ForeignKey('groups_23.id')),
-                                  sqlalchemy.Column('reg_date', sqlalchemy.Date(), default=datetime.date.today()))
+                                  sqlalchemy.Column('reg_date', sqlalchemy.Date(), default=datetime.date.today))
 
 
 records_courses = sqlalchemy.Table("records_courses_23",

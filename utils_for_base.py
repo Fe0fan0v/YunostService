@@ -50,6 +50,7 @@ def find_and_delete_record():
                                                                          records_groups.group_id == group_num_to_delete)).first()
                 course_to_del = db_sess.query(records_courses).filter(and_(records_courses.record_id == id_to_delete,
                                                                            records_groups.course_id == course_to_delete.course_id)).first()
+                print(course_to_del.id, group_to_del.id)
                 db_sess.delete(group_to_del)
                 db_sess.delete(course_to_del)
                 db_sess.commit()
