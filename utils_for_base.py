@@ -40,22 +40,18 @@ def find_and_delete_record():
         group_num_to_delete = int(input('Введите id группы из которой необходимо удалить ребёнка\n'))
         print(f'Удаляем запись {id_to_delete} из группы {group_num_to_delete}? (Y/N)\n')
         answer = input().lower()
-        while answer != 'y':
-            if answer == 'n':
-                return
-            elif answer == 'y':
-                course_to_delete = db_sess.query(Course).select_from(Group).join(Course.groups).filter(
-                    Group.id == group_num_to_delete).first()
-                group_to_del = db_sess.query(records_groups).filter(and_(records_groups.record_id == id_to_delete,
-                                                                         records_groups.group_id == group_num_to_delete)).first()
-                course_to_del = db_sess.query(records_courses).filter(and_(records_courses.record_id == id_to_delete,
-                                                                           records_groups.course_id == course_to_delete.course_id)).first()
-                db_sess.delete(group_to_del)
-                db_sess.delete(course_to_del)
-                db_sess.commit()
-                db_sess.close()
-            else:
-                answer = input('Не понял, удаляем или нет? (Y/N)\n').lower()
+        while answer not in 'yn':
+            answer = input('Не понял, удаляем или нет? (Y/N)\n').lower()
+        if answer == 'n':
+            return
+        else:
+            course_to_delete = db_sess.query(Course).select_from(Group).join(Course.groups).filter(
+                Group.id == group_num_to_delete).first()
+            db_sess.execute(f'delete from records_groups_23 where record_id = {id_to_delete} and group_id = {group_num_to_delete}')
+            db_sess.execute(f'delete from records_courses_23 where record_id = {id_to_delete} and course_id = {course_to_delete.id}')
+            db_sess.commit()
+            db_sess.close()
+            print('Удалено')
     else:
         return
 
