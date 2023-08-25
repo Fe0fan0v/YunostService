@@ -29,12 +29,16 @@ class RegisterChild(FlaskForm):
     parent_work = StringField('Место работы родителя/законного представителя', validators=[DataRequired()])
     parent_phone = StringField('Телефон родителя/законного представителя', validators=[DataRequired()])
     parent_email = EmailField('Email родителя/законного представителя', validators=[DataRequired(), Email()])
-    full_family = SelectField('Полная семья', validators=[DataRequired()], choices=['Полная семья', 'Неполная семья'])
-    large_family = SelectField('Многодетная семья', validators=[DataRequired()], choices=['Многодетная семья', 'Нет'])
+    full_family = SelectField('Полная семья', validators=[DataRequired()], choices=['Полная семья', 'Неполная семья'],
+                              default='Полная семья')
+    large_family = SelectField('Многодетная семья', validators=[DataRequired()],
+                               choices=['Многодетная семья', 'Нет'],
+                               default='Нет')
     without_parents = SelectField('Оставшийся без попечения родителей', validators=[DataRequired()],
-                                  choices=['Оставшийся без попечения родителей', 'Нет'])
+                                  choices=['Оставшийся без попечения родителей', 'Нет'], default='Нет')
     police_record = SelectField('Состоит на учете в инспекции по делах н/летних', validators=[DataRequired()],
-                                choices=['Состоит на учете в инспекции по делах н/летних', 'Нет'])
+                                choices=['Состоит на учете в инспекции по делах н/летних', 'Нет'],
+                                default='Нет')
     resident = SelectField('Гражданин РФ', validators=[DataRequired()],
                            choices=['Гражданин РФ', 'Не является гражданином РФ'])
     second_parent_fio = StringField('ФИО второго родителя')
