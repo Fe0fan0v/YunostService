@@ -136,10 +136,10 @@
                                     <div class="uk-inline">
                                         {% if group.opened %}
                                         <a href="/admin/group/{{ group.id }}" target="_blank" class="uk-button uk-button-text uk-text-success">
-                                            Группа {{ group.number }}</a>
+                                            Группа {{ group.number }} {{ group.schedule }}</a>
                                         {% else %}
                                         <a href="/admin/group/{{ group.id }}" target="_blank" class="uk-button uk-button-text uk-text-danger">
-                                            Группа {{ group.number }}</a>
+                                            Группа {{ group.number }} {{ group.schedule }}</a>
                                         {% endif %}
                                     </div>
                                 <br>

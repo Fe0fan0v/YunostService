@@ -18,6 +18,13 @@
                 </ul>
             </ul>
         </div>
+        <div class="uk-navbar-item">
+                <form class="uk-search uk-search-navbar">
+                    <span uk-search-icon></span>
+                    <input id="search" class="uk-search-input" type="search" placeholder="Поиск"
+                           autocomplete="off">
+                </form>
+            </div>
     </nav>
     <!--Всплывающие сообщения------------------------------------------>
     {% if message %}
@@ -184,7 +191,7 @@
                 {% if course.age_from and course.age_to %}
                     {% set ages = range(course.age_from, course.age_to + 1)|join(' ') %}
                 {% endif %}
-                <li data-area="{{ course.area }}" data-direction="{{ course.direction }}" data-age="{{ ages }}"
+                <li class="courseCard" data-area="{{ course.area }}" data-direction="{{ course.direction }}" data-age="{{ ages }}"
                     data-code="{{ course.code }}">
                     <div class="uk-card uk-card-default uk-box-shadow-hover-small uk-border-rounded">
                         <div class="uk-card-header">
@@ -199,6 +206,8 @@
                                     {% endif %}
                                     {% if course.id == 21 %}
                                         <p>Необходим отбор по <a href="https://innovationcampus.ru/itschool/">ссылке</a></p>
+                                    {% elif course.id in (35, 36, 55, 56) %}
+                                        <p>Запись и отбор по <a href="https://academy.yandex.ru/lyceum">ссылке</a></p>
                                     {% endif %}
                                     <p>{{ course.area }}</p>
                                     {% for teacher in course.teachers %}
@@ -235,4 +244,23 @@
             {% endfor %}
         </ul>
     </div>
+    <script>
+        let courses = Array.from(document.getElementsByClassName('courseCard'));
+        const search_input = document.getElementById('search');
+        let search_term = '';
+        search_input.addEventListener('input', e => {
+            search_term = e.target.value;
+            showCourses();
+        });
+        console.log(courses[0]);
+        const showCourses = async () => {
+            courses.forEach(course => {course.setAttribute('hidden', true)});
+            courses
+                .filter(course =>
+                    course.outerHTML.toLowerCase().includes(search_term.toLowerCase()))
+                .forEach(course => {
+                    course.removeAttribute('hidden');
+                })
+        }
+    </script>
 {% endblock %}
