@@ -172,6 +172,9 @@ def get_all_records(filename):
     all_recs = db_sess.query(Record.child_surname,
                              Record.child_name,
                              Record.child_patronymic,
+                             Record.parent_surname,
+                             Record.parent_name,
+                             Record.parent_patronymic,
                              Record.parent_phone,
                              Record.parent_email,
                              Record.parent_work,
@@ -180,13 +183,18 @@ def get_all_records(filename):
                              Record.edu_class,
                              Course.name,
                              Course.teachers).select_from(Course).join(Course.records).all()
-    all_records = pandas.DataFrame(all_recs, columns=['Ф', 'И', 'О', 'Телефон', 'Email', 'Место работы родителя', 'Дата Рождения',
+    all_records = pandas.DataFrame(all_recs, columns=['Ф', 'И', 'О', 'Фр', 'Ир', 'Ор', 'Телефон', 'Email', 'Место работы родителя', 'Дата Рождения',
                                                       'Школа', 'Класс', 'Программа', 'Педагог'])
     all_records['ФИО'] = all_records[['Ф', 'И', 'О']].agg(' '.join, axis=1)
+    all_records['ФИОр'] = all_records[['Фр', 'Ир', 'Ор']].agg(' '.join, axis=1)
     FIO = all_records['ФИО']
+    FIOr = all_records['ФИОр']
     all_records.drop(columns=['Ф', 'И', 'О'], axis=1, inplace=True)
+    all_records.drop(columns=['Фр', 'Ир', 'Ор'], axis=1, inplace=True)
     all_records.drop(columns=['ФИО'], axis=1, inplace=True)
+    all_records.drop(columns=['ФИОр'], axis=1, inplace=True)
     all_records.insert(0, 'ФИО', FIO)
+    all_records.insert(1, 'ФИО родителя', FIOr)
     all_records.to_excel(filename)
 
 
