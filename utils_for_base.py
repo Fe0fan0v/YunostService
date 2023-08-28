@@ -36,7 +36,7 @@ def find_and_delete_record():
     print('Что делаем дальше? (D - удалить, другое - выйти)')
     todo = input().lower()
     if todo == 'd':
-        id_to_delete = int(input('Введите id записи ребёнка для удаления\n'))
+        id_to_delete = int(input('Введите id записи ребёнка дкля удаления\n'))
         group_num_to_delete = int(input('Введите id группы из которой необходимо удалить ребёнка\n'))
         print(f'Удаляем запись {id_to_delete} из группы {group_num_to_delete}? (Y/N)\n')
         answer = input().lower()
