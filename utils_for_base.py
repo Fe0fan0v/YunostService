@@ -6,8 +6,7 @@ from sqlalchemy.dialects.postgresql import Any
 from utilities import get_all_records
 
 
-def find_and_delete_record():
-    db_sess = db_session.create_db_session()
+def find_and_delete_record(db_sess):
     print('Введите <Фамилию Имя> ребёнка\n')
     surname, name = input().split()
     recs = db_sess.query(Record).filter(and_(Record.child_surname == surname,
@@ -36,7 +35,7 @@ def find_and_delete_record():
     print('Что делаем дальше? (D - удалить, другое - выйти)')
     todo = input().lower()
     if todo == 'd':
-        id_to_delete = int(input('Введите id записи ребёнка дкля удаления\n'))
+        id_to_delete = int(input('Введите id записи ребёнка для удаления\n'))
         group_num_to_delete = int(input('Введите id группы из которой необходимо удалить ребёнка\n'))
         print(f'Удаляем запись {id_to_delete} из группы {group_num_to_delete}? (Y/N)\n')
         answer = input().lower()
@@ -56,10 +55,9 @@ def find_and_delete_record():
         return
 
 
-def find_course_and_group():
+def find_course_and_group(db_sess):
     print('Введите примерное название программы\n')
     answer = input().upper()
-    db_sess = db_session.create_db_session()
     courses = db_sess.query(Course).filter(Course.name.contains(answer)).all()
     if not courses:
         print('Ничего не найдено')
@@ -86,12 +84,15 @@ def find_course_and_group():
 
 
 def run():
-    print('Ищем курс или запись?(С - курс, R - запись)\n')
-    answer = input().lower()
-    if answer == 'c':
-        find_course_and_group()
-    elif answer == 'r':
-        find_and_delete_record()
+    answer = ''
+    while answer != 'exit':
+        print('Ищем курс или запись?(С - курс, R - запись, exit - выход)\n')
+        db_sess = db_session.create_db_session()
+        answer = input().lower()
+        if answer == 'c':
+            find_course_and_group(db_sess)
+        elif answer == 'r':
+            find_and_delete_record(db_sess)
 
 
 run()
