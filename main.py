@@ -181,7 +181,8 @@ def get_group(num):
     db_sess = create_db_session()
     course = db_sess.query(Course).select_from(Group).join(Course.groups).filter(Group.id == num).first()
     group_num = db_sess.query(Group).filter(Group.id == num).first().number
-    records = db_sess.query(Record).select_from(Group).join(Record.groups).filter(Group.id == num).all()
+    records = db_sess.query(Record).select_from(Group).join(Record.groups).filter(Group.id == num).order_by(
+        Record.id).all()
     pairs = []
     for record in records:
         record.child_birthday = (datetime.date.today() - record.child_birthday).days // 365
@@ -231,7 +232,8 @@ def record_documents(pair_id):
         "snils": record.snils,
         "without_parents": record.without_parents,
         "police_record": record.police_record,
-        "parent_fullname": ' '.join(map(str.strip, (record.parent_surname, record.parent_name, record.parent_patronymic))),
+        "parent_fullname": ' '.join(
+            map(str.strip, (record.parent_surname, record.parent_name, record.parent_patronymic))),
         "parent_birthday": record.parent_birthday.strftime("%d.%m.%Y"),
         "parent_phone": record.parent_phone,
         "parent_email": record.parent_email,
