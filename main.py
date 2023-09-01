@@ -154,8 +154,7 @@ def registration():
                                     overflow=overflow,
                                     pair_id=encoded_pair))
     db_session.close()
-    return render_template('registration.html', course=course, form=form, group=group,
-                           count_records=count_records)
+    return render_template('technical_work.html')
 
 
 @app.route('/admin', methods=['GET', 'POST'])  # панель администратора
