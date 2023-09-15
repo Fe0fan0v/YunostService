@@ -95,4 +95,10 @@ def run():
             find_and_delete_record(db_sess)
 
 
-run()
+db_sess = db_session.create_db_session()
+groups = db_sess.query(Group).all()
+for group in groups:
+    group.opened = False
+    db_sess.add(group)
+db_sess.commit()
+db_sess.close()

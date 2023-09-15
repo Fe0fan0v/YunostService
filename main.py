@@ -39,25 +39,24 @@ DIRECTIONS = {'Художественная': ['ИЗОБРАЗИТЕЛЬНОЕ �
 
 @app.route('/')
 def enroll():
-    return render_template('technical_work.html')
-    # args = request.args.to_dict()
-    # db_session = create_db_session()
-    # courses, areas, directions = show_courses(db_session)
-    # if not args:
-    #     db_session.close()
-    #     return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS)
-    # elif 'message_type' in args.keys():
-    #     db_session.close()
-    #     return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS,
-    #                            message_type=args['message_type'],
-    #                            message=args['message'])
-    # if 'overflow' in args.keys():
-    #     return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS,
-    #                            message_type=args['message_type'],
-    #                            message=args['message'], overflow=True)
-    # else:
-    #     db_session.close()
-    #     return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS)
+    args = request.args.to_dict()
+    db_session = create_db_session()
+    courses, areas, directions = show_courses(db_session)
+    if not args:
+        db_session.close()
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS)
+    elif 'message_type' in args.keys():
+        db_session.close()
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS,
+                               message_type=args['message_type'],
+                               message=args['message'])
+    if 'overflow' in args.keys():
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS,
+                               message_type=args['message_type'],
+                               message=args['message'], overflow=True)
+    else:
+        db_session.close()
+        return render_template('enroll.html', title='Запись', courses=courses, areas=areas, directions=DIRECTIONS)
 
 
 @app.route('/registration', methods=['GET', 'POST'])
