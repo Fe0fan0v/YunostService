@@ -59,9 +59,9 @@ class Course(base, SerializerMixin):
 class Record(base, SerializerMixin):
     __tablename__ = 'records_23'
 
-    serialize_only = ('child_name', 'child_surname', 'child_patronymic', 'child_birthday',
-                      'parent_name', 'parent_surname', 'parent_patronymic', 'parent_phone', 'parent_email',
-                      'courses.name', 'groups.number', 'educational_institution', 'edu_class')
+    # serialize_only = ('child_name', 'child_surname', 'child_patronymic', 'child_birthday',
+    #                   'parent_name', 'parent_surname', 'parent_patronymic', 'parent_phone', 'parent_email',
+    #                   'courses.name', 'groups.number', 'educational_institution', 'edu_class')
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     # -------------информация о ребенке------------#

@@ -24,6 +24,8 @@
             <th>Телефон родителя</th>
             <th>Электронная почта родителя</th>
             <th>Приоритет записи</th>
+            <th>Скачать заявление</th>
+            <th>Дата записи</th>
         </tr>
         </thead>
         <tbody id="results">
@@ -43,6 +45,7 @@
                 <td>Резерв</td>
                 {% endif %}
                 <td><a href="/documents/{{ pairs_id[i] }}" class="uk-button uk-button-primary">Заявление</a></td>
+                <td>{{ dates[i] }}</td>
                 </tr>
             {% endfor %}
         </tbody>

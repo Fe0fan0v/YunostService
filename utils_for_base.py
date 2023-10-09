@@ -69,14 +69,11 @@ def find_course_and_group(db_sess):
         for group in groups:
             print(f'ID{group.id} Группа № {group.number} - {group.schedule} / {"открыта" if group.opened else "закрыта"}')
         print('-------------------------------------------------------------------------------------------------------')
-    group_to_work = int(input('Какую группу открыть/закрыть?(ID)\n'))
-    group = db_sess.query(Group).filter(Group.id == group_to_work).first()
-    todo = input('Что делать с группой? (O - открыть, С - закрыть\n').lower()
-    if todo == 'o':
+    group_to_work = list(map(int, (input('Какие группы открыть?(ID)\n').split())))
+    for group_num in group_to_work:
+        group = db_sess.query(Group).filter(Group.id == group_num).first()
         group.opened = True
-    elif todo == 'c':
-        group.opened = False
-    db_sess.add(group)
+        db_sess.add(group)
     db_sess.commit()
     db_sess.close()
     print('Done')
@@ -84,21 +81,11 @@ def find_course_and_group(db_sess):
 
 
 def run():
+    db_sess = db_session.create_db_session()
     answer = ''
     while answer != 'exit':
-        print('Ищем курс или запись?(С - курс, R - запись, exit - выход)\n')
-        db_sess = db_session.create_db_session()
-        answer = input().lower()
-        if answer == 'c':
-            find_course_and_group(db_sess)
-        elif answer == 'r':
-            find_and_delete_record(db_sess)
+        find_course_and_group(db_sess)
 
 
-db_sess = db_session.create_db_session()
-groups = db_sess.query(Group).all()
-for group in groups:
-    group.opened = False
-    db_sess.add(group)
-db_sess.commit()
-db_sess.close()
+run()
+

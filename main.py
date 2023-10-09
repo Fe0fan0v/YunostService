@@ -5,7 +5,7 @@ from docxtpl import DocxTemplate
 from flask import Flask, render_template, request, redirect, send_file, url_for
 from flask_cors import CORS
 
-from db.models import Course, Record, Group
+from db.models import Course, Record, Group, records_groups
 from forms import RegisterChild, AdminEnter
 from utilities import show_courses, get_filter_criteria, get_group_records, get_encoded_str_from_int_pair, \
     get_decoded_int_pair_from_str
@@ -181,14 +181,17 @@ def get_group(num):
     db_sess = create_db_session()
     course = db_sess.query(Course).select_from(Group).join(Course.groups).filter(Group.id == num).first()
     group_num = db_sess.query(Group).filter(Group.id == num).first().number
-    records = db_sess.query(Record).select_from(Group).join(Record.groups).filter(Group.id == num).order_by(
+    records = db_sess.query(Record).select_from(Group).join(Record.groups).join(records_groups).filter(Group.id == num).order_by(
         Record.id).all()
+    dates = []
+    for rec in records:
+        dates.append(db_sess.query(records_groups).filter(records_groups.c.record_id == rec.id).first()[2].strftime("%d/%m/%y"))
     pairs = []
     for record in records:
         record.child_birthday = (datetime.date.today() - record.child_birthday).days // 365
         pairs.append(get_encoded_str_from_int_pair(record.id, course.id))
     return render_template('show_records.html', course=course, group_num=group_num, group_id=num,
-                           records=enumerate(records), pairs_id=pairs)
+                           records=enumerate(records), dates=dates, pairs_id=pairs)
 
 
 @app.route('/get_group_table/<num>')
