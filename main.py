@@ -72,10 +72,6 @@ def registration():
         data = request.form
         child_birthday = datetime.datetime.fromisoformat(data['child_birthday']).date()
         age = (datetime.date.today() - child_birthday).days // 365
-        if not course.age_from - 1 <= age <= course.age_to + 1:
-            db_session.close()
-            return render_template('registration.html', course=course, form=form, group=group,
-                                   count_records=count_records, message='Курс не подходит Вам по возрасту')
         registered = db_session.query(Record).filter(
             and_(
                 Record.child_name == data['child_name'].strip().capitalize(),

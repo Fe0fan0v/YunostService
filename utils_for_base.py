@@ -16,7 +16,7 @@ def find_and_delete_record(db_sess):
         return
     for rec in recs:
         print('-------------------------------------------------------------------------------------------------------')
-        print(f'№{rec.id} {surname} {name}')
+        print(f'№{rec.id} {surname} {name} {rec.child_patronymic} {rec.child_birthday}')
         result = {}
         courses = db_sess.query(Course).select_from(Record).join(Course.records).filter(
             and_(Record.child_surname == rec.child_surname,
@@ -36,18 +36,19 @@ def find_and_delete_record(db_sess):
     todo = input().lower()
     if todo == 'd':
         id_to_delete = int(input('Введите id записи ребёнка для удаления\n'))
-        group_num_to_delete = int(input('Введите id группы из которой необходимо удалить ребёнка\n'))
-        print(f'Удаляем запись {id_to_delete} из группы {group_num_to_delete}? (Y/N)\n')
+        groups_num_to_delete = list(map(int, input('Введите id групп из которой необходимо удалить ребёнка через пробел\n').split()))
+        print(f'Удаляем запись {id_to_delete} из групп {groups_num_to_delete}? (Y/N)\n')
         answer = input().lower()
         while answer not in 'yn':
             answer = input('Не понял, удаляем или нет? (Y/N)\n').lower()
         if answer == 'n':
             return
         else:
-            course_to_delete = db_sess.query(Course).select_from(Group).join(Course.groups).filter(
-                Group.id == group_num_to_delete).first()
-            db_sess.execute(f'delete from records_groups_23 where record_id = {id_to_delete} and group_id = {group_num_to_delete}')
-            db_sess.execute(f'delete from records_courses_23 where record_id = {id_to_delete} and course_id = {course_to_delete.id}')
+            for g in groups_num_to_delete:
+                course_to_delete = db_sess.query(Course).select_from(Group).join(Course.groups).filter(
+                    Group.id == g).first()
+                db_sess.execute(f'delete from records_groups_23 where record_id = {id_to_delete} and group_id = {g}')
+                db_sess.execute(f'delete from records_courses_23 where record_id = {id_to_delete} and course_id = {course_to_delete.id}')
             db_sess.commit()
             db_sess.close()
             print('Удалено')
